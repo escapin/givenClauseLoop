@@ -1,0 +1,73 @@
+%----These are tokens that appear in the syntax rules above. No rules
+%----defined here because they appear explicitly in the syntax rules,
+%----except that <vline>, <star>, <plus> denote "|", "*", "+", respectively.
+%----Keywords:    fof cnf thf tff include
+%----Punctuation: ( ) , . [ ] :
+%----Operators:   ! ? ~ & | <=> => <= <~> ~| ~& * +
+%----Predicates:  = != $true $false
+
+
+%----Files. Empty file is OK.
+<TPTP_file>          ::= <TPTP_input>*
+<TPTP_input>         ::= <annotated_formula> | <include>
+%----Formula records
+<annotated_formula>  ::= <cnf_annotated>
+<cnf_annotated>      ::= cnf(<name>,<formula_role>,<cnf_formula><annotations>).
+<annotations>        ::= ,<source><optional_info> | null
+
+%----In derivations the annotated formulae names must be unique, so that
+%----parent references (see <inference_record>) are unambiguous.
+<formula_role>       ::= <lower_word>
+<formula_role>       :== axiom | hypothesis | definition | assumption |
+                         lemma | theorem | conjecture | negated_conjecture |
+                         plain | fi_domain | fi_functors | fi_predicates |
+                         type | unknown
+%----CNF formulae (variables implicitly universally quantified)
+<cnf_formula>        ::= (<disjunction>) | <disjunction>
+<disjunction>        ::= <literal> | <disjunction> <vline> <literal>
+<literal>            ::= <atomic_formula> | ~ <atomic_formula> |
+                         <fol_infix_unary>
+<fol_infix_unary>    ::= <term> <infix_inequality> <term>
+
+%----First order atoms
+<atomic_formula>     ::= <plain_atomic_formula> | <defined_atomic_formula> |
+                         <system_atomic_formula>
+<plain_atomic_formula> ::= <plain_term>
+<plain_atomic_formula> :== <proposition> | <predicate>(<arguments>)
+<proposition>        :== <predicate>
+<predicate>          :== <atomic_word>
+%----Using <plain_term> removes a reduce/reduce ambiguity in lex/yacc.
+
+%----First order terms
+<term>               ::= <function_term> | <variable> | <conditional_term> |
+                         <let_term>
+<function_term>      ::= <plain_term> | <defined_term> | <system_term>
+<plain_term>         ::= <constant> | <functor>(<arguments>)
+<constant>           ::= <functor>
+<functor>            ::= <atomic_word>
+
+
+
+%----Variables, and only variables, start with uppercase
+<variable>           ::= <upper_word>
+%----Arguments recurse back up to terms (this is the FOF world here)
+<arguments>          ::= <term> | <term>,<arguments>
+
+%----General purpose
+<name>               ::= <atomic_word> | <integer>
+%----Integer names are expected to be unsigned
+<atomic_word>        ::= <lower_word> | <single_quoted>
+%----<single_quoted> tokens do not include their outer quotes, therefore the
+%----<lower_word> <atomic_word> cat and the <single_quoted> <atomic_word> 'cat'
+%----are the same. Quotes must be removed from a <single_quoted> <atomic_word>
+%----if doing so produces a <lower_word> <atomic_word>. Note that <numbers>s
+%----and <variable>s are not <lower_word>s, so '123' and 123, and 'X' and X,
+%----are different.
+<atomic_defined_word> ::= <dollar_word>
+<atomic_system_word> ::= <dollar_dollar_word>
+<number>             ::= <integer> | <rational> | <real>
+%----Numbers are always interpreted as themselves, and are thus implicitly
+%----distinct if they have different values, e.g., 1 != 2 is an implicit axiom.
+%----All numbers are base 10 at the moment.
+<file_name>          ::= <single_quoted>
+<null>               ::=
