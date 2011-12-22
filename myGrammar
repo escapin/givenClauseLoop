@@ -9,39 +9,29 @@
 
 <name>               ::= <atomic_word> | <integer>
 <formula_role>       ::= <lower_word>
-<annotations>        ::= ( <atomic_word> )*
+<annotations>        ::= ( <atomic_word> | <upper_word> )*
 
 #################################################################
 ##  CNF FORMULAE (variables implicitly universally quantified) ##
 #################################################################
 
-<cnf_formula>        ::= (<disjunction>) | <disjunction>
+<cnf_formula>        ::= (<disjunction>)+
 <disjunction>        ::= <literal> | <disjunction> <vline> <literal>
 <literal>            ::= <atomic_formula> | ~ <atomic_formula>
 
 
-<atomic_formula>     ::= <plain_atomic_formula> | <defined_atomic_formula> |
-                         <system_atomic_formula>
-<plain_atomic_formula> :== <proposition> | <predicate>(<arguments>)
-<proposition>        :== <predicate>
-<predicate>          :== <atomic_word>
-%----Note: "defined" means a word starting with one $ and "system" means $$.
-<defined_atomic_formula> :== <dollar><plain_atomic_formula>
-<system_atomic_formula> :== <dollar><dollar><plain_atomic_formula>
+<atomic_formula>     ::= <atomic_word> | <atomic_word>(<arguments>)  %---- this production represents predicates 
+
 
 
 #################################################################
 ###################  FIRST ORDER TERMS   ########################
 #################################################################
 
+<arguments>          ::= <term> | <term>,<arguments>
 <term>               ::= <function_term> | <variable>
 <function_term>      ::= <plain_term> | <defined_term> | <system_term>
 <plain_term>         ::= <constant> | <functor>(<arguments>)
-%----Note: "defined" means a word starting with one $ and "system" means $$.
-<defined_term>		 ::= <dollar><plain_term>
-<system_term>		 ::= <dollar><dollar><plain_term>
-
-<arguments>          ::= <term> | <term>,<arguments>
 
 %----Variables, and only variables, start with uppercase
 <variable>           ::= <upper_word>
@@ -52,10 +42,12 @@
 ########################    STRING    ###########################
 #################################################################
 
+
 <atomic_word>        ::= <lower_word> | <single_quoted>
+%----Note: "defined" means a word starting with one $ and "system" means $$.
+<lower_word>         ::- <$>*<lower_alpha><alpha_numeric>*
+<upper_word>         ::- <$>*<upper_alpha><alpha_numeric>*
 <single_quoted>      ::- <single_quote><sq_char>+<single_quote>
-<lower_word>         ::- <lower_alpha><alpha_numeric>*
-<upper_word>         ::- <upper_alpha><alpha_numeric>*
 <alpha_numeric>      ::: (<lower_alpha>|<upper_alpha>|<numeric>|[_])
 
 <SQ_CHAR>            ::: (["\40"-"\46"] | ["\50-\133"] | ["\135"-"\176]) %---Space and visible characters upto ~, except ' and \
