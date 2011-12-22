@@ -11,15 +11,47 @@ public interface ParserConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int EqNotEq = 6;
+  int SINGLE_LINE_COMMENT = 5;
   /** RegularExpression Id. */
-  int CADR = 9;
+  int SIGN = 6;
   /** RegularExpression Id. */
-  int PRED = 10;
+  int SINGLE_QUOTE = 7;
   /** RegularExpression Id. */
-  int FUNVAR = 11;
+  int VLINE = 8;
   /** RegularExpression Id. */
-  int SINGLE_LINE_COMMENT = 16;
+  int NOT = 9;
+  /** RegularExpression Id. */
+  int OPEN_BRACKET = 10;
+  /** RegularExpression Id. */
+  int CLOSE_BRACKET = 11;
+  /** RegularExpression Id. */
+  int DOT = 12;
+  /** RegularExpression Id. */
+  int COMMA = 13;
+  /** RegularExpression Id. */
+  int UNDERSCORE = 14;
+  /** RegularExpression Id. */
+  int DEF_SYS = 15;
+  /** RegularExpression Id. */
+  int CNF = 16;
+  /** RegularExpression Id. */
+  int NUMERIC = 17;
+  /** RegularExpression Id. */
+  int ZERO_NUMERIC = 18;
+  /** RegularExpression Id. */
+  int NON_ZERO_NUMERIC = 19;
+  /** RegularExpression Id. */
+  int LOWER_ALFA = 20;
+  /** RegularExpression Id. */
+  int UPPER_ALFA = 21;
+  /** RegularExpression Id. */
+  int DOLLAR_LOWER_ALFA = 22;
+  /** RegularExpression Id. */
+  int DOLLAR_UPPER_ALFA = 23;
+  /** RegularExpression Id. */
+  int ALFA_NUMERIC = 24;
+  /** RegularExpression Id. */
+  int SQ_CHAR = 25;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -27,24 +59,31 @@ public interface ParserConstants {
   /** Literal token values. */
   String[] tokenImage = {
     "<EOF>",
-    "\"-\"",
-    "\"(\"",
-    "\")\"",
-    "\";\"",
-    "\",\"",
-    "<EqNotEq>",
-    "\"atom\"",
-    "\"cons\"",
-    "<CADR>",
-    "<PRED>",
-    "<FUNVAR>",
     "\" \"",
     "\"\\t\"",
     "\"\\n\"",
     "\"\\r\"",
     "<SINGLE_LINE_COMMENT>",
-    "\"cnf\"",
+    "<SIGN>",
+    "\"\\\'\"",
+    "\"|\"",
+    "\"~\"",
+    "\"(\"",
+    "\")\"",
     "\".\"",
+    "\",\"",
+    "\"_\"",
+    "<DEF_SYS>",
+    "\"cnf\"",
+    "<NUMERIC>",
+    "<ZERO_NUMERIC>",
+    "<NON_ZERO_NUMERIC>",
+    "<LOWER_ALFA>",
+    "<UPPER_ALFA>",
+    "<DOLLAR_LOWER_ALFA>",
+    "<DOLLAR_UPPER_ALFA>",
+    "<ALFA_NUMERIC>",
+    "<SQ_CHAR>",
   };
 
 }

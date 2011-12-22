@@ -1,7 +1,6 @@
 #################################################################
 #############  GRAMMAR FOR CNF-TPTP PARSER	#####################
 #################################################################
-
 <TPTP_file>          ::= <TPTP_input>
 <TPTP_input>         ::= <cnf_annotated>*
 
@@ -14,46 +13,34 @@
 #################################################################
 ##  CNF FORMULAE (variables implicitly universally quantified) ##
 #################################################################
-
-<cnf_formula>        ::= (<disjunction>)+
-<disjunction>        ::= <literal> | <disjunction> <vline> <literal>
+<cnf_formula>        ::= ("(")? <literal> ( <vline> <literal> )* (")")?
 <literal>            ::= <atomic_formula> | ~ <atomic_formula>
-
-
-<atomic_formula>     ::= <atomic_word> | <atomic_word>(<arguments>)  %---- this production represents predicates 
-
-
+<atomic_formula>     ::= <atomic_word> | <atomic_word>(<arguments>)	%---- this production represents PREDICATES 
 
 #################################################################
 ###################  FIRST ORDER TERMS   ########################
 #################################################################
-
 <arguments>          ::= <term> | <term>,<arguments>
-<term>               ::= <function_term> | <variable>
-<function_term>      ::= <plain_term> | <defined_term> | <system_term>
-<plain_term>         ::= <constant> | <functor>(<arguments>)
-
-%----Variables, and only variables, start with uppercase
-<variable>           ::= <upper_word>
-<constant>           ::= <functor>
-<functor>            ::= <atomic_word>
+<term>               ::= <function_term> | <upper_word>			%---- <upper_word> defines VARIABLES
+<function_term>      ::= <atomic_word>( <arguments> )		%---- atomic_word without brackets defines CONSTANT
+								%---- atomic_word with brackets defines FUNCTION
 
 #################################################################
 ########################    STRING    ###########################
 #################################################################
-
-
 <atomic_word>        ::= <lower_word> | <single_quoted>
-%----Note: "defined" means a word starting with one $ and "system" means $$.
-<lower_word>         ::- <$>*<lower_alpha><alpha_numeric>*
-<upper_word>         ::- <$>*<upper_alpha><alpha_numeric>*
+<lower_word>         ::- ( <DOLLAR_LOWER_ALFA> | <LOWER_ALPHA> ) <alpha_numeric>*
+<upper_word>         ::- ( <DOLLAR_UPPER_ALFA> | <UPPER_ALPHA> ) <alpha_numeric>*
 <single_quoted>      ::- <single_quote><sq_char>+<single_quote>
 <alpha_numeric>      ::: (<lower_alpha>|<upper_alpha>|<numeric>|[_])
 
-<SQ_CHAR>            ::: (["\40"-"\46"] | ["\50-\133"] | ["\135"-"\176]) %---Space and visible characters upto ~, except ' and \
-<LOWER_ALFA>	     ::: [a-z]
-<UPPER_ALFA>         ::: [A-Z]
 
+<DEF_SYS>		::: "$" | "$$"
+<LOWER_ALFA>		::: [a-z]
+<UPPER_ALFA>		::: [A-Z]
+<DOLLAR_LOWER_ALFA>	::: <DEF_SYS><LOWER_ALPHA>	
+<DOLLAR_UPPER_ALFA>	::: <DEF_SYS><UPPER_ALPHA>	
+<SQ_CHAR>		::: (["\40"-"\46"] | ["\50-\133"] | ["\135"-"\176]) %---Space and visible characters upto ~, except ' and \
 
 
 #################################################################
@@ -74,6 +61,6 @@
 #################################################################
 #####################   General purpose    ######################
 #################################################################
-<single_quote>       ::: [']
-<vline>				 ::: [|]
-<dollar>             ::: [$]
+<SINGLE_QUOTE>       	::: [']
+<VLINE>			::: [|]
+
