@@ -5,7 +5,6 @@ package givenClauseLoop;
 public class Parser implements ParserConstants {
         /**	* Conjunctive Normal Form (CNF) Formulae's Parser.	* Based on CNF fragment of TPTP syntax	* http://www.tptp.org	* http://www.cs.miami.edu/~tptp/TPTP/SyntaxBNF.html	*	*@param input CNF formulae	*@param output	*/
         public static void parsing(String input,Object output) throws Exception{
-                output="ciao";
                 try{
                         new Parser(new java.io.StringReader(input)).TPTP_file();
                 }catch(Throwable e){
@@ -60,15 +59,14 @@ public class Parser implements ParserConstants {
 /*** The CNF name*/
   static final public void name() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case SINGLE_QUOTE:
-    case LOWER_ALFA:
-    case DOLLAR_LOWER_ALFA:
-      atomic_word();
+    case LOWER_WORD:
+      jj_consume_token(LOWER_WORD);
       break;
-    case SIGN:
-    case ZERO_NUMERIC:
-    case NON_ZERO_NUMERIC:
-      integer();
+    case SINGLE_QUOTED:
+      jj_consume_token(SINGLE_QUOTED);
+      break;
+    case INTEGER:
+      jj_consume_token(INTEGER);
       break;
     default:
       jj_la1[2] = jj_gen;
@@ -79,7 +77,7 @@ public class Parser implements ParserConstants {
 
 /*** The CNF formula role*/
   static final public void formula_role() throws ParseException {
-    lower_word();
+    jj_consume_token(LOWER_WORD);
   }
 
 /*** The CNF annotations*/
@@ -87,14 +85,14 @@ public class Parser implements ParserConstants {
     label_2:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case SINGLE_QUOTE:
-      case LOWER_ALFA:
-      case DOLLAR_LOWER_ALFA:
-        atomic_word();
+      case LOWER_WORD:
+        jj_consume_token(LOWER_WORD);
         break;
-      case UPPER_ALFA:
-      case DOLLAR_UPPER_ALFA:
-        upper_word();
+      case UPPER_WORD:
+        jj_consume_token(UPPER_WORD);
+        break;
+      case SINGLE_QUOTED:
+        jj_consume_token(SINGLE_QUOTED);
         break;
       default:
         jj_la1[3] = jj_gen;
@@ -102,11 +100,9 @@ public class Parser implements ParserConstants {
         throw new ParseException();
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case SINGLE_QUOTE:
-      case LOWER_ALFA:
-      case UPPER_ALFA:
-      case DOLLAR_LOWER_ALFA:
-      case DOLLAR_UPPER_ALFA:
+      case LOWER_WORD:
+      case UPPER_WORD:
+      case SINGLE_QUOTED:
         ;
         break;
       default:
@@ -118,22 +114,48 @@ public class Parser implements ParserConstants {
 
 /******************************************************************  CNF FORMULAE (variables implicitly universally quantified) ******************************************************************/
   static final public void cnf_formula() throws ParseException {
-    jj_consume_token(OPEN_BRACKET);
-    literal();
-    label_3:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case VLINE:
-        ;
-        break;
-      default:
-        jj_la1[5] = jj_gen;
-        break label_3;
-      }
-      jj_consume_token(VLINE);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case OPEN_BRACKET:
+      jj_consume_token(OPEN_BRACKET);
       literal();
+      label_3:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case VLINE:
+          ;
+          break;
+        default:
+          jj_la1[5] = jj_gen;
+          break label_3;
+        }
+        jj_consume_token(VLINE);
+        literal();
+      }
+      jj_consume_token(CLOSE_BRACKET);
+      break;
+    case NOT:
+    case LOWER_WORD:
+    case SINGLE_QUOTED:
+      literal();
+      label_4:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case VLINE:
+          ;
+          break;
+        default:
+          jj_la1[6] = jj_gen;
+          break label_4;
+        }
+        jj_consume_token(VLINE);
+        literal();
+      }
+      break;
+    default:
+      jj_la1[7] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
-    jj_consume_token(CLOSE_BRACKET);
   }
 
 // void disjunction():{}{	disjunction() <VLINE> literal() | literal()	}   static final public void literal() throws ParseException {
@@ -143,7 +165,7 @@ public class Parser implements ParserConstants {
       t = jj_consume_token(NOT);
       break;
     default:
-      jj_la1[6] = jj_gen;
+      jj_la1[8] = jj_gen;
       ;
     }
     atomic_formula();
@@ -151,53 +173,18 @@ public class Parser implements ParserConstants {
   }
 
   static final public void atomic_formula() throws ParseException {
-    atomic_word();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case OPEN_BRACKET:
-      jj_consume_token(OPEN_BRACKET);
-      arguments();
-      jj_consume_token(CLOSE_BRACKET);
+    case LOWER_WORD:
+      jj_consume_token(LOWER_WORD);
       break;
-    default:
-      jj_la1[7] = jj_gen;
-      ;
-    }
-  }
-
-/******************************************************************		TERM	***************************************************************************/
-  static final public void arguments() throws ParseException {
-    term();
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case COMMA:
-      jj_consume_token(COMMA);
-      term();
-      break;
-    default:
-      jj_la1[8] = jj_gen;
-      ;
-    }
-  }
-
-  static final public void term() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case SINGLE_QUOTE:
-    case LOWER_ALFA:
-    case DOLLAR_LOWER_ALFA:
-      function_term();
-      break;
-    case UPPER_ALFA:
-    case DOLLAR_UPPER_ALFA:
-      upper_word();
+    case SINGLE_QUOTED:
+      jj_consume_token(SINGLE_QUOTED);
       break;
     default:
       jj_la1[9] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
-  }
-
-  static final public void function_term() throws ParseException {
-    atomic_word();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case OPEN_BRACKET:
       jj_consume_token(OPEN_BRACKET);
@@ -210,184 +197,63 @@ public class Parser implements ParserConstants {
     }
   }
 
-/******************************************************************		WORD	***************************************************************************/
-  static final public String atomic_word() throws ParseException {
-          String s;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case LOWER_ALFA:
-    case DOLLAR_LOWER_ALFA:
-      s = lower_word();
-      break;
-    case SINGLE_QUOTE:
-      s = single_quoted();
-          {if (true) return s;}
-      break;
-    default:
-      jj_la1[11] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+/******************************************************************		TERM	***************************************************************************/
+  static final public void arguments() throws ParseException {
+    term();
+    label_5:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case COMMA:
+        ;
+        break;
+      default:
+        jj_la1[11] = jj_gen;
+        break label_5;
+      }
+      jj_consume_token(COMMA);
+      term();
     }
-    throw new Error("Missing return statement in function");
   }
 
-  static final public String upper_word() throws ParseException {
-                Token   t1=null,
-                                t2=null;
-                StringBuffer s1 = new StringBuffer();
+  static final public void term() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case DOLLAR_UPPER_ALFA:
-      t1 = jj_consume_token(DOLLAR_UPPER_ALFA);
+    case LOWER_WORD:
+    case SINGLE_QUOTED:
+      function_term();
       break;
-    case UPPER_ALFA:
-      t1 = jj_consume_token(UPPER_ALFA);
+    case UPPER_WORD:
+      jj_consume_token(UPPER_WORD);
       break;
     default:
       jj_la1[12] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
-    label_4:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case ALFA_NUMERIC:
-        ;
-        break;
-      default:
-        jj_la1[13] = jj_gen;
-        break label_4;
-      }
-      t2 = jj_consume_token(ALFA_NUMERIC);
-                                                                           s1.append(t2.image.charAt(0));
-    }
-          {if (true) return  t1.image + s1.toString();}
-    throw new Error("Missing return statement in function");
   }
 
-  static final public String lower_word() throws ParseException {
-                Token   t1=null,
-                                t2=null;
-                StringBuffer s1 = new StringBuffer();
+  static final public void function_term() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case DOLLAR_LOWER_ALFA:
-      t1 = jj_consume_token(DOLLAR_LOWER_ALFA);
+    case LOWER_WORD:
+      jj_consume_token(LOWER_WORD);
       break;
-    case LOWER_ALFA:
-      t1 = jj_consume_token(LOWER_ALFA);
+    case SINGLE_QUOTED:
+      jj_consume_token(SINGLE_QUOTED);
+      break;
+    default:
+      jj_la1[13] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case OPEN_BRACKET:
+      jj_consume_token(OPEN_BRACKET);
+      arguments();
+      jj_consume_token(CLOSE_BRACKET);
       break;
     default:
       jj_la1[14] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+      ;
     }
-    label_5:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case ALFA_NUMERIC:
-        ;
-        break;
-      default:
-        jj_la1[15] = jj_gen;
-        break label_5;
-      }
-      t2 = jj_consume_token(ALFA_NUMERIC);
-                                                                           s1.append(t2.image.charAt(0));
-    }
-          {if (true) return  t1.image + s1.toString();}
-    throw new Error("Missing return statement in function");
-  }
-
-/*** A a word in quoted* It can contain also special character apart from ' and \*/
-  static final public String single_quoted() throws ParseException {
-                Token   t1=null,
-                                t2=null;
-                StringBuffer s=new StringBuffer();
-    t1 = jj_consume_token(SINGLE_QUOTE);
-    label_6:
-    while (true) {
-      t2 = jj_consume_token(SQ_CHAR);
-                                          s.append(t2.image.charAt(0));
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case SQ_CHAR:
-        ;
-        break;
-      default:
-        jj_la1[16] = jj_gen;
-        break label_6;
-      }
-    }
-    jj_consume_token(SINGLE_QUOTE);
-          {if (true) return t1.image + s.toString() + t1.image;}
-    throw new Error("Missing return statement in function");
-  }
-
-/******************************************************************		NUMBER	***************************************************************************/
-  static final public String integer() throws ParseException {
-                String s;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case SIGN:
-      s = signed_integer();
-      break;
-    case ZERO_NUMERIC:
-    case NON_ZERO_NUMERIC:
-      s = decimal();
-          {if (true) return s;}
-      break;
-    default:
-      jj_la1[17] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    throw new Error("Missing return statement in function");
-  }
-
-  static final public String signed_integer() throws ParseException {
-                Token t=null;
-                String s;
-    t = jj_consume_token(SIGN);
-    s = decimal();
-          {if (true) return t.image + s;}
-    throw new Error("Missing return statement in function");
-  }
-
-  static final public String decimal() throws ParseException {
-                Token t=null;
-                String s;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case ZERO_NUMERIC:
-      t = jj_consume_token(ZERO_NUMERIC);
-      break;
-    case NON_ZERO_NUMERIC:
-      s = positive_decimal();
-        {if (true) return (t!=null)? t.image : s;}
-      break;
-    default:
-      jj_la1[18] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    throw new Error("Missing return statement in function");
-  }
-
-  static final public String positive_decimal() throws ParseException {
-                Token   t1=null,
-                                t2=null;
-                StringBuffer s=new StringBuffer();
-    t1 = jj_consume_token(NON_ZERO_NUMERIC);
-    label_7:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case NUMERIC:
-        ;
-        break;
-      default:
-        jj_la1[19] = jj_gen;
-        break label_7;
-      }
-      t2 = jj_consume_token(NUMERIC);
-                                              s.append(t2.image.charAt(0));
-    }
-          {if (true) return t1.image + s;}
-    throw new Error("Missing return statement in function");
   }
 
   static private boolean jj_initialized_once = false;
@@ -400,13 +266,13 @@ public class Parser implements ParserConstants {
   static public Token jj_nt;
   static private int jj_ntk;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[20];
+  static final private int[] jj_la1 = new int[15];
   static private int[] jj_la1_0;
   static {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x10000,0x2000,0x5c00c0,0xf00080,0xf00080,0x100,0x200,0x400,0x2000,0xf00080,0x400,0x500080,0xa00000,0x1000000,0x500000,0x1000000,0x2000000,0xc0040,0xc0000,0x20000,};
+      jj_la1_0 = new int[] {0x1000,0x800,0x200a000,0xe000,0xe000,0x40,0x40,0xa180,0x80,0xa000,0x100,0x800,0xe000,0xa000,0x100,};
    }
 
   /** Constructor with InputStream. */
@@ -427,7 +293,7 @@ public class Parser implements ParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 20; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 15; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -441,7 +307,7 @@ public class Parser implements ParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 20; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 15; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -458,7 +324,7 @@ public class Parser implements ParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 20; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 15; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -468,7 +334,7 @@ public class Parser implements ParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 20; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 15; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -484,7 +350,7 @@ public class Parser implements ParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 20; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 15; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -493,7 +359,7 @@ public class Parser implements ParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 20; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 15; i++) jj_la1[i] = -1;
   }
 
   static private Token jj_consume_token(int kind) throws ParseException {
@@ -544,12 +410,12 @@ public class Parser implements ParserConstants {
   /** Generate ParseException. */
   static public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[26];
+    boolean[] la1tokens = new boolean[32];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 15; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -558,7 +424,7 @@ public class Parser implements ParserConstants {
         }
       }
     }
-    for (int i = 0; i < 26; i++) {
+    for (int i = 0; i < 32; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

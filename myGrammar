@@ -49,8 +49,7 @@
 
 <integer>            ::- (<signed_integer>|<decimal>)
 <signed_integer>     ::- <sign><decimal>
-<decimal>            ::- (<zero_numeric>|<positive_decimal>)
-<positive_decimal>   ::- <non_zero_numeric><numeric>*
+<decimal>            ::- <zero_numeric> | <non_zero_numeric><numeric>*
 
 <NUMERIC>            ::: [0-9]
 <ZERO_NUMERIC>       ::: [0]
