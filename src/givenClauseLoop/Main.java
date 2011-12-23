@@ -22,12 +22,12 @@ public class Main {
 		}catch (IOException e){
 			throw new IOException("Failed to open the file");
 		}
-		System.out.println(input);
-		//try{
+		//System.out.println(input);
+		try{
 			//PARSING
 			Parser.parsing(input, new String());
-		//}catch(Throwable e){
-		//	System.out.println(e.getMessage());
-		//}
+		}catch(Throwable e){
+			System.out.println(e.getMessage());
+		}
 	}
 }
