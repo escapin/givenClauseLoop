@@ -13,17 +13,18 @@
 #################################################################
 ##  CNF FORMULAE (variables implicitly universally quantified) ##
 #################################################################
-<cnf_formula>        ::= ("(")? <literal> ( <vline> <literal> )* (")")?
+<cnf_formula>        ::= "(" <literal> ( <vline> <literal> )* ")" | <literal> ( <vline> <literal> )*
 <literal>            ::= <atomic_formula> | ~ <atomic_formula>
 <atomic_formula>     ::= <atomic_word> | <atomic_word>(<arguments>)	%---- this production represents PREDICATES 
 
 #################################################################
 ###################  FIRST ORDER TERMS   ########################
 #################################################################
+% Non ci possono essere termini (funzioni, variabili o costanti) se non come argomenti di predicati 
 <arguments>          ::= <term> | <term>,<arguments>
 <term>               ::= <function_term> | <upper_word>			%---- <upper_word> defines VARIABLES
-<function_term>      ::= <atomic_word>( <arguments> )		%---- atomic_word without brackets defines CONSTANT
-								%---- atomic_word with brackets defines FUNCTION
+<function_term>      ::= <atomic_word>("(" <arguments> ")")?		%---- <atomic_word> with brackets defines FUNCTION
+									%---- <atomic_word> without brackets defines CONSTANT
 
 #################################################################
 ########################    STRING    ###########################
