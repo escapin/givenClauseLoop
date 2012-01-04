@@ -19,7 +19,7 @@ public class Main {
 		}catch (FileNotFoundException e){
 			System.out.println("Can not open file. Maybe path is wrong or file does not exist."); 
 		}catch (IOException e){
-			throw new IOException("Failed to open the file");
+			throw new IOException("Failed to open the file.");
 		}
 		//System.out.println(input);
 		try{

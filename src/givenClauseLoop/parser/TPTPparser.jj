@@ -2,22 +2,35 @@ PARSER_BEGIN(Parser)
 
 package givenClauseLoop.parser;
 
-import java.util.List;
-import java.util.LinkedList;
-import givenClauseLoop.bean.FOLNode;
-import givenClauseLoop.bean.SymType;
+import java.util.*;
+import givenClauseLoop.bean.*;
 
 public class Parser{
 	/**
-	* Conjunctive Normal Form (CNF) Formulae's Parser.
-	* Based on CNF fragment of TPTP syntax
-	* http://www.tptp.org
-	* http://www.cs.miami.edu/~tptp/TPTP/SyntaxBNF.html
-	*
-	*@param input CNF formulae
-	*@param output
-	*/
+	 * Contains the functions already read with its args number.
+	 * This Map avoids the presence of functions with same name
+	 * but different number of attributes. 
+	 */
+	private static Map<String,Integer> functions;
+
+	/**
+	 * Set of all formulae read
+	 */
+	private static SortedSet<CNFformula> formulae;
+
+	/**
+	 * Conjunctive Normal Form (CNF) Formulae's Parser.
+	 * Based on CNF fragment of TPTP syntax
+	 * http://www.tptp.org
+	 * http://www.cs.miami.edu/~tptp/TPTP/SyntaxBNF.html
+	 *
+	 *@param input CNF formulae
+	 *@param output
+	 */
 	public static void parsing(String input,Object output) throws Exception{
+		functions = new HashMap<String, Integer>();
+		formulae  = new TreeSet<CNFformula>();
+		
 		try{	
 			new Parser(new java.io.StringReader(input)).TPTP_file();
 		}catch(Throwable e){
@@ -25,7 +38,6 @@ public class Parser{
 			throw new ParseException("Syntax check failed: " + e.getMessage());
 		}
     }
-
 }
 PARSER_END(Parser)
 
@@ -87,9 +99,14 @@ void TPTP_input():{}
 /**
  * An annotated CNF formula
  */ 
-void cnf_annotated(): {}
+void cnf_annotated():
+	{
+	  CNFformula f;
+	}
 {
-	<CNF>  <OPEN_BRACKET> name() <COMMA>  formula_role() <COMMA>  cnf_formula()  ( <COMMA> annotations() )? <CLOSE_BRACKET> <DOT>
+	<CNF>  <OPEN_BRACKET> name() <COMMA>  formula_role() <COMMA>  f=cnf_formula()  ( <COMMA> annotations() )? <CLOSE_BRACKET> <DOT>
+	{
+	  formulae.add(f);	}
 }
 
 /**
@@ -112,14 +129,18 @@ void annotations():	{}	{ ( <LOWER_WORD> | <UPPER_WORD> | <SINGLE_QUOTED> )+ }
 **  CNF FORMULAE (variables implicitly universally quantified) **
 ****************************************************************/
 
-void cnf_formula():
+CNFformula cnf_formula():
 	{
-	  FOLNode n;
+	  FOLNode n=null;
+	  SortedSet<FOLNode> atoms=new TreeSet<FOLNode>();
+	  int symNumber=0, litNumber=0;
 	}
 {
-	( <OPEN_BRACKET> n=literal() ( <VLINE> n=literal() )* <CLOSE_BRACKET> 	| 	literal() ( <VLINE> literal() )* )
+	(	<OPEN_BRACKET> n=literal() {atoms.add(n); symNumber+=n.getSymNumber(); litNumber++; } ( <VLINE> n=literal() {atoms.add(n); symNumber+=n.getSymNumber(); litNumber++; } )* <CLOSE_BRACKET>
+		| 	literal() {atoms.add(n); symNumber+=n.getSymNumber(); litNumber++; } ( <VLINE> literal() {atoms.add(n); symNumber+=n.getSymNumber(); litNumber++; } )* )
 	{
-	  //System.out.println("ciao");	}
+		CNFformula formula=new CNFformula(atoms, symNumber, litNumber);
+	  	return formula;	}
 }
 
 FOLNode literal():
@@ -156,7 +177,7 @@ List<FOLNode> arguments():
 ***************************************************/
 FOLNode term():
 	{
-	  Token t1=null, t2=null;
+	  Token t1=null;
 	  List<FOLNode> args=null;
 	}
 {
@@ -172,6 +193,18 @@ FOLNode term():
 			return new FOLNode(t1.image, SymType.CONSTANT);
 		else		// FUNCTION
 		{
+			/* check if a function with that name 
+			 * but different arguments' number has been already read
+			 */
+			Integer f=(Integer) functions.get(t1.image);
+			if(f!=null){
+			  if(f.intValue()!=args.size())
+					throw new ParseException("The function \"" + t1.image 
+						+ "\" has been already read with " + f.intValue() + " argument(s)");
+			}
+			else
+				functions.put(t1.image, new Integer(args.size()));
+			
 			FOLNode n=new FOLNode(t1.image, SymType.FUNCTION);
 			n.setArgs(args);
 			return n;
