@@ -1,7 +1,9 @@
 package givenClauseLoop;
 
 import java.io.*;
+import java.util.*;
 import givenClauseLoop.parser.*;
+import givenClauseLoop.bean.*;
 
 public class Main {
 
@@ -22,11 +24,13 @@ public class Main {
 			throw new IOException("Failed to open the file.");
 		}
 		//System.out.println(input);
+		AbstractQueue<CNFformula> formulae;
 		try{
 			//PARSING
-			Parser.parsing(input, new String());
+			formulae=Parser.parsing(input);
 		}catch(Throwable e){
 			System.out.println(e.getMessage());
 		}
+		 
 	}
 }

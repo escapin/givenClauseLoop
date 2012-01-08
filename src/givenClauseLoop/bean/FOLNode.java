@@ -26,6 +26,10 @@ public class FOLNode implements Comparable<FOLNode>{
 		this.syty=syty;
 	}
 	
+	public SymType getSymType(){
+		return syty;
+	}
+	
 	public void setArgs(List<FOLNode> args){
 		this.args=args;
 		for(FOLNode a: args){

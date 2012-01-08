@@ -5,6 +5,7 @@ import java.util.*;
 import givenClauseLoop.bean.*;
 
 public class Parser implements ParserConstants {
+
         /**
 	 * Contains the functions already read with its args number.
 	 * This Map avoids the presence of functions with same name
@@ -13,9 +14,16 @@ public class Parser implements ParserConstants {
         private static Map<String,Integer> functions;
 
         /**
-	 * Set of all formulae read
+	 * Contains the predicates already read with its args number.
+	 * This Map avoids the presence of predicates with same name
+	 * but different number of attributes. 
 	 */
-        private static SortedSet<CNFformula> formulae;
+        private static Map<String,Integer> predicates;
+
+        /**
+	 * Queue of all formulae read
+	 */
+        private static AbstractQueue<CNFformula> formulae;
 
         /**
 	 * Conjunctive Normal Form (CNF) Formulae's Parser.
@@ -26,9 +34,10 @@ public class Parser implements ParserConstants {
 	 *@param input CNF formulae
 	 *@param output
 	 */
-        public static void parsing(String input,Object output) throws Exception{
+        public static AbstractQueue<CNFformula> parsing(String input) throws Exception{
                 functions = new HashMap<String, Integer>();
-                formulae  = new TreeSet<CNFformula>();
+                predicates = new HashMap<String, Integer>();
+                formulae  = new PriorityQueue<CNFformula>();
 
                 try{
                         new Parser(new java.io.StringReader(input)).TPTP_file();
@@ -36,6 +45,7 @@ public class Parser implements ParserConstants {
                         // Catching Throwable is ugly but JavaCC throws Error objects!
                         throw new ParseException("Syntax check failed: " + e.getMessage());
                 }
+                return formulae;
     }
 
 /**
@@ -245,7 +255,21 @@ public class Parser implements ParserConstants {
     }
                 FOLNode n=new FOLNode((t1==null)? t2.image: t1.image + t2.image , SymType.PREDICATE);
                 if(args!=null)
+                {
+                        /* check if a predicate with that name 
+			 * but different arguments' number has been already read
+			 */
+                        Integer p=(Integer) predicates.get(t2.image);
+                        if(p!=null){
+                          if(p.intValue()!=args.size())
+                                        {if (true) throw new ParseException("The predicate \u005c"" + t2.image
+                                                + "\u005c" has been already read with " + p.intValue() + " argument(s)");}
+                        }
+                        else
+                                predicates.put(t2.image, new Integer(args.size()));
+
                         n.setArgs(args);
+                }
                 {if (true) return n;}
     throw new Error("Missing return statement in function");
   }
