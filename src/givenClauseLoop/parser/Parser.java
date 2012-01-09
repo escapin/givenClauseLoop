@@ -166,14 +166,15 @@ public class Parser implements ParserConstants {
 **  CNF FORMULAE (variables implicitly universally quantified) **
 ****************************************************************/
   static final public CNFformula cnf_formula() throws ParseException {
-          FOLNode n=null;
-          SortedSet<FOLNode> atoms=new TreeSet<FOLNode>();
+          Predicate p=null;
+          //Set<Predicate> atoms=new TreeSet<Predicate>();
+          Set<Predicate> atoms=new HashSet<Predicate>();
           int symNumber=0, litNumber=0;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case OPEN_BRACKET:
       jj_consume_token(OPEN_BRACKET);
-      n = literal();
-                                            atoms.add(n); symNumber+=n.getSymNumber(); litNumber++;
+      p = literal();
+                                            atoms.add(p); symNumber+=p.getSymNumber(); litNumber++;
       label_3:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -185,16 +186,16 @@ public class Parser implements ParserConstants {
           break label_3;
         }
         jj_consume_token(VLINE);
-        n = literal();
-                                                                                                                             atoms.add(n); symNumber+=n.getSymNumber(); litNumber++;
+        p = literal();
+                                                                                                                             atoms.add(p); symNumber+=p.getSymNumber(); litNumber++;
       }
       jj_consume_token(CLOSE_BRACKET);
       break;
     case NOT:
     case LOWER_WORD:
     case SINGLE_QUOTED:
-      literal();
-                                   atoms.add(n); symNumber+=n.getSymNumber(); litNumber++;
+      p = literal();
+                                     atoms.add(p); symNumber+=p.getSymNumber(); litNumber++;
       label_4:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -206,8 +207,8 @@ public class Parser implements ParserConstants {
           break label_4;
         }
         jj_consume_token(VLINE);
-        literal();
-                                                                                                                  atoms.add(n); symNumber+=n.getSymNumber(); litNumber++;
+        p = literal();
+                                                                                                                      atoms.add(p); symNumber+=p.getSymNumber(); litNumber++;
       }
       break;
     default:
@@ -220,9 +221,9 @@ public class Parser implements ParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  static final public FOLNode literal() throws ParseException {
+  static final public Predicate literal() throws ParseException {
           Token t1=null, t2;
-          List<FOLNode> args=null;
+          List<Term> args=null;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case NOT:
       t1 = jj_consume_token(NOT);
@@ -253,32 +254,32 @@ public class Parser implements ParserConstants {
       jj_la1[10] = jj_gen;
       ;
     }
-                FOLNode n=new FOLNode((t1==null)? t2.image: t1.image + t2.image , SymType.PREDICATE);
+                Predicate p=new Predicate(t2.image, (t1==null)? true: false);
                 if(args!=null)
                 {
                         /* check if a predicate with that name 
 			 * but different arguments' number has been already read
 			 */
-                        Integer p=(Integer) predicates.get(t2.image);
-                        if(p!=null){
-                          if(p.intValue()!=args.size())
+                        Integer pp=(Integer) predicates.get(t2.image);
+                        if(pp!=null){
+                          if(pp.intValue()!=args.size())
                                         {if (true) throw new ParseException("The predicate \u005c"" + t2.image
-                                                + "\u005c" has been already read with " + p.intValue() + " argument(s)");}
+                                                + "\u005c" has been already read with " + pp.intValue() + " argument(s)");}
                         }
                         else
                                 predicates.put(t2.image, new Integer(args.size()));
 
-                        n.setArgs(args);
+                        p.setArgs(args);
                 }
-                {if (true) return n;}
+                {if (true) return p;}
     throw new Error("Missing return statement in function");
   }
 
-  static final public List<FOLNode> arguments() throws ParseException {
-          List<FOLNode> args=new LinkedList<FOLNode>();
-          FOLNode n;
-    n = term();
-                  args.add(n);
+  static final public List<Term> arguments() throws ParseException {
+          List<Term> args=new LinkedList<Term>();
+          Term t;
+    t = term();
+                  args.add(t);
     label_5:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -290,8 +291,8 @@ public class Parser implements ParserConstants {
         break label_5;
       }
       jj_consume_token(COMMA);
-      n = term();
-                                                     args.add(n);
+      t = term();
+                                                     args.add(t);
     }
           {if (true) return args;}
     throw new Error("Missing return statement in function");
@@ -300,14 +301,14 @@ public class Parser implements ParserConstants {
 /***************************************************
 ***************		TERM	************************
 ***************************************************/
-  static final public FOLNode term() throws ParseException {
+  static final public Term term() throws ParseException {
           Token t1=null;
-          List<FOLNode> args=null;
+          List<Term> args=null;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case UPPER_WORD:
       t1 = jj_consume_token(UPPER_WORD);
                 // VARIABLE
-                {if (true) return new FOLNode(t1.image, SymType.VARIABLE);}
+                {if (true) return new Variable(t1.image);}
       break;
     case LOWER_WORD:
     case SINGLE_QUOTED:
@@ -334,7 +335,7 @@ public class Parser implements ParserConstants {
         ;
       }
                 if(args==null) // CONSTANT
-                        {if (true) return new FOLNode(t1.image, SymType.CONSTANT);}
+                        {if (true) return new Constant(t1.image);}
                 else            // FUNCTION
                 {
                         /* check if a function with that name 
@@ -349,9 +350,9 @@ public class Parser implements ParserConstants {
                         else
                                 functions.put(t1.image, new Integer(args.size()));
 
-                        FOLNode n=new FOLNode(t1.image, SymType.FUNCTION);
-                        n.setArgs(args);
-                        {if (true) return n;}
+                        Function t=new Function(t1.image);
+                        t.setArgs(args);
+                        {if (true) return t;}
                 }
       break;
     default:

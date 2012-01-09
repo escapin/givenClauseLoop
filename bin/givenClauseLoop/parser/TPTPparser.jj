@@ -141,54 +141,55 @@ void annotations():	{}	{ ( <LOWER_WORD> | <UPPER_WORD> | <SINGLE_QUOTED> )+ }
 
 CNFformula cnf_formula():
 	{
-	  FOLNode n=null;
-	  SortedSet<FOLNode> atoms=new TreeSet<FOLNode>();
+	  Predicate p=null;
+	  //Set<Predicate> atoms=new TreeSet<Predicate>();
+	  Set<Predicate> atoms=new HashSet<Predicate>();
 	  int symNumber=0, litNumber=0;
 	}
 {
-	(	<OPEN_BRACKET> n=literal() {atoms.add(n); symNumber+=n.getSymNumber(); litNumber++; } ( <VLINE> n=literal() {atoms.add(n); symNumber+=n.getSymNumber(); litNumber++; } )* <CLOSE_BRACKET>
-		| 	literal() {atoms.add(n); symNumber+=n.getSymNumber(); litNumber++; } ( <VLINE> literal() {atoms.add(n); symNumber+=n.getSymNumber(); litNumber++; } )* )
+	(	<OPEN_BRACKET> p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); litNumber++; } ( <VLINE> p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); litNumber++; } )* <CLOSE_BRACKET>
+		| 	p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); litNumber++; } ( <VLINE> p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); litNumber++; } )* )
 	{
 		CNFformula formula=new CNFformula(atoms, symNumber, litNumber);
 	  	return formula;	}
 }
 
-FOLNode literal():
+Predicate literal():
 	{
 	  Token t1=null, t2;
-	  List<FOLNode> args=null;
+	  List<Term> args=null;
 	}
 {
 	(t1=<NOT>)? (t2=<LOWER_WORD> | t2=<SINGLE_QUOTED>)  ( <OPEN_BRACKET> args=arguments() <CLOSE_BRACKET> )?
 	//this production represents predicates with or without arguments
 	// <ATOMIC_WORD:		<LOWER_WORD> | <SINGLE_QUOTED> >
 	{
-		FOLNode n=new FOLNode((t1==null)? t2.image: t1.image + t2.image , SymType.PREDICATE);
+		Predicate p=new Predicate(t2.image, (t1==null)? true: false);
 		if(args!=null)		{			/* check if a predicate with that name 
 			 * but different arguments' number has been already read
 			 */
-			Integer p=(Integer) predicates.get(t2.image);
-			if(p!=null){
-			  if(p.intValue()!=args.size())
+			Integer pp=(Integer) predicates.get(t2.image);
+			if(pp!=null){
+			  if(pp.intValue()!=args.size())
 					throw new ParseException("The predicate \"" + t2.image 
-						+ "\" has been already read with " + p.intValue() + " argument(s)");
+						+ "\" has been already read with " + pp.intValue() + " argument(s)");
 			}
 			else
 				predicates.put(t2.image, new Integer(args.size()));  
 
-			n.setArgs(args);
+			p.setArgs(args);
 		}
-		return n;
+		return p;
 	}
 }
 
-List<FOLNode> arguments():
+List<Term> arguments():
 	{
-	  List<FOLNode> args=new LinkedList<FOLNode>();
-	  FOLNode n;
+	  List<Term> args=new LinkedList<Term>();
+	  Term t;
 	}
 {
-	n=term() {args.add(n);} ( <COMMA>  n=term() {args.add(n);} )*
+	t=term() {args.add(t);} ( <COMMA>  t=term() {args.add(t);} )*
 	{
 	  return args;
 	}
@@ -197,22 +198,22 @@ List<FOLNode> arguments():
 /***************************************************
 ***************		TERM	************************
 ***************************************************/
-FOLNode term():
+Term term():
 	{
 	  Token t1=null;
-	  List<FOLNode> args=null;
+	  List<Term> args=null;
 	}
 {
   	t1=<UPPER_WORD>			// upper_word defines VARIABLE
 	{
 		// VARIABLE
-	 	return new FOLNode(t1.image, SymType.VARIABLE);	}
+	 	return new Variable(t1.image);	}
   	| (t1=<LOWER_WORD> | t1=<SINGLE_QUOTED>) ( <OPEN_BRACKET> args=arguments() <CLOSE_BRACKET> )?
 		// atomic_word with brackets defines FUNCTION
 		// atomic_word without brackets defines CONSTANT
 	{
 	 	if(args==null) // CONSTANT
-			return new FOLNode(t1.image, SymType.CONSTANT);
+			return new Constant(t1.image);
 		else		// FUNCTION
 		{
 			/* check if a function with that name 
@@ -227,9 +228,9 @@ FOLNode term():
 			else
 				functions.put(t1.image, new Integer(args.size()));
 			
-			FOLNode n=new FOLNode(t1.image, SymType.FUNCTION);
-			n.setArgs(args);
-			return n;
+			Function t=new Function(t1.image);
+			t.setArgs(args);
+			return t;
 		}  	
   	}
 }

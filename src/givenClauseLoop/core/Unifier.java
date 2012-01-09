@@ -9,13 +9,13 @@ import givenClauseLoop.bean.*;
  */
 public class Unifier {
 
-	private static Map<FOLNode, FOLNode> sigma;
+	private static Map<Variable, Term> sigma;
 	
 	public Unifier(){
-		sigma=new HashMap<FOLNode, FOLNode>();
+		sigma=new HashMap<Variable, Term>();
 	}
 	
-	public static Map<FOLNode, FOLNode> unify(List<FOLNode> x, List<FOLNode> y){
-		
+	public static Map<Variable, Term> unify(List<Term> arg1, List<Term> arg2){
+		return sigma;
 	}
 }

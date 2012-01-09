@@ -7,17 +7,17 @@ import java.util.Set;
  *
  */
 public class CNFformula implements Comparable<CNFformula>{
-	Set<FOLNode> atoms;
+	Set<Predicate> atoms;
 	int symNumber;
 	int litNumber;
 	
-	public CNFformula(Set<FOLNode> atoms, int symNumber, int litNumber){
+	public CNFformula(Set<Predicate> atoms, int symNumber, int litNumber){
 		this.atoms=atoms;
 		this.symNumber=symNumber;
 		this.litNumber=litNumber;
 	}
 	
-	public Set<FOLNode> getAtoms(){
+	public Set<Predicate> getAtoms(){
 		return atoms;
 	}
 
