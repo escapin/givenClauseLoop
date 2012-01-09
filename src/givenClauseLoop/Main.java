@@ -25,9 +25,10 @@ public class Main {
 		}
 		//System.out.println(input);
 		AbstractQueue<CNFformula> formulae=null;
+		Map<String, FOLNode> elements=new HashMap<String, FOLNode>();
 		try{
 			//PARSING
-			formulae=Parser.parsing(input);
+			formulae=Parser.parsing(input, elements);
 		}catch(Throwable e){
 			System.out.println(e.getMessage());
 		}

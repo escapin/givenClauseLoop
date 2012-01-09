@@ -7,8 +7,7 @@ public class Function extends FOLNodeArg implements Term {
 	}
 	
 	public String toString(){
-		StringBuffer s = new StringBuffer();
-		s.append(symbol + "(");
+		StringBuffer s = new StringBuffer(symbol + "(");
 		for(Term t: args)
 			s.append(t.toString() + ",");
 		s.replace(s.length()-1, s.length(), ")");

@@ -25,6 +25,10 @@ public class Parser implements ParserConstants {
 	 */
         private static AbstractQueue<CNFformula> formulae;
 
+        /**
+	 * All the elements (constants, variables, functions, predicates) that are read
+	 */
+         private static Map<String, FOLNode> elements;
 
         /**
 	 * Conjunctive Normal Form (CNF) Formulae's Parser.
@@ -35,10 +39,11 @@ public class Parser implements ParserConstants {
 	 *@param input CNF formulae
 	 *@param output
 	 */
-        public static AbstractQueue<CNFformula> parsing(String input) throws Exception{
+        public static AbstractQueue<CNFformula> parsing(String input, Map<String, FOLNode> elms) throws Exception{
                 functions = new HashMap<String, Integer>();
                 predicates = new HashMap<String, Integer>();
                 formulae  = new PriorityQueue<CNFformula>();
+                elements=elms;
 
                 try{
                         new Parser(new java.io.StringReader(input)).TPTP_file();
@@ -255,22 +260,31 @@ public class Parser implements ParserConstants {
       jj_la1[10] = jj_gen;
       ;
     }
-                Predicate p=new Predicate(t2.image, (t1==null)? true: false);
+                StringBuffer sKey=new StringBuffer((t1==null)? t2.image: t1.image + t2.image);
+
                 if(args!=null)
                 {
                         /* check if a predicate with that name 
 			 * but different arguments' number has been already read
 			 */
                         Integer pp=(Integer) predicates.get(t2.image);
-                        if(pp!=null){
-                          if(pp.intValue()!=args.size())
+                        if(pp!=null && pp.intValue()!=args.size())
                                         {if (true) throw new ParseException("The predicate \u005c"" + t2.image
                                                 + "\u005c" has been already read with " + pp.intValue() + " argument(s)");}
-                        }
                         else
                                 predicates.put(t2.image, new Integer(args.size()));
 
+                        sKey.append("(");
+                        for(Term t: args)
+                                sKey.append(t.toString() + ",");
+                        sKey.replace(sKey.length()-1, sKey.length(), ")");
+                }
+
+                Predicate p = (Predicate) elements.get(sKey.toString());
+                if(p==null){
+                        p=new Predicate(t2.image, (t1==null)? true: false);
                         p.setArgs(args);
+                        elements.put(sKey.toString(), p);
                 }
                 {if (true) return p;}
     throw new Error("Missing return statement in function");
@@ -309,7 +323,12 @@ public class Parser implements ParserConstants {
     case UPPER_WORD:
       t1 = jj_consume_token(UPPER_WORD);
                 // VARIABLE
-                {if (true) return new Variable(t1.image);}
+                Variable v = (Variable) elements.get(t1.image);
+                if(v == null){
+                  v = new Variable(t1.image);
+                  elements.put(t1.image, v);
+                }
+                {if (true) return v;}
       break;
     case LOWER_WORD:
     case SINGLE_QUOTED:
@@ -335,25 +354,40 @@ public class Parser implements ParserConstants {
         jj_la1[13] = jj_gen;
         ;
       }
-                if(args==null) // CONSTANT
-                        {if (true) return new Constant(t1.image);}
+                if(args==null)
+                {
+                   // CONSTANT
+                        Constant c = (Constant) elements.get(t1.image);
+                        if(c == null){
+                                c = new Constant(t1.image);
+                                elements.put(t1.image, c);
+                        }
+                        {if (true) return c;}
+                }
                 else            // FUNCTION
                 {
                         /* check if a function with that name 
 			 * but different arguments' number has been already read
 			 */
-                        Integer f=(Integer) functions.get(t1.image);
-                        if(f!=null){
-                          if(f.intValue()!=args.size())
+                        Integer ff=(Integer) functions.get(t1.image);
+                        if(ff!=null && ff.intValue()!=args.size())
                                         {if (true) throw new ParseException("The function \u005c"" + t1.image
-                                                + "\u005c" has been already read with " + f.intValue() + " argument(s)");}
-                        }
+                                                + "\u005c" has been already read with " + ff.intValue() + " argument(s)");}
                         else
                                 functions.put(t1.image, new Integer(args.size()));
 
-                        Function t=new Function(t1.image);
-                        t.setArgs(args);
-                        {if (true) return t;}
+                        StringBuffer sKey = new StringBuffer(t1.image + "(");
+                        for(Term t: args)
+                                sKey.append(t.toString() + ",");
+                        sKey.replace(sKey.length()-1, sKey.length(), ")");
+
+                        Function f = (Function) elements.get(sKey.toString());
+                        if(f == null){
+                                f = new Function(t1.image);
+                                f.setArgs(args);
+                                elements.put(sKey.toString(), f);
+                        }
+                        {if (true) return f;}
                 }
       break;
     default:
