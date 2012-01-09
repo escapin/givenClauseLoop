@@ -25,6 +25,7 @@ public class Parser implements ParserConstants {
 	 */
         private static AbstractQueue<CNFformula> formulae;
 
+
         /**
 	 * Conjunctive Normal Form (CNF) Formulae's Parser.
 	 * Based on CNF fragment of TPTP syntax

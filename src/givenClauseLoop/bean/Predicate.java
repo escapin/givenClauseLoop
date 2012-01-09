@@ -7,6 +7,8 @@ public class Predicate extends FOLNodeArg {
 	public Predicate(String symbol, boolean isPositive){
 		super.symbol=symbol;
 		this.isPositive=isPositive;
+		if(!isPositive)	// because also the negation symbol "~" must be counted
+			symNumber++;
 	}
 	
 	public boolean isPositive(){

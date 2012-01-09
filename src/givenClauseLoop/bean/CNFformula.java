@@ -29,6 +29,13 @@ public class CNFformula implements Comparable<CNFformula>{
 		return litNumber;
 	}
 	
+	public String toString(){
+		StringBuffer s = new StringBuffer();
+		for(Predicate p: atoms)
+			s.append(p.toString() + " | ");
+		s.delete(s.length()-3, s.length());
+		return s.toString();
+	}
 	/**
 	 * Inconsistent with equality.
 	 * Compare respect the number of symbols in these two formulae.

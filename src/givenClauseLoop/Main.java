@@ -24,13 +24,15 @@ public class Main {
 			throw new IOException("Failed to open the file.");
 		}
 		//System.out.println(input);
-		AbstractQueue<CNFformula> formulae;
+		AbstractQueue<CNFformula> formulae=null;
 		try{
 			//PARSING
 			formulae=Parser.parsing(input);
 		}catch(Throwable e){
 			System.out.println(e.getMessage());
 		}
-		 
+		while(!formulae.isEmpty()){
+			System.out.println(formulae.poll());
+		}
 	}
 }
