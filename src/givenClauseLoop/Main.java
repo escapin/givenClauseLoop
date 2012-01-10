@@ -32,8 +32,12 @@ public class Main {
 		}catch(Throwable e){
 			System.out.println(e.getMessage());
 		}
+		
+		// print the formulae
 		while(!formulae.isEmpty()){
 			System.out.println(formulae.poll());
 		}
+		
+		
 	}
 }
