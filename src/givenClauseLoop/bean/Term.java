@@ -1,5 +1,5 @@
 package givenClauseLoop.bean;
 
-public interface Term extends FOLNode{
+public abstract class Term extends FOLNode{
 
 }

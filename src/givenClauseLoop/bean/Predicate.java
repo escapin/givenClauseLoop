@@ -1,8 +1,15 @@
 package givenClauseLoop.bean;
 
-public class Predicate extends FOLNodeArg {
+import java.util.List;
+
+public class Predicate extends FOLNode implements FOLNodeArg {
 
 	private boolean isPositive;
+	
+	/**
+	 * The arguments of this predicate/function
+	 */
+	private List<Term> args=null;
 	
 	public Predicate(String symbol, boolean isPositive){
 		super.symbol=symbol;
@@ -13,6 +20,21 @@ public class Predicate extends FOLNodeArg {
 	
 	public boolean isPositive(){
 		return isPositive;
+	}
+	
+	public void setArgs(List<Term> args){
+		this.args=args;
+		for(Term t: this.args){
+			symNumber += t.getSymNumber();
+		}
+	}
+	
+	public List<Term> getArgs(){
+		return args;
+	}
+	
+	public int nArgs(){
+		return args.size();
 	}
 	
 	public String toString(){
