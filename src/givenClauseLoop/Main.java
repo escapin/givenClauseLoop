@@ -28,10 +28,20 @@ public class Main {
 		Map<String, FOLNode> elements=new HashMap<String, FOLNode>();
 		try{
 			//PARSING
-			formulae=Parser.parsing(input, elements);
+			formulae= Parser.parsing(input, elements);
 		}catch(Throwable e){
 			System.out.println(e.getMessage());
 		}
+		
+		/*
+		for(String k: el.keySet())
+			System.out.println(el.get(k));
+			
+		if(el.size()==0)
+			System.out.println("Equals to 0");
+		if(el.size()!=0)
+			System.out.println("Not Equals to 0");
+		*/
 		
 		// print the formulae
 		while(!formulae.isEmpty()){

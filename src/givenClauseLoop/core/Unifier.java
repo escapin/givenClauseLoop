@@ -9,8 +9,6 @@ import givenClauseLoop.bean.*;
  */
 public class Unifier {
 
-	
-	
 	public Unifier(){
 	}
 	
@@ -20,11 +18,8 @@ public class Unifier {
 	 * of variable/term pairs) or null which is used to indicate a failure to
 	 * unify.
 	 * 
-	 * @param arg1
-	 *            a variable, constant, list, or compound
-	 * @param arg2
-	 *            a variable, constant, list, or compound
-	 * 
+	 * @param arg1 the terms' list of the first predicate
+	 * @param arg2 the terms' list of the first predicate 
 	 * @return a Map<Variable, Term> representing the substitution (i.e. a set
 	 *         of variable/term pairs) or null which is used to indicate a
 	 *         failure to unify.
@@ -76,17 +71,16 @@ public class Unifier {
 	 * @param sigma
 	 *            the substitution built up so far
 	 * 
-	 * @return a Map<Variable, Term> representing the substitution (i.e. a set
+	 * @return Map<Variable, Term> representing the substitution (i.e. a set
 	 *         of variable/term pairs) or null which is used to indicate a
 	 *         failure to unify.
 	 */
-	public Map<Variable, Term> unify(Term x, Term y,
+	private Map<Variable, Term> unify(Term x, Term y,
 			Map<Variable, Term> sigma) {
-		// if sigma = failure then return failure
 		if (sigma == null) {
 			return null;
 		} else if (x.equals(y)) {
-			// else if x = y then return sigma
+			// if the two term are equals return the substitution without any modification
 			return sigma;
 		} else if (x instanceof Variable) {
 			// else if VARIABLE?(x) then return UNIFY-VAR(x, y, sigma)
@@ -106,16 +100,17 @@ public class Unifier {
 	}
 	
 	/**
-	 * <code>
-	 * function UNIFY-VAR(var, x, theta) returns a substitution
-	 *   inputs: var, a variable
-	 *       x, any expression
-	 *       sigma, the substitution built up so far
-	 * </code>
+	 * Makes the unification between a variable and a term if it is possible,
+	 * return null otherwise.
+	 * The term must not be equal to the variable, otherwise return null!
+	 * 
+	 * @param var	the variable that will be part of the substitution's domain
+	 * @param x		the term that will be the image of var in the substitution
+	 * @param sigma	the substitution
+	 * @return the substitution
 	 */
 	private Map<Variable, Term> unifyVar(Variable var, Term x,
 			Map<Variable, Term> sigma) {
-
 		if (sigma.keySet().contains(var)) {
 			// if {var/val} belongs to sigma then return UNIFY(val, x, sigma)
 			return unify(sigma.get(var), x, sigma);
@@ -125,6 +120,7 @@ public class Unifier {
 		} else if (occurCheck(var, x, sigma)) { // OCCUR CHECK!!!
 			return null;
 		} else {
+			//sigma.put(var, x);
 			/* we cannot simply do 'sigma.put(var, x);'
 			 * we must execute the cascadeSubstituion method.
 			 * See cascadeSubstitution method's documentation for more explanation.
@@ -136,13 +132,13 @@ public class Unifier {
 	
 	/**
 	 * 
-	 * It happens: (1) if x is equals to y (or a variables' chain makes them equal);
+	 * Occur Check happens: (1) if x is equals to y (or a variables' chain makes them equal);
 	 * (2) when you should make a substitution between a variable and a term
 	 * that contain the same variable at different nested level of a function.
 	 * e.g.  var <-- g(var)
 	 * If an occur check exists, this method finds it. 
 	 * 
-	  * @param var	the variable that should be substituted
+	 * @param var	the variable that should be substituted
 	 * @param x		the term that should be substituted instead of var
 	 * @param sigma	the substitution
 	 * @return true if an occur check exists, false otherwise.
@@ -171,22 +167,29 @@ public class Unifier {
 	 * It would be incorrect to write p(x,a).
 	 * This has particularly important consequences anytime you are trying to unify two expressions.
 	 *
-	 * σ = {z ← x, x ← a} must became σ = {z ← a, x ← a}
+	 * σ = {z ← x, x ← a} must become σ = {z ← a, x ← a}
 	 *
 	 * @param var	the variable that must be substituted
 	 * @param x		the term that must be substituted instead of var
 	 * @param sigma	the substitution
 	 */
+	 Map<Variable, Variable> inverseSigma=new HashMap<Variable, Variable>();
 	 private void cascadeSubstitution(Variable var, Term x, Map<Variable, Term> sigma) {
+		Variable v;
+		if((v=inverseSigma.get(var)) !=null)
+			sigma.put(v, x);
+		
 		if(x instanceof Variable){
 			Term t=sigma.get(x);
 			if(t!=null) // instead of x, var must get the x's image
 				sigma.put(var, t);
 			else // there is not 'x' variable in substitution's domain
 				sigma.put(var, x);
+			inverseSigma.put((Variable) x, var);
 		}
 		else
 			sigma.put(var, x);
+		
 		/*
 		for (Variable v : sigma.keySet()) {
 			sigma.put(v, _substVisitor.subst(sigma, sigma.get(v)));

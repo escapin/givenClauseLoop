@@ -39,11 +39,11 @@ public class Parser implements ParserConstants {
 	 *@param input CNF formulae
 	 *@param output
 	 */
-        public static AbstractQueue<CNFformula> parsing(String input, Map<String, FOLNode> elms) throws Exception{
+        public static AbstractQueue<CNFformula> parsing(String input, Map<String, FOLNode> el) throws Exception{
                 functions = new HashMap<String, Integer>();
                 predicates = new HashMap<String, Integer>();
                 formulae  = new PriorityQueue<CNFformula>();
-                elements=elms;
+                elements=el;
 
                 try{
                         new Parser(new java.io.StringReader(input)).TPTP_file();
@@ -53,6 +53,23 @@ public class Parser implements ParserConstants {
                 }
                 return formulae;
     }
+
+    public static List<Term>[] getArguments(String arg1, String arg2) throws Exception{
+                functions = new HashMap<String, Integer>();
+                elements= new HashMap<String, FOLNode>();
+                List<Term>[] lar = new List[2];
+                try{
+                        Parser par=new Parser(new java.io.StringReader(arg1));
+                        lar[0]=par.arguments();
+                        // only here you can use ReInit. Not when you call the static class out of this file!                        par.ReInit(new java.io.StringReader(arg2));
+                        lar[1]=par.arguments();
+                        return lar;
+                }catch(Throwable e){
+                        // Catching Throwable is ugly but JavaCC throws Error objects!
+                        e.printStackTrace();
+                        throw new ParseException("Syntax check failed: " + e.getMessage());
+                }
+        }
 
 /**
 * All the contents of the file
@@ -80,6 +97,7 @@ public class Parser implements ParserConstants {
     }
   }
 
+//List<Term> TPTP_args(): {List<Term> l;} {	<OPEN_BRACKET>  l=arguments()  <CLOSE_BRACKET> <EOF> { return l;}	}
 /**
  * An annotated CNF formula
  */

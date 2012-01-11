@@ -1,3 +1,4 @@
+options{  USER_TOKEN_MANAGER=false;  USER_CHAR_STREAM=false;}
 PARSER_BEGIN(Parser)
 
 package givenClauseLoop.parser;
@@ -40,11 +41,11 @@ public class Parser{
 	 *@param input CNF formulae
 	 *@param output
 	 */
-	public static AbstractQueue<CNFformula> parsing(String input, Map<String, FOLNode> elms) throws Exception{
+	public static AbstractQueue<CNFformula> parsing(String input, Map<String, FOLNode> el) throws Exception{
 		functions = new HashMap<String, Integer>();
 		predicates = new HashMap<String, Integer>();
 		formulae  = new PriorityQueue<CNFformula>();
-		elements=elms;
+		elements=el;
 		
 		try{	
 			new Parser(new java.io.StringReader(input)).TPTP_file();
@@ -54,6 +55,18 @@ public class Parser{
 		}
 		return formulae;
     }
+
+    public static List<Term>[] getArguments(String arg1, String arg2) throws Exception{
+		functions = new HashMap<String, Integer>();
+		elements= new HashMap<String, FOLNode>();
+		List<Term>[] lar = new List[2];		try{	
+			Parser par=new Parser(new java.io.StringReader(arg1));			lar[0]=par.arguments();			// only here you can use ReInit. Not when you call the static class out of this file!			par.ReInit(new java.io.StringReader(arg2));			lar[1]=par.arguments();			return lar;
+		}catch(Throwable e){
+			// Catching Throwable is ugly but JavaCC throws Error objects!
+			e.printStackTrace();
+			throw new ParseException("Syntax check failed: " + e.getMessage());
+		}
+	}
 }
 PARSER_END(Parser)
 
@@ -111,7 +124,7 @@ void TPTP_input():{}
 {
 	( cnf_annotated() )*
 }
-
+//List<Term> TPTP_args(): {List<Term> l;} {	<OPEN_BRACKET>  l=arguments()  <CLOSE_BRACKET> <EOF> { return l;}	}
 /**
  * An annotated CNF formula
  */ 
@@ -122,7 +135,8 @@ void cnf_annotated():
 {
 	<CNF>  <OPEN_BRACKET> name() <COMMA>  formula_role() <COMMA>  f=cnf_formula()  ( <COMMA> annotations() )? <CLOSE_BRACKET> <DOT>
 	{
-	  formulae.add(f);	}
+	  formulae.add(f);
+	}
 }
 
 /**
@@ -157,7 +171,8 @@ CNFformula cnf_formula():
 		| 	p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); litNumber++; } ( <VLINE> p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); litNumber++; } )* )
 	{
 		CNFformula formula=new CNFformula(atoms, symNumber, litNumber);
-	  	return formula;	}
+	  	return formula;
+	}
 }
 
 Predicate literal():
@@ -172,7 +187,9 @@ Predicate literal():
 	{
 		StringBuffer sKey=new StringBuffer((t1==null)? t2.image: t1.image + t2.image);
 		
-		if(args!=null)		{			/* check if a predicate with that name 
+		if(args!=null)
+		{
+			/* check if a predicate with that name 
 			 * but different arguments' number has been already read
 			 */
 			Integer pp=(Integer) predicates.get(t2.image);
@@ -192,7 +209,8 @@ Predicate literal():
 		if(p==null){
 			p=new Predicate(t2.image, (t1==null)? true: false);
 			p.setArgs(args);
-			elements.put(sKey.toString(), p);		}
+			elements.put(sKey.toString(), p);
+		}
 		return p;
 	}
 }
@@ -222,10 +240,12 @@ Term term():
 	{
 		// VARIABLE
 		Variable v = (Variable) elements.get(t1.image);
-		if(v == null){		  v = new Variable(t1.image);
+		if(v == null){
+		  v = new Variable(t1.image);
 		  elements.put(t1.image, v);
 		}
-	 	return v;	}
+	 	return v;
+	}
   	| (t1=<LOWER_WORD> | t1=<SINGLE_QUOTED>) ( <OPEN_BRACKET> args=arguments() <CLOSE_BRACKET> )?
 		// atomic_word with brackets defines FUNCTION
 		// atomic_word without brackets defines CONSTANT
