@@ -14,11 +14,11 @@ public class TestUnifier {
 				arg2="g(X), Z, g(X)";
 		 */
 		/* OCCUR CHECK */
-		String	arg1="Y, Z",
-				arg2="Z, g(X)";
+		String	arg1="Y, Z, X ",
+				arg2="Z, g(X), a";
 		
 		List<Term>[] lar=new List[2];
-		lar=Parser.getArguments(arg1, arg2);
+		lar=Parser.getArguments(arg1, arg2, true);
 		/**
 		for(Term t: lar[0])
 			System.out.println(t);

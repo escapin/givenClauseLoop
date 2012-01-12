@@ -45,6 +45,8 @@ public abstract class FOLNode{
 	
 	/**
 	 * Two FOLNode(s) are equals iff the toString() method return two equals string.
+	 * This method is re-implemented in Variable sub-class because two variable are equals
+	 * iff they are the same.
 	 * 
 	 * @return true if the FOLNode are equals, false else
 	 */

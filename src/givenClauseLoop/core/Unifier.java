@@ -25,7 +25,9 @@ public class Unifier {
 	 *         failure to unify.
 	 */
 	public  Map<Variable, Term> unify(List<Term> arg1, List<Term> arg2){
-		return unify(arg1, arg2, new HashMap<Variable, Term>() );
+		Map<Variable, Term> sigma = new HashMap<Variable, Term>();
+		sigma = unify(arg1, arg2, sigma);
+		return cascadeSubstitution(sigma);
 	}
 	
 	/**
@@ -33,13 +35,9 @@ public class Unifier {
 	 * of variable/term pairs) or null which is used to indicate a failure to
 	 * unify.
 	 * 
-	 * @param arg1
-	 *            a variable, constant, list, or compound
-	 * @param arg2
-	 *            a variable, constant, list, or compound
-	 * @param sigma
-	 *            the substitution built up so far
-	 * 
+	 * @param arg1 the terms' list of the first predicate
+	 * @param arg2 the terms' list of the first predicate 
+	 * @param sigma the substitution built up so far
 	 * @return a Map<Variable, Term> representing the substitution (i.e. a set
 	 *         of variable/term pairs) or null which is used to indicate a
 	 *         failure to unify.
@@ -64,14 +62,10 @@ public class Unifier {
 	 * of variable/term pairs) or null which is used to indicate a failure to
 	 * unify.
 	 * 
-	 * @param x
-	 *            a constant, variable, or function
-	 * @param y
-	 *            a constant, variable, or function
-	 * @param sigma
-	 *            the substitution built up so far
-	 * 
-	 * @return Map<Variable, Term> representing the substitution (i.e. a set
+	 * @param arg1 the terms' list of the first predicate
+	 * @param arg2 the terms' list of the first predicate 
+	 * @param sigma the substitution built up so far
+	 * @return a Map<Variable, Term> representing the substitution (i.e. a set
 	 *         of variable/term pairs) or null which is used to indicate a
 	 *         failure to unify.
 	 */
@@ -120,12 +114,12 @@ public class Unifier {
 		} else if (occurCheck(var, x, sigma)) { // OCCUR CHECK!!!
 			return null;
 		} else {
-			//sigma.put(var, x);
+			sigma.put(var, x);
 			/* we cannot simply do 'sigma.put(var, x);'
 			 * we must execute the cascadeSubstituion method.
 			 * See cascadeSubstitution method's documentation for more explanation.
 			 */
-			cascadeSubstitution(var, x, sigma);
+			//cascadeSubstitution(var, x, sigma);
 			return sigma;
 		}
 	}
@@ -173,6 +167,31 @@ public class Unifier {
 	 * @param x		the term that must be substituted instead of var
 	 * @param sigma	the substitution
 	 */
+	private Map<Variable, Term> cascadeSubstitution(Map<Variable, Term> sigma){
+		if(sigma==null)
+			return null;
+		Term t1,t2;
+		for(Variable v1: sigma.keySet())
+			for(Variable v2: sigma.keySet())
+				if(!v1.equals(v2)){
+					t1=sigma.get(v1);
+					t2=sigma.get(v2);
+					if(t2 instanceof Variable && t2.equals(v1)){ 
+						if(occurCheck(v2, t1, sigma))
+							return null;
+						else	// subscribe the term of v2 with t1
+							sigma.put(v2, t1);					
+					} else if(t2 instanceof Function){
+						// substitute with t1 all the occurrence of v1 in t2
+						sigma.put(v2, Substitution.substitute(v1, t1, t2));
+						if(occurCheck(v2, t2, sigma))
+							return null;
+					}
+				}
+		return sigma;		
+	}
+	
+	/*
 	 Map<Variable, Variable> inverseSigma=new HashMap<Variable, Variable>();
 	 private void cascadeSubstitution(Variable var, Term x, Map<Variable, Term> sigma) {
 		Variable v;
@@ -189,7 +208,7 @@ public class Unifier {
 		}
 		else
 			sigma.put(var, x);
-		
+		*/
 		/*
 		for (Variable v : sigma.keySet()) {
 			sigma.put(v, _substVisitor.subst(sigma, sigma.get(v)));
@@ -203,6 +222,5 @@ public class Unifier {
 			}
 		}
 		*/
-	}
-	
+	//}
 }

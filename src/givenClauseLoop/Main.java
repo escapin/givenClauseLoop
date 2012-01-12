@@ -25,10 +25,10 @@ public class Main {
 		}
 		//System.out.println(input);
 		AbstractQueue<CNFformula> formulae=null;
-		Map<String, FOLNode> elements=new HashMap<String, FOLNode>();
+		Map<String, FixedElement> fixEl=new HashMap<String, FixedElement>();
 		try{
 			//PARSING
-			formulae= Parser.parsing(input, elements);
+			formulae= Parser.parsing(input, fixEl);
 		}catch(Throwable e){
 			System.out.println(e.getMessage());
 		}
@@ -44,10 +44,15 @@ public class Main {
 		*/
 		
 		// print the formulae
+		CNFformula f;
+		StringBuffer s;
 		while(!formulae.isEmpty()){
-			System.out.println(formulae.poll());
+			f=formulae.poll();
+			System.out.println(f);
+			s = new StringBuffer();
+			for(String key: f.getVariables().keySet())
+				s.append(f.getVariables().get(key).toString() + "  ");
+			System.out.println(s);
 		}
-		
-		
 	}
 }

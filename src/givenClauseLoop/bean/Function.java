@@ -2,7 +2,7 @@ package givenClauseLoop.bean;
 
 import java.util.List;
 
-public class Function extends Term implements FOLNodeArg {
+public class Function extends Term implements FOLNodeArg, FixedElement {
 
 	/**
 	 * The arguments of this predicate/function

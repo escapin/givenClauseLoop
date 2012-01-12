@@ -2,7 +2,7 @@ package givenClauseLoop.bean;
 
 import java.util.List;
 
-public class Predicate extends FOLNode implements FOLNodeArg {
+public class Predicate extends FOLNode implements FOLNodeArg, FixedElement {
 
 	private boolean isPositive;
 	
