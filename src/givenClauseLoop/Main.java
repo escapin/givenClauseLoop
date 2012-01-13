@@ -25,10 +25,9 @@ public class Main {
 		}
 		//System.out.println(input);
 		AbstractQueue<CNFformula> formulae=null;
-		Map<String, FixedElement> fixEl=new HashMap<String, FixedElement>();
 		try{
 			//PARSING
-			formulae= Parser.parsing(input, fixEl);
+			formulae= Parser.parsing(input);
 		}catch(Throwable e){
 			System.out.println(e.getMessage());
 		}

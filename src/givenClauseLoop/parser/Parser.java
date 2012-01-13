@@ -31,7 +31,7 @@ public class Parser implements ParserConstants {
         /**
 	 * All the fixed elements (constants, functions, predicates) that are read
 	 */
-        private static Map<String, FixedElement> fixEl;
+        private static Map<String, Constant> constants;
 
         /**
 	 * Conjunctive Normal Form (CNF) Formulae's Parser.
@@ -42,11 +42,11 @@ public class Parser implements ParserConstants {
 	 *@param input CNF formulae
 	 *@param output
 	 */
-        public static AbstractQueue<CNFformula> parsing(String input, Map<String, FixedElement> fixedEl) throws Exception{
-                functions = new HashMap<String, Integer>();
-                predicates = new HashMap<String, Integer>();
+        public static AbstractQueue<CNFformula> parsing(String input) throws Exception{
                 formulae  = new PriorityQueue<CNFformula>();
-                fixEl=fixedEl;
+                predicates = new HashMap<String, Integer>();
+                functions = new HashMap<String, Integer>();
+                constants = new HashMap<String, Constant>();
 
                 try{
                         new Parser(new java.io.StringReader(input)).TPTP_file();
@@ -59,7 +59,7 @@ public class Parser implements ParserConstants {
 
     public static List<Term>[] getArguments(String arg1, String arg2, boolean sameClause) throws Exception{
                 functions = new HashMap<String, Integer>();
-                fixEl= new HashMap<String, FixedElement>();
+                constants = new HashMap<String, Constant>();
                 List<Term>[] lar = new List[2];
                 try{
                         variables = new HashMap<String, Variable>();
@@ -286,10 +286,7 @@ public class Parser implements ParserConstants {
       jj_la1[10] = jj_gen;
       ;
     }
-                StringBuffer sKey=new StringBuffer((t1==null)? t2.image: t1.image + t2.image);
-
-                if(args!=null)
-                {
+                if(args!=null){
                         /* check if a predicate with that name 
 			 * but different arguments' number has been already read
 			 */
@@ -299,19 +296,9 @@ public class Parser implements ParserConstants {
                                                 + "\u005c" has been already read with " + pp.intValue() + " argument(s)");}
                         else
                                 predicates.put(t2.image, new Integer(args.size()));
-
-                        sKey.append("(");
-                        for(Term t: args)
-                                sKey.append(t.toString() + ",");
-                        sKey.replace(sKey.length()-1, sKey.length(), ")");
                 }
-
-                Predicate p = (Predicate) fixEl.get(sKey.toString());
-                if(p==null){
-                        p=new Predicate(t2.image, (t1==null)? true: false);
-                        p.setArgs(args);
-                        fixEl.put(sKey.toString(), p);
-                }
+                Predicate p=new Predicate(t2.image, (t1==null)? true: false);
+                p.setArgs(args);
                 {if (true) return p;}
     throw new Error("Missing return statement in function");
   }
@@ -383,10 +370,10 @@ public class Parser implements ParserConstants {
                 if(args==null)
                 {
                    // CONSTANT
-                        Constant c = (Constant) fixEl.get(t1.image);
+                        Constant c = (Constant) constants.get(t1.image);
                         if(c == null){
                                 c = new Constant(t1.image);
-                                fixEl.put(t1.image, c);
+                                constants.put(t1.image, c);
                         }
                         {if (true) return c;}
                 }
@@ -402,17 +389,8 @@ public class Parser implements ParserConstants {
                         else
                                 functions.put(t1.image, new Integer(args.size()));
 
-                        StringBuffer sKey = new StringBuffer(t1.image + "(");
-                        for(Term t: args)
-                                sKey.append(t.toString() + ",");
-                        sKey.replace(sKey.length()-1, sKey.length(), ")");
-
-                        Function f = (Function) fixEl.get(sKey.toString());
-                        if(f == null){
-                                f = new Function(t1.image);
-                                f.setArgs(args);
-                                fixEl.put(sKey.toString(), f);
-                        }
+                        Function f = new Function(t1.image);
+                        f.setArgs(args);
                         {if (true) return f;}
                 }
       break;

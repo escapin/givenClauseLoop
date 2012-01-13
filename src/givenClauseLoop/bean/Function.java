@@ -2,7 +2,7 @@ package givenClauseLoop.bean;
 
 import java.util.List;
 
-public class Function extends Term implements FOLNodeArg, FixedElement {
+public class Function extends Term implements FOLNodeArg {
 
 	/**
 	 * The arguments of this predicate/function
@@ -26,6 +26,25 @@ public class Function extends Term implements FOLNodeArg, FixedElement {
 	
 	public int nArgs(){
 		return args.size();
+	}
+	
+	/**
+	 * Two Functions are equals iff they have 
+	 * the same signature and the same term inside.
+	 */
+	public boolean equals(Object obj){
+		if(this == obj)
+			return true;
+		if(obj instanceof Function){
+			Function f = (Function) obj;
+			if(this.getSymbol()==f.getSymbol() && this.nArgs()==f.nArgs()){
+				boolean same=true;
+				for(int i=0; same && i<this.nArgs(); i++)
+					same = this.getArgs().get(i).equals(f.getArgs().get(i));
+				return same;
+			}
+		}
+		return false;
 	}
 	
 	public String toString(){

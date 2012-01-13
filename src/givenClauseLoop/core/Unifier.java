@@ -9,10 +9,6 @@ import givenClauseLoop.bean.*;
  */
 public class Unifier {
 
-	public Unifier(){
-	}
-	
-	
 	/**
 	 * Returns a Map<Variable, Term> representing the substitution (i.e. a set
 	 * of variable/term pairs) or null which is used to indicate a failure to
@@ -24,7 +20,7 @@ public class Unifier {
 	 *         of variable/term pairs) or null which is used to indicate a
 	 *         failure to unify.
 	 */
-	public  Map<Variable, Term> unify(List<Term> arg1, List<Term> arg2){
+	public static Map<Variable, Term> getMGU(List<Term> arg1, List<Term> arg2){
 		Map<Variable, Term> sigma = new HashMap<Variable, Term>();
 		sigma = unify(arg1, arg2, sigma);
 		return cascadeSubstitution(sigma);
@@ -42,7 +38,7 @@ public class Unifier {
 	 *         of variable/term pairs) or null which is used to indicate a
 	 *         failure to unify.
 	 */
-	private Map<Variable, Term> unify(List<Term> arg1, List<Term> arg2, Map<Variable, Term> sigma) {
+	private static Map<Variable, Term> unify(List<Term> arg1, List<Term> arg2, Map<Variable, Term> sigma) {
 		if (sigma == null) {
 			return null;
 		} else if (arg1.size() != arg2.size()) {
@@ -58,6 +54,54 @@ public class Unifier {
 	}
 	
 	/**
+	 * Returns a Map<Variable, Term> representing the left-substitution (i.e. a set
+	 * of variable/term pairs) or null which is used to indicate a failure to
+	 * unify.
+	 * 
+	 * @param arg1 the terms' list of the first predicate
+	 * @param arg2 the terms' list of the first predicate 
+	 * @return a Map<Variable, Term> representing the substitution (i.e. a set
+	 *         of variable/term pairs) or null which is used to indicate a
+	 *         failure to unify.
+	 */
+	public static Map<Variable, Term> getLeftSubstitution(List<Term> arg1, List<Term> arg2){
+		if(arg1==null || arg2==null || arg1.size()!=arg2.size())
+			return null;
+		else{
+			Map<Variable, Term> sigma = new HashMap<Variable, Term>();
+			for(int i=0;i<arg1.size();i++)
+				sigma=unifyLeft(arg1.get(i), arg2.get(i), sigma);
+			return cascadeSubstitution(sigma);
+		}
+	}
+	
+	private static Map<Variable, Term> unifyLeft(Term x, Term y,
+			Map<Variable, Term> sigma) {
+		if (sigma == null) {
+			return null;
+		} else if (x.equals(y)) {
+			// if the two term are equals return the substitution without any modification
+			return sigma;
+		} else if (x instanceof Variable) {
+			return unifyVar((Variable) x, y, sigma);
+		} else if (x instanceof Function && y instanceof Function) {
+			if(x.getSymbol().equals(y.getSymbol())){		// the function's name must be the same
+				for(int i=0;i<((Function)x).nArgs();i++)
+					sigma=unifyLeft(((Function)x).getArgs().get(i), ((Function)y).getArgs().get(i), sigma);
+				return sigma;
+			} else // CLASH!!!
+				return null;
+		} else {
+			/* - two different constant
+			 * - left(constant) && ( right(variable) || right(function) ) 
+			 * - left(function) && ( right(constant) || right(variable) )
+			 */
+			return null;
+		}
+	}
+	
+	
+	/**
 	 * Returns a Map<Variable, Term> representing the substitution (i.e. a set
 	 * of variable/term pairs) or null which is used to indicate a failure to
 	 * unify.
@@ -69,7 +113,7 @@ public class Unifier {
 	 *         of variable/term pairs) or null which is used to indicate a
 	 *         failure to unify.
 	 */
-	private Map<Variable, Term> unify(Term x, Term y,
+	private static Map<Variable, Term> unify(Term x, Term y,
 			Map<Variable, Term> sigma) {
 		if (sigma == null) {
 			return null;
@@ -103,7 +147,7 @@ public class Unifier {
 	 * @param sigma	the substitution
 	 * @return the substitution
 	 */
-	private Map<Variable, Term> unifyVar(Variable var, Term x,
+	private static Map<Variable, Term> unifyVar(Variable var, Term x,
 			Map<Variable, Term> sigma) {
 		if (sigma.keySet().contains(var)) {
 			// if {var/val} belongs to sigma then return UNIFY(val, x, sigma)
@@ -137,7 +181,7 @@ public class Unifier {
 	 * @param sigma	the substitution
 	 * @return true if an occur check exists, false otherwise.
 	 */
-	private boolean occurCheck(Variable var, Term x, Map<Variable, Term> sigma) {
+	private static boolean occurCheck(Variable var, Term x, Map<Variable, Term> sigma) {
 		if (x instanceof Variable && var.equals(x)) { // (1) you cannot unify the same variable 
 			return true;
 		} else if (x instanceof Variable && sigma.containsKey(x)) {
@@ -163,10 +207,28 @@ public class Unifier {
 	 *
 	 * σ = {z ← x, x ← a} must become σ = {z ← a, x ← a}
 	 *
-	 * @param var	the variable that must be substituted
-	 * @param x		the term that must be substituted instead of var
 	 * @param sigma	the substitution
-	 */
+	 * @return the substitution cascaded, null if there are occur checks
+ 	 */
+	private static Map<Variable, Term> cascadeSubstitution(Map<Variable, Term> sigma){
+		if(sigma==null)
+			return null;
+		Term t, t2;
+		for(Variable v1: sigma.keySet())
+			for(Variable v2: sigma.keySet())
+				if(!v1.equals(v2)){
+					t2=sigma.get(v2);
+					t=Substitution.substitute(v1, sigma.get(v1), t2);
+					if(t!=t2){
+						sigma.put(v2, t);
+						if(occurCheck(v2, t, sigma))
+							return null;
+					}		
+				}
+		return sigma;		
+	}
+	
+	/*
 	private Map<Variable, Term> cascadeSubstitution(Map<Variable, Term> sigma){
 		if(sigma==null)
 			return null;
@@ -190,7 +252,7 @@ public class Unifier {
 				}
 		return sigma;		
 	}
-	
+	*/
 	/*
 	 Map<Variable, Variable> inverseSigma=new HashMap<Variable, Variable>();
 	 private void cascadeSubstitution(Variable var, Term x, Map<Variable, Term> sigma) {
@@ -208,19 +270,8 @@ public class Unifier {
 		}
 		else
 			sigma.put(var, x);
+	}
 		*/
-		/*
-		for (Variable v : sigma.keySet()) {
-			sigma.put(v, _substVisitor.subst(sigma, sigma.get(v)));
-		}
-		// Ensure Function Terms are correctly updates by passing over them
-		// again. Fix for testBadCascadeSubstitution_LCL418_1()
-		for (Variable v : sigma.keySet()) {
-			Term t = sigma.get(v);
-			if (t instanceof Function) {
-				sigma.put(v, _substVisitor.subst(sigma, t));
-			}
-		}
-		*/
-	//}
+
+	
 }

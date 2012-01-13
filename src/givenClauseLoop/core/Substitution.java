@@ -14,10 +14,9 @@ public class Substitution {
 	 *  
 	 * @param sigma the substitution
 	 * @param args 	the list of terms
-	 * @param fixEl the current map with fixed elements
 	 * @return a new List<Term> in which the substitution has been applied
 	 */
-	public static List<Term> substitute(Map<Variable, Term> sigma, List<Term> args, Map<String, FixedElement> fixEl){
+	public static List<Term> substitute(Map<Variable, Term> sigma, List<Term> args){
 		List<Term> newArgs=new LinkedList<Term>();
 		for(Variable v: sigma.keySet())
 			for(Term t: args)
@@ -30,21 +29,33 @@ public class Substitution {
 	 * @param v
 	 * @param substitution
 	 * @param toSubstitute
-	 * @param fixEl
 	 * @return
 	 */
-	public static Term substitute(Variable v, Term substitution, Term toSubstitute){ //, Map<String, FixedElement> fixEl){
+	public static Term substitute(Variable v, Term substitution, Term toSubstitute){
 		if(toSubstitute instanceof Constant)
 			return toSubstitute;
 		 else if(toSubstitute instanceof Variable) 
 			return (toSubstitute.equals(v))? substitution : toSubstitute;
 		 else {  //if(toSubstitute instanceof Function){
 			List<Term> args=new LinkedList<Term>();
-			for(Term tArg: ((Function)toSubstitute).getArgs())
-				args.add(substitute(v, substitution, tArg));
-			Function f=new Function(toSubstitute.getSymbol());
-			f.setArgs(args);
-			return f;
-		}	
+			Term t;
+			boolean newObj=false; // true iff a new function must be created
+			for(Term tArg: ((Function)toSubstitute).getArgs()){
+				newObj = ((t=substitute(v, substitution, tArg)) != tArg) | newObj;
+				/*
+				 * t=substitute(v, substitution, tArg);
+				 * if (!newObj)	
+				 * 	newObj= t != tArg;
+				 */
+				args.add(t);
+			}
+			if(newObj){ // true iff a new function must be created
+				Function f=new Function(toSubstitute.getSymbol());
+				f.setArgs(args);
+				return f;
+			}
+			else
+				return toSubstitute;
+		}
 	}
 }

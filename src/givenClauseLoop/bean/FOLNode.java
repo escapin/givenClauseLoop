@@ -42,24 +42,4 @@ public abstract class FOLNode{
 	public String toString(){
 		return symbol;
 	}
-	
-	/**
-	 * Two FOLNode(s) are equals iff the toString() method return two equals string.
-	 * This method is re-implemented in Variable sub-class because two variable are equals
-	 * iff they are the same.
-	 * 
-	 * @return true if the FOLNode are equals, false else
-	 */
-	public boolean equals(Object obj){
-		if(this == obj)
-			return true;
-		if(obj instanceof FOLNode){
-			/* We cannot add this line 'FOLNode n = (FOLNode) obj;'
-			 * because the toString() method that must be executed is the method of the real class,
-			 * not the method of FOLNode abstract class
-			 */
-			return this.toString().equals(obj.toString());
-		}
-		return false;
-	}
 }
