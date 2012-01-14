@@ -24,7 +24,7 @@ public class Main {
 			throw new IOException("Failed to open the file.");
 		}
 		//System.out.println(input);
-		AbstractQueue<CNFformula> formulae=null;
+		AbstractQueue<Clause> formulae=null;
 		try{
 			//PARSING
 			formulae= Parser.parsing(input);
@@ -43,7 +43,7 @@ public class Main {
 		*/
 		
 		// print the formulae
-		CNFformula f;
+		Clause f;
 		StringBuffer s;
 		while(!formulae.isEmpty()){
 			f=formulae.poll();

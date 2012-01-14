@@ -54,12 +54,28 @@ public class Predicate extends FOLNode {
 			return true;
 		if(obj instanceof Predicate){
 			Predicate p = (Predicate) obj;
-			if(this.isPositive()==p.isPositive() && this.getSymbol()==p.getSymbol() && this.nArgs()==p.nArgs()){
+			if(this.getSymbol().equals(p.getSymbol()) && this.isPositive()==p.isPositive() && this.nArgs()==p.nArgs()){
 				boolean same=true;
 				for(int i=0; same && i<this.nArgs(); i++)
 					same = this.getArgs().get(i).equals(p.getArgs().get(i));
 				return same;
 			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Two predicate are opposite  
+	 * 
+	 * @param p
+	 * @return
+	 */
+	public boolean isOpposite(Predicate p){
+		if(this.getSymbol().equals(p.getSymbol()) && this.isPositive()!=p.isPositive() && this.nArgs()==p.nArgs()){
+			boolean opposite=true;
+			for(int i=0; opposite && i<this.nArgs(); i++)
+				opposite = this.getArgs().get(i).equals(p.getArgs().get(i));
+			return opposite;
 		}
 		return false;
 	}

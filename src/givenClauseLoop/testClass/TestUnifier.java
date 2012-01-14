@@ -19,9 +19,10 @@ public class TestUnifier {
 		
 		arg1="Z, X, L, f(Q) ";
 		arg2="Z, g(X), M, f(b)";
+		boolean sameClause=false;
 		
 		List<Term>[] lar=new List[2];
-		lar=Parser.getArguments(arg1, arg2, false);
+		lar=Parser.getArguments(arg1, arg2, sameClause);
 		/**
 			for(Term t: lar[0])
 				System.out.println(t);
@@ -31,8 +32,8 @@ public class TestUnifier {
 			System.out.println();
 		*/
 		
-		//givenClauseLoop.core.Unifier u = new givenClauseLoop.core.Unifier();
-		Map<Variable, Term> sigma=givenClauseLoop.core.Unifier.getLeftSubstitution(lar[0], lar[1]);
+		Map<Variable, Term> sigma=givenClauseLoop.core.Unifier.findMGU(lar[0], lar[1], sameClause);
+		//Map<Variable, Term> sigma=givenClauseLoop.core.Unifier.findLeftSubst(lar[0], lar[1], sameClause);
 		Term t;
 		System.out.println("MOST GENERAL UNIFIER:");
 		if(sigma==null)

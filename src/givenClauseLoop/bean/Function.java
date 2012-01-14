@@ -37,7 +37,7 @@ public class Function extends Term implements FOLNodeArg {
 			return true;
 		if(obj instanceof Function){
 			Function f = (Function) obj;
-			if(this.getSymbol()==f.getSymbol() && this.nArgs()==f.nArgs()){
+			if(this.getSymbol().equals(f.getSymbol()) && this.nArgs()==f.nArgs()){
 				boolean same=true;
 				for(int i=0; same && i<this.nArgs(); i++)
 					same = this.getArgs().get(i).equals(f.getArgs().get(i));
