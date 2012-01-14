@@ -23,7 +23,7 @@ public class Parser implements ParserConstants {
         /**
 	 * Queue of all formulae read
 	 */
-        private static AbstractQueue<CNFformula> formulae;
+        private static AbstractQueue<Clause> formulae;
 
         /**
 	 * All the elements (constants, variables, functions, predicates) that are read
@@ -39,10 +39,10 @@ public class Parser implements ParserConstants {
 	 *@param input CNF formulae
 	 *@param output
 	 */
-        public static AbstractQueue<CNFformula> parsing(String input, Map<String, FOLNode> el) throws Exception{
+        public static AbstractQueue<Clause> parsing(String input, Map<String, FOLNode> el) throws Exception{
                 functions = new HashMap<String, Integer>();
                 predicates = new HashMap<String, Integer>();
-                formulae  = new PriorityQueue<CNFformula>();
+                formulae  = new PriorityQueue<Clause>();
                 elements=el;
 
                 try{
@@ -102,7 +102,7 @@ public class Parser implements ParserConstants {
  * An annotated CNF formula
  */
   static final public void cnf_annotated() throws ParseException {
-          CNFformula f;
+          Clause f;
     jj_consume_token(CNF);
     jj_consume_token(OPEN_BRACKET);
     name();
@@ -189,7 +189,7 @@ public class Parser implements ParserConstants {
 /****************************************************************
 **  CNF FORMULAE (variables implicitly universally quantified) **
 ****************************************************************/
-  static final public CNFformula cnf_formula() throws ParseException {
+  static final public Clause cnf_formula() throws ParseException {
           Predicate p=null;
           //Set<Predicate> atoms=new TreeSet<Predicate>();
           Set<Predicate> atoms=new HashSet<Predicate>();
@@ -240,7 +240,7 @@ public class Parser implements ParserConstants {
       jj_consume_token(-1);
       throw new ParseException();
     }
-                CNFformula formula=new CNFformula(atoms, symNumber, litNumber);
+                Clause formula=new Clause(atoms, symNumber, litNumber);
                 {if (true) return formula;}
     throw new Error("Missing return statement in function");
   }

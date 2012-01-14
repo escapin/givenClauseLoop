@@ -25,7 +25,7 @@ public class Parser{
 	/**
 	 * Queue of all formulae read
 	 */
-	private static AbstractQueue<CNFformula> formulae;
+	private static AbstractQueue<Clause> formulae;
 
 	/**
 	 * All the elements (constants, variables, functions, predicates) that are read
@@ -41,10 +41,10 @@ public class Parser{
 	 *@param input CNF formulae
 	 *@param output
 	 */
-	public static AbstractQueue<CNFformula> parsing(String input, Map<String, FOLNode> el) throws Exception{
+	public static AbstractQueue<Clause> parsing(String input, Map<String, FOLNode> el) throws Exception{
 		functions = new HashMap<String, Integer>();
 		predicates = new HashMap<String, Integer>();
-		formulae  = new PriorityQueue<CNFformula>();
+		formulae  = new PriorityQueue<Clause>();
 		elements=el;
 		
 		try{	
@@ -130,7 +130,7 @@ void TPTP_input():{}
  */ 
 void cnf_annotated():
 	{
-	  CNFformula f;
+	  Clause f;
 	}
 {
 	<CNF>  <OPEN_BRACKET> name() <COMMA>  formula_role() <COMMA>  f=cnf_formula()  ( <COMMA> annotations() )? <CLOSE_BRACKET> <DOT>
@@ -159,7 +159,7 @@ void annotations():	{}	{ ( <LOWER_WORD> | <UPPER_WORD> | <SINGLE_QUOTED> )+ }
 **  CNF FORMULAE (variables implicitly universally quantified) **
 ****************************************************************/
 
-CNFformula cnf_formula():
+Clause cnf_formula():
 	{
 	  Predicate p=null;
 	  //Set<Predicate> atoms=new TreeSet<Predicate>();
@@ -170,7 +170,7 @@ CNFformula cnf_formula():
 	(	<OPEN_BRACKET> p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); litNumber++; } ( <VLINE> p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); litNumber++; } )* <CLOSE_BRACKET>
 		| 	p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); litNumber++; } ( <VLINE> p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); litNumber++; } )* )
 	{
-		CNFformula formula=new CNFformula(atoms, symNumber, litNumber);
+		Clause formula=new Clause(atoms, symNumber, litNumber);
 	  	return formula;
 	}
 }
