@@ -25,12 +25,16 @@ public class Parser{
 	/**
 	 * Queue of all formulae read
 	 */
+<<<<<<< HEAD
 	private static AbstractQueue<Clause> formulae;
+=======
+	private static AbstractQueue<Clause> formulae;	/**	 * The variables' set of the formula that it's currently reading	 */	private static Map<String, Variable> variables;
+>>>>>>> variable
 
 	/**
-	 * All the elements (constants, variables, functions, predicates) that are read
+	 * All the fixed elements (constants, functions, predicates) that are read
 	 */
-	 private static Map<String, FOLNode> elements;
+	private static Map<String, Constant> constants;
 
 	/**
 	 * Conjunctive Normal Form (CNF) Formulae's Parser.
@@ -41,11 +45,17 @@ public class Parser{
 	 *@param input CNF formulae
 	 *@param output
 	 */
+<<<<<<< HEAD
 	public static AbstractQueue<Clause> parsing(String input, Map<String, FOLNode> el) throws Exception{
 		functions = new HashMap<String, Integer>();
 		predicates = new HashMap<String, Integer>();
 		formulae  = new PriorityQueue<Clause>();
 		elements=el;
+=======
+	public static AbstractQueue<Clause> parsing(String input) throws Exception{
+		formulae  = new PriorityQueue<Clause>();		predicates = new HashMap<String, Integer>();		functions = new HashMap<String, Integer>();
+		constants = new HashMap<String, Constant>();
+>>>>>>> variable
 		
 		try{	
 			new Parser(new java.io.StringReader(input)).TPTP_file();
@@ -56,11 +66,11 @@ public class Parser{
 		return formulae;
     }
 
-    public static List<Term>[] getArguments(String arg1, String arg2) throws Exception{
+    public static List<Term>[] getArguments(String arg1, String arg2, boolean sameClause) throws Exception{
 		functions = new HashMap<String, Integer>();
-		elements= new HashMap<String, FOLNode>();
-		List<Term>[] lar = new List[2];		try{	
-			Parser par=new Parser(new java.io.StringReader(arg1));			lar[0]=par.arguments();			// only here you can use ReInit. Not when you call the static class out of this file!			par.ReInit(new java.io.StringReader(arg2));			lar[1]=par.arguments();			return lar;
+		constants = new HashMap<String, Constant>();
+		List<Term>[] lar = new List[2];		try{		  	variables = new HashMap<String, Variable>();	
+			Parser par=new Parser(new java.io.StringReader(arg1));			lar[0]=par.arguments();						// only here you can use ReInit. Not when you call the static class out of this file!			par.ReInit(new java.io.StringReader(arg2));			if(!sameClause) // if the two predicate come from different clauses all the variables are different				variables = new HashMap<String, Variable>();			lar[1]=par.arguments();			return lar;
 		}catch(Throwable e){
 			// Catching Throwable is ugly but JavaCC throws Error objects!
 			e.printStackTrace();
@@ -163,15 +173,20 @@ Clause cnf_formula():
 	{
 	  Predicate p=null;
 	  //Set<Predicate> atoms=new TreeSet<Predicate>();
-	  Set<Predicate> atoms=new HashSet<Predicate>();
-	  int symNumber=0, litNumber=0;
+	  Set<Predicate> atoms=new HashSet<Predicate>();		  variables = new HashMap<String, Variable>(); // reinizialize the variable set
+	  int symNumber=0;
 	}
 {
-	(	<OPEN_BRACKET> p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); litNumber++; } ( <VLINE> p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); litNumber++; } )* <CLOSE_BRACKET>
-		| 	p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); litNumber++; } ( <VLINE> p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); litNumber++; } )* )
+	(	<OPEN_BRACKET> p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); } ( <VLINE> p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); } )* <CLOSE_BRACKET>
+		| 	p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); } ( <VLINE> p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); } )* )
 	{
+<<<<<<< HEAD
 		Clause formula=new Clause(atoms, symNumber, litNumber);
 	  	return formula;
+=======
+		Clause clause=new Clause(atoms, variables, symNumber);
+	  	return clause;
+>>>>>>> variable
 	}
 }
 
@@ -185,10 +200,7 @@ Predicate literal():
 	//this production represents predicates with or without arguments
 	// <ATOMIC_WORD:		<LOWER_WORD> | <SINGLE_QUOTED> >
 	{
-		StringBuffer sKey=new StringBuffer((t1==null)? t2.image: t1.image + t2.image);
-		
-		if(args!=null)
-		{
+		if(args!=null){
 			/* check if a predicate with that name 
 			 * but different arguments' number has been already read
 			 */
@@ -198,19 +210,9 @@ Predicate literal():
 						+ "\" has been already read with " + pp.intValue() + " argument(s)");
 			else
 				predicates.put(t2.image, new Integer(args.size()));  
-
-			sKey.append("(");
-			for(Term t: args)
-				sKey.append(t.toString() + ",");
-			sKey.replace(sKey.length()-1, sKey.length(), ")");
 		}
-
-		Predicate p = (Predicate) elements.get(sKey.toString());
-		if(p==null){
-			p=new Predicate(t2.image, (t1==null)? true: false);
-			p.setArgs(args);
-			elements.put(sKey.toString(), p);
-		}
+		Predicate p=new Predicate(t2.image, (t1==null)? true: false);
+		p.setArgs(args);
 		return p;
 	}
 }
@@ -239,10 +241,10 @@ Term term():
   	t1=<UPPER_WORD>			// upper_word defines VARIABLE
 	{
 		// VARIABLE
-		Variable v = (Variable) elements.get(t1.image);
+		Variable v = variables.get(t1.image);
 		if(v == null){
 		  v = new Variable(t1.image);
-		  elements.put(t1.image, v);
+		  variables.put(t1.image, v);
 		}
 	 	return v;
 	}
@@ -253,10 +255,10 @@ Term term():
 	 	if(args==null)
 	 	{
 	 	   // CONSTANT
-			Constant c = (Constant) elements.get(t1.image);
+			Constant c = (Constant) constants.get(t1.image);
 			if(c == null){
 		 		c = new Constant(t1.image);
-		  		elements.put(t1.image, c);
+		  		constants.put(t1.image, c);
 			}
 	 		return c;
 		}
@@ -271,19 +273,9 @@ Term term():
 						+ "\" has been already read with " + ff.intValue() + " argument(s)");
 			else
 				functions.put(t1.image, new Integer(args.size()));
-
-			StringBuffer sKey = new StringBuffer(t1.image + "(");
-			for(Term t: args)
-				sKey.append(t.toString() + ",");
-			sKey.replace(sKey.length()-1, sKey.length(), ")");
-
-			Function f = (Function) elements.get(sKey.toString());
-			if(f == null){
-		  		f = new Function(t1.image);
-		  		f.setArgs(args);
-		  		elements.put(sKey.toString(), f);
-			}
-	 		return f;
+			Function f = new Function(t1.image);
+		  	f.setArgs(args);
+		  	return f;
 		}  	
   	}
 }

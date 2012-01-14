@@ -24,11 +24,17 @@ public class Parser implements ParserConstants {
 	 * Queue of all formulae read
 	 */
         private static AbstractQueue<Clause> formulae;
+<<<<<<< HEAD
+=======
+
+        /**	 * The variables' set of the formula that it's currently reading	 */
+        private static Map<String, Variable> variables;
+>>>>>>> variable
 
         /**
-	 * All the elements (constants, variables, functions, predicates) that are read
+	 * All the fixed elements (constants, functions, predicates) that are read
 	 */
-         private static Map<String, FOLNode> elements;
+        private static Map<String, Constant> constants;
 
         /**
 	 * Conjunctive Normal Form (CNF) Formulae's Parser.
@@ -39,11 +45,19 @@ public class Parser implements ParserConstants {
 	 *@param input CNF formulae
 	 *@param output
 	 */
+<<<<<<< HEAD
         public static AbstractQueue<Clause> parsing(String input, Map<String, FOLNode> el) throws Exception{
                 functions = new HashMap<String, Integer>();
                 predicates = new HashMap<String, Integer>();
                 formulae  = new PriorityQueue<Clause>();
                 elements=el;
+=======
+        public static AbstractQueue<Clause> parsing(String input) throws Exception{
+                formulae  = new PriorityQueue<Clause>();
+                predicates = new HashMap<String, Integer>();
+                functions = new HashMap<String, Integer>();
+                constants = new HashMap<String, Constant>();
+>>>>>>> variable
 
                 try{
                         new Parser(new java.io.StringReader(input)).TPTP_file();
@@ -54,14 +68,18 @@ public class Parser implements ParserConstants {
                 return formulae;
     }
 
-    public static List<Term>[] getArguments(String arg1, String arg2) throws Exception{
+    public static List<Term>[] getArguments(String arg1, String arg2, boolean sameClause) throws Exception{
                 functions = new HashMap<String, Integer>();
-                elements= new HashMap<String, FOLNode>();
+                constants = new HashMap<String, Constant>();
                 List<Term>[] lar = new List[2];
                 try{
+                        variables = new HashMap<String, Variable>();
+
                         Parser par=new Parser(new java.io.StringReader(arg1));
                         lar[0]=par.arguments();
+
                         // only here you can use ReInit. Not when you call the static class out of this file!                        par.ReInit(new java.io.StringReader(arg2));
+                        if(!sameClause) // if the two predicate come from different clauses all the variables are different                                variables = new HashMap<String, Variable>();
                         lar[1]=par.arguments();
                         return lar;
                 }catch(Throwable e){
@@ -193,12 +211,13 @@ public class Parser implements ParserConstants {
           Predicate p=null;
           //Set<Predicate> atoms=new TreeSet<Predicate>();
           Set<Predicate> atoms=new HashSet<Predicate>();
-          int symNumber=0, litNumber=0;
+          variables = new HashMap<String, Variable>(); // reinizialize the variable set
+          int symNumber=0;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case OPEN_BRACKET:
       jj_consume_token(OPEN_BRACKET);
       p = literal();
-                                            atoms.add(p); symNumber+=p.getSymNumber(); litNumber++;
+                                            atoms.add(p); symNumber+=p.getSymNumber();
       label_3:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -211,7 +230,7 @@ public class Parser implements ParserConstants {
         }
         jj_consume_token(VLINE);
         p = literal();
-                                                                                                                             atoms.add(p); symNumber+=p.getSymNumber(); litNumber++;
+                                                                                                                atoms.add(p); symNumber+=p.getSymNumber();
       }
       jj_consume_token(CLOSE_BRACKET);
       break;
@@ -219,7 +238,7 @@ public class Parser implements ParserConstants {
     case LOWER_WORD:
     case SINGLE_QUOTED:
       p = literal();
-                                     atoms.add(p); symNumber+=p.getSymNumber(); litNumber++;
+                                     atoms.add(p); symNumber+=p.getSymNumber();
       label_4:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -232,7 +251,7 @@ public class Parser implements ParserConstants {
         }
         jj_consume_token(VLINE);
         p = literal();
-                                                                                                                      atoms.add(p); symNumber+=p.getSymNumber(); litNumber++;
+                                                                                                         atoms.add(p); symNumber+=p.getSymNumber();
       }
       break;
     default:
@@ -240,8 +259,13 @@ public class Parser implements ParserConstants {
       jj_consume_token(-1);
       throw new ParseException();
     }
+<<<<<<< HEAD
                 Clause formula=new Clause(atoms, symNumber, litNumber);
                 {if (true) return formula;}
+=======
+                Clause clause=new Clause(atoms, variables, symNumber);
+                {if (true) return clause;}
+>>>>>>> variable
     throw new Error("Missing return statement in function");
   }
 
@@ -278,10 +302,7 @@ public class Parser implements ParserConstants {
       jj_la1[10] = jj_gen;
       ;
     }
-                StringBuffer sKey=new StringBuffer((t1==null)? t2.image: t1.image + t2.image);
-
-                if(args!=null)
-                {
+                if(args!=null){
                         /* check if a predicate with that name 
 			 * but different arguments' number has been already read
 			 */
@@ -291,19 +312,9 @@ public class Parser implements ParserConstants {
                                                 + "\u005c" has been already read with " + pp.intValue() + " argument(s)");}
                         else
                                 predicates.put(t2.image, new Integer(args.size()));
-
-                        sKey.append("(");
-                        for(Term t: args)
-                                sKey.append(t.toString() + ",");
-                        sKey.replace(sKey.length()-1, sKey.length(), ")");
                 }
-
-                Predicate p = (Predicate) elements.get(sKey.toString());
-                if(p==null){
-                        p=new Predicate(t2.image, (t1==null)? true: false);
-                        p.setArgs(args);
-                        elements.put(sKey.toString(), p);
-                }
+                Predicate p=new Predicate(t2.image, (t1==null)? true: false);
+                p.setArgs(args);
                 {if (true) return p;}
     throw new Error("Missing return statement in function");
   }
@@ -341,10 +352,10 @@ public class Parser implements ParserConstants {
     case UPPER_WORD:
       t1 = jj_consume_token(UPPER_WORD);
                 // VARIABLE
-                Variable v = (Variable) elements.get(t1.image);
+                Variable v = variables.get(t1.image);
                 if(v == null){
                   v = new Variable(t1.image);
-                  elements.put(t1.image, v);
+                  variables.put(t1.image, v);
                 }
                 {if (true) return v;}
       break;
@@ -375,10 +386,10 @@ public class Parser implements ParserConstants {
                 if(args==null)
                 {
                    // CONSTANT
-                        Constant c = (Constant) elements.get(t1.image);
+                        Constant c = (Constant) constants.get(t1.image);
                         if(c == null){
                                 c = new Constant(t1.image);
-                                elements.put(t1.image, c);
+                                constants.put(t1.image, c);
                         }
                         {if (true) return c;}
                 }
@@ -394,17 +405,8 @@ public class Parser implements ParserConstants {
                         else
                                 functions.put(t1.image, new Integer(args.size()));
 
-                        StringBuffer sKey = new StringBuffer(t1.image + "(");
-                        for(Term t: args)
-                                sKey.append(t.toString() + ",");
-                        sKey.replace(sKey.length()-1, sKey.length(), ")");
-
-                        Function f = (Function) elements.get(sKey.toString());
-                        if(f == null){
-                                f = new Function(t1.image);
-                                f.setArgs(args);
-                                elements.put(sKey.toString(), f);
-                        }
+                        Function f = new Function(t1.image);
+                        f.setArgs(args);
                         {if (true) return f;}
                 }
       break;

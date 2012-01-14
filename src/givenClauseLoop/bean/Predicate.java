@@ -2,7 +2,7 @@ package givenClauseLoop.bean;
 
 import java.util.List;
 
-public class Predicate extends FOLNode implements FOLNodeArg {
+public class Predicate extends FOLNode {
 
 	private boolean isPositive;
 	
@@ -45,4 +45,38 @@ public class Predicate extends FOLNode implements FOLNodeArg {
 		return isPositive? s.toString() : "~" + s.toString();
 	}
 	
+	/**
+	 * Two Predicates are equals iff they have 
+	 * the same signature and the same term inside.
+	 */
+	public boolean equals(Object obj){
+		if(this == obj)
+			return true;
+		if(obj instanceof Predicate){
+			Predicate p = (Predicate) obj;
+			if(this.getSymbol().equals(p.getSymbol()) && this.isPositive()==p.isPositive() && this.nArgs()==p.nArgs()){
+				boolean same=true;
+				for(int i=0; same && i<this.nArgs(); i++)
+					same = this.getArgs().get(i).equals(p.getArgs().get(i));
+				return same;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Two predicate are opposite  
+	 * 
+	 * @param p
+	 * @return
+	 */
+	public boolean isOpposite(Predicate p){
+		if(this.getSymbol().equals(p.getSymbol()) && this.isPositive()!=p.isPositive() && this.nArgs()==p.nArgs()){
+			boolean opposite=true;
+			for(int i=0; opposite && i<this.nArgs(); i++)
+				opposite = this.getArgs().get(i).equals(p.getArgs().get(i));
+			return opposite;
+		}
+		return false;
+	}
 }

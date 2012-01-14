@@ -24,11 +24,10 @@ public class Main {
 			throw new IOException("Failed to open the file.");
 		}
 		//System.out.println(input);
-		AbstractQueue<CNFformula> formulae=null;
-		Map<String, FOLNode> elements=new HashMap<String, FOLNode>();
+		AbstractQueue<Clause> formulae=null;
 		try{
 			//PARSING
-			formulae= Parser.parsing(input, elements);
+			formulae= Parser.parsing(input);
 		}catch(Throwable e){
 			System.out.println(e.getMessage());
 		}
@@ -44,10 +43,15 @@ public class Main {
 		*/
 		
 		// print the formulae
+		Clause f;
+		StringBuffer s;
 		while(!formulae.isEmpty()){
-			System.out.println(formulae.poll());
+			f=formulae.poll();
+			System.out.println(f);
+			s = new StringBuffer();
+			for(String key: f.getVariables().keySet())
+				s.append(f.getVariables().get(key).toString() + "  ");
+			System.out.println(s);
 		}
-		
-		
 	}
 }
