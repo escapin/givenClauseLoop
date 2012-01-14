@@ -1,7 +1,8 @@
 package givenClauseLoop.bean;
 
 import java.util.*;
-import givenClauseLoop.core.Unifier;
+
+import givenClauseLoop.core.*;
 
 
 /**
@@ -9,31 +10,58 @@ import givenClauseLoop.core.Unifier;
  *
  */
 public class Clause implements Comparable<Clause>{
-	Set<Predicate> literals;
-	Map<String, Variable> variables;
-	Map<String, Set<Predicate>> nameLit;
+	/**
+	 * Set of the clause's predicates
+	 */
+	Collection<Literal> literals;
+	
+	/**
+	 * Map of the clause's variables 
+	 */
+	Collection<Variable> variables;
+	
+	/**
+	 * Map that matches a predicate name (sign + symbol) with 
+	 * a set of all the literals with that name.
+	 * This allows to implement the inference rule more efficiently 
+	 */
+	Map<String, Collection<Literal>> litMap;
+	
 	int symNumber;
+	boolean isTautology;
 	
-	public Clause(Map<String, Variable> variables){
-		literals=new HashSet<Predicate>();
-		nameLit=new HashMap<String, Set<Predicate>>();
-		this.variables=variables;
+	public Clause(){
+		literals=new HashSet<Literal>();
+		litMap=new HashMap<String, Collection<Literal>>();
 		symNumber=0;
+		isTautology=false;
 	}
 	
-	public void addLiteral(Predicate p){
-		literals.add(p);
-		symNumber+=p.getSymNumber();
-		String signature = ((p.isPositive())? "": "~") + p.getSymbol();
-		Set<Predicate> setPred = nameLit.get(signature);
-		if(setPred==null){ // we have to create a new set
-			setPred=new HashSet<Predicate>();
-			nameLit.put(signature, setPred);
-		}
-		setPred.add(p);
+	public void setVariables(Collection<Variable> setVar){
+		variables=setVar;
 	}
 	
-	public Set<Predicate> getLiterals(){
+	public void addLiteral(Literal l){
+		literals.add(l);
+		symNumber+=l.nSymbols();
+		String signature = ((l.sign())? "": "~") + l.getSymbol();
+		Collection<Literal> setLit = litMap.get(signature);
+		if(setLit==null){ // we have to create a new set
+			setLit=new HashSet<Literal>();
+			litMap.put(signature, setLit);
+		} /* else{ // checking for tautology
+			 for(Predicate l1: setLit)
+				 if(l.isOpposite(l1))
+					 isTautology=true;
+			}*/	
+		setLit.add(l);
+	}
+	
+	public Map<String, Collection<Literal>> getLitMap(){
+		return litMap;
+	}
+	
+	public Collection<Literal> getLiterals(){
 		return literals;
 	}
 
@@ -43,22 +71,21 @@ public class Clause implements Comparable<Clause>{
 	 * 
 	 * @return the variables' set
 	 */
-	public Map<String, Variable> getVariables(){
+	public Collection<Variable> getVariables(){
 		return variables;
 	}
 
-
-	public int nSymbol(){
+	 public int nSymbols(){
 		return symNumber;
 	}
 
-	public int nLiteral(){
+	public int nLiterals(){
 		return literals.size();
 	}
 	
 	public String toString(){
 		StringBuffer s = new StringBuffer();
-		for(Predicate p: literals)
+		for(Literal p: literals)
 			s.append(p.toString() + " | ");
 		s.delete(s.length()-3, s.length());
 		return s.toString();
@@ -71,21 +98,45 @@ public class Clause implements Comparable<Clause>{
 	 * @return true if is a tautology, false otherwise
 	 */
 	public boolean isTautology(){
-		for(Predicate p1: literals)
-			for(Predicate p2: literals)
-				if(p1!=p2 && p1.isOpposite(p2))
+		Collection<Literal> setLit;
+		for(Literal l1: literals){
+			setLit = litMap.get( ((l1.sign())? "~": "") + l1.getSymbol() ); // the opposite
+			for(Literal l2: setLit)
+				if(l1!=l2 && l1.isOpposite(l2))
 					return true;
+		}
 		return false;
 	}
 	
-	public boolean subsumes(Clause c){
-		if(this.nLiteral()<=c.nLiteral()){
+	public boolean subsumes(Clause D){
+		return false;
+	}
+	/*
+		// INIZIO ALGORITMO CHANG LEE pag 95
+		if(!(this == D) && this.nLiterals()<=D.nLiterals()){
+			Map<Variable, Term> theta = new HashMap<Variable, Term>();
+			for(String k : D.getVariables().keySet())
+				theta.put(D.getVariables().get(k), new Constant("##"));
+			Set<Predicate> W = new HashSet<Predicate>();
+			Predicate lTemp;
+			for(Predicate lit : D.getLiterals()){
+				lTemp = new Predicate(lit.getSymbol(), !lit.sign());
+				lTemp.setArgs(Substitution.substitute(theta, lit.getArgs()));
+				W.add(lTemp);
+			}
+			
+		}
+		return false;
+	}	
+		
+	/*	if(this.nLiterals()<=c.nLiterals()){
 			boolean predFound;
-			for(Predicate p1: literals){
+			Set<Predicate> setLit;
+			for(Predicate l1: this.getLiterals()){
+				setLit=c.getLitMap().get( ((l1.sign())? "": "~") + l1.getSymbol() );
 				predFound=false;
-				for(Predicate p2: c.getLiterals())
-					if(p1.getSymbol().equals(p2.getSymbol()) && p1.isPositive()==p2.isPositive() &&
-						Unifier.findLeftSubst(p1.getArgs(), p2.getArgs(), false)!=null){
+				for(Predicate l2: setLit)
+					if(Unifier.findLeftSubst(l1.getArgs(), l2.getArgs(), false)!=null){
 						predFound=true;
 						break; // Predicate Found!
 					}
@@ -96,7 +147,19 @@ public class Clause implements Comparable<Clause>{
 		}
 		return false;
 	}
-
+	*/
+	
+	public boolean simplify(Literal l1){
+		Collection<Literal> setLit = litMap.get( ((l1.sign())? "~": "") + l1.getSymbol() ); // the opposite
+		for(Literal l2: setLit)
+			if(Unifier.findLeftSubst(l1.getArgs(), l2.getArgs(), false)!= null){
+				literals.remove(l2);
+				setLit.remove(l2);
+				return true;
+			}
+		return false;
+	}
+	
 	/**
 	 * Inconsistent with equality.
 	 * Compare respect the number of symbols in these two formulae.
@@ -105,7 +168,7 @@ public class Clause implements Comparable<Clause>{
 	 *
 	 */
 	public int compareTo(Clause f){
-		return this.nSymbol()-f.nSymbol();
+		return this.nSymbols()-f.nSymbols();
 	}
 	/**
 	 * The equals() and hashCode() methods are inherited from object,

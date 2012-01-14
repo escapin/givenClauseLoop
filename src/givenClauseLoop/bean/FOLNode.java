@@ -32,7 +32,7 @@ public abstract class FOLNode{
 	 * The number of symbols in that node
 	 * @return symNumber the number of symbols in that node
 	 */
-	public int getSymNumber(){
+	public int nSymbols(){
 		return symNumber;
 	}
 	

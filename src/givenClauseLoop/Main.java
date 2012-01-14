@@ -49,8 +49,8 @@ public class Main {
 			f=formulae.poll();
 			System.out.println(f);
 			s = new StringBuffer();
-			for(String key: f.getVariables().keySet())
-				s.append(f.getVariables().get(key).toString() + "  ");
+			for(Variable v: f.getVariables())
+				s.append(v.toString() + "  ");
 			System.out.println(s);
 		}
 	}

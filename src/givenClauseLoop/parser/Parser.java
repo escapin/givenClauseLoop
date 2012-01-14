@@ -69,7 +69,7 @@ public class Parser implements ParserConstants {
                         lar[0]=par.arguments();
 
                         // only here you can use ReInit. Not when you call the static class out of this file!                        par.ReInit(new java.io.StringReader(arg2));
-                        if(!sameClause) // if the two predicate come from different clauses all the variables are different                                variables = new HashMap<String, Variable>();
+                        if(!sameClause) // if the two Literal come from different clauses all the variables are different                                variables = new HashMap<String, Variable>();
                         lar[1]=par.arguments();
                         return lar;
                 }catch(Throwable e){
@@ -198,8 +198,8 @@ public class Parser implements ParserConstants {
 **  CNF FORMULAE (variables implicitly universally quantified) **
 ****************************************************************/
   static final public Clause cnf_formula() throws ParseException {
-          Predicate p=null;
-          //Set<Predicate> atoms=new TreeSet<Predicate>();          variables = new HashMap<String, Variable>(); // reinizialize the variable set          Clause clause=new Clause(variables);
+          Literal p=null;
+          //Collection<Literal> atoms=new TreeSet<Literal>();          variables = new HashMap<String, Variable>(); // reinizialize the variable set          Clause clause=new Clause();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case OPEN_BRACKET:
       jj_consume_token(OPEN_BRACKET);
@@ -246,11 +246,12 @@ public class Parser implements ParserConstants {
       jj_consume_token(-1);
       throw new ParseException();
     }
+                clause.setVariables(variables.values());
                 {if (true) return clause;}
     throw new Error("Missing return statement in function");
   }
 
-  static final public Predicate literal() throws ParseException {
+  static final public Literal literal() throws ParseException {
           Token t1=null, t2;
           List<Term> args=null;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -284,7 +285,7 @@ public class Parser implements ParserConstants {
       ;
     }
                 if(args!=null){
-                        /* check if a predicate with that name 
+                        /* check if a Literal with that name 
 			 * but different arguments' number has been already read
 			 */
                         Integer pp=(Integer) predicates.get(t2.image);
@@ -294,9 +295,9 @@ public class Parser implements ParserConstants {
                         else
                                 predicates.put(t2.image, new Integer(args.size()));
                 }
-                Predicate p=new Predicate(t2.image, (t1==null)? true: false);
-                p.setArgs(args);
-                {if (true) return p;}
+                Literal l=new Literal(t2.image, (t1==null)? true: false);
+                l.setArgs(args);
+                {if (true) return l;}
     throw new Error("Missing return statement in function");
   }
 

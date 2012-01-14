@@ -7,19 +7,19 @@ import java.util.*;
  *
  */
 public class CNFformula implements Comparable<CNFformula>{
-	Set<Predicate> atoms;
+	Set<Literal> atoms;
 	Map<String, Variable>  variables;
 	int symNumber;
 	int litNumber;
 	
-	public CNFformula(Set<Predicate> atoms, Map<String, Variable> variables, int symNumber, int litNumber){
+	public CNFformula(Set<Literal> atoms, Map<String, Variable> variables, int symNumber, int litNumber){
 		this.atoms=atoms;
 		this.variables=variables;
 		this.symNumber=symNumber;
 		this.litNumber=litNumber;
 	}
 	
-	public Set<Predicate> getAtoms(){
+	public Set<Literal> getAtoms(){
 		return atoms;
 	}
 	
@@ -42,7 +42,7 @@ public class CNFformula implements Comparable<CNFformula>{
 	
 	public String toString(){
 		StringBuffer s = new StringBuffer();
-		for(Predicate p: atoms)
+		for(Literal p: atoms)
 			s.append(p.toString() + " | ");
 		s.delete(s.length()-3, s.length());
 		return s.toString();

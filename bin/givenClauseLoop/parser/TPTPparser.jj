@@ -59,7 +59,7 @@ public class Parser{
 		functions = new HashMap<String, Integer>();
 		constants = new HashMap<String, Constant>();
 		List<Term>[] lar = new List[2];		try{		  	variables = new HashMap<String, Variable>();	
-			Parser par=new Parser(new java.io.StringReader(arg1));			lar[0]=par.arguments();						// only here you can use ReInit. Not when you call the static class out of this file!			par.ReInit(new java.io.StringReader(arg2));			if(!sameClause) // if the two predicate come from different clauses all the variables are different				variables = new HashMap<String, Variable>();			lar[1]=par.arguments();			return lar;
+			Parser par=new Parser(new java.io.StringReader(arg1));			lar[0]=par.arguments();						// only here you can use ReInit. Not when you call the static class out of this file!			par.ReInit(new java.io.StringReader(arg2));			if(!sameClause) // if the two Literal come from different clauses all the variables are different				variables = new HashMap<String, Variable>();			lar[1]=par.arguments();			return lar;
 		}catch(Throwable e){
 			// Catching Throwable is ugly but JavaCC throws Error objects!
 			e.printStackTrace();
@@ -160,19 +160,19 @@ void annotations():	{}	{ ( <LOWER_WORD> | <UPPER_WORD> | <SINGLE_QUOTED> )+ }
 
 Clause cnf_formula():
 	{
-	  Predicate p=null;
-	  //Set<Predicate> atoms=new TreeSet<Predicate>();	  variables = new HashMap<String, Variable>(); // reinizialize the variable set	  Clause clause=new Clause(variables);
+	  Literal p=null;
+	  //Collection<Literal> atoms=new TreeSet<Literal>();	  variables = new HashMap<String, Variable>(); // reinizialize the variable set	  Clause clause=new Clause();
 	}
 {
 	(	<OPEN_BRACKET> p=literal() {clause.addLiteral(p); } ( <VLINE> p=literal() {clause.addLiteral(p); } )* <CLOSE_BRACKET>
 		| 	p=literal() {clause.addLiteral(p); } ( <VLINE> p=literal() {clause.addLiteral(p); } )* )
 	{
-		
+		clause.setVariables(variables.values());
 	  	return clause;
 	}
 }
 
-Predicate literal():
+Literal literal():
 	{
 	  Token t1=null, t2;
 	  List<Term> args=null;
@@ -183,7 +183,7 @@ Predicate literal():
 	// <ATOMIC_WORD:		<LOWER_WORD> | <SINGLE_QUOTED> >
 	{
 		if(args!=null){
-			/* check if a predicate with that name 
+			/* check if a Literal with that name 
 			 * but different arguments' number has been already read
 			 */
 			Integer pp=(Integer) predicates.get(t2.image);
@@ -193,9 +193,9 @@ Predicate literal():
 			else
 				predicates.put(t2.image, new Integer(args.size()));  
 		}
-		Predicate p=new Predicate(t2.image, (t1==null)? true: false);
-		p.setArgs(args);
-		return p;
+		Literal l=new Literal(t2.image, (t1==null)? true: false);
+		l.setArgs(args);
+		return l;
 	}
 }
 

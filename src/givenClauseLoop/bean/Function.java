@@ -16,7 +16,7 @@ public class Function extends Term implements FOLNodeArg {
 	public void setArgs(List<Term> args){
 		this.args=args;
 		for(Term t: this.args){
-			symNumber += t.getSymNumber();
+			symNumber += t.nSymbols();
 		}
 	}
 	
