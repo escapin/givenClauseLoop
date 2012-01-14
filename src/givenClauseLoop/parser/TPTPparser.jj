@@ -161,15 +161,13 @@ void annotations():	{}	{ ( <LOWER_WORD> | <UPPER_WORD> | <SINGLE_QUOTED> )+ }
 Clause cnf_formula():
 	{
 	  Predicate p=null;
-	  //Set<Predicate> atoms=new TreeSet<Predicate>();
-	  Set<Predicate> atoms=new HashSet<Predicate>();		  variables = new HashMap<String, Variable>(); // reinizialize the variable set
-	  int symNumber=0;
+	  //Set<Predicate> atoms=new TreeSet<Predicate>();	  variables = new HashMap<String, Variable>(); // reinizialize the variable set	  Clause clause=new Clause(variables);
 	}
 {
-	(	<OPEN_BRACKET> p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); } ( <VLINE> p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); } )* <CLOSE_BRACKET>
-		| 	p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); } ( <VLINE> p=literal() {atoms.add(p); symNumber+=p.getSymNumber(); } )* )
+	(	<OPEN_BRACKET> p=literal() {clause.addLiteral(p); } ( <VLINE> p=literal() {clause.addLiteral(p); } )* <CLOSE_BRACKET>
+		| 	p=literal() {clause.addLiteral(p); } ( <VLINE> p=literal() {clause.addLiteral(p); } )* )
 	{
-		Clause clause=new Clause(atoms, variables, symNumber);
+		
 	  	return clause;
 	}
 }

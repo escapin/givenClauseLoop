@@ -199,15 +199,12 @@ public class Parser implements ParserConstants {
 ****************************************************************/
   static final public Clause cnf_formula() throws ParseException {
           Predicate p=null;
-          //Set<Predicate> atoms=new TreeSet<Predicate>();
-          Set<Predicate> atoms=new HashSet<Predicate>();
-          variables = new HashMap<String, Variable>(); // reinizialize the variable set
-          int symNumber=0;
+          //Set<Predicate> atoms=new TreeSet<Predicate>();          variables = new HashMap<String, Variable>(); // reinizialize the variable set          Clause clause=new Clause(variables);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case OPEN_BRACKET:
       jj_consume_token(OPEN_BRACKET);
       p = literal();
-                                            atoms.add(p); symNumber+=p.getSymNumber();
+                                            clause.addLiteral(p);
       label_3:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -220,7 +217,7 @@ public class Parser implements ParserConstants {
         }
         jj_consume_token(VLINE);
         p = literal();
-                                                                                                                atoms.add(p); symNumber+=p.getSymNumber();
+                                                                                           clause.addLiteral(p);
       }
       jj_consume_token(CLOSE_BRACKET);
       break;
@@ -228,7 +225,7 @@ public class Parser implements ParserConstants {
     case LOWER_WORD:
     case SINGLE_QUOTED:
       p = literal();
-                                     atoms.add(p); symNumber+=p.getSymNumber();
+                                     clause.addLiteral(p);
       label_4:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -241,7 +238,7 @@ public class Parser implements ParserConstants {
         }
         jj_consume_token(VLINE);
         p = literal();
-                                                                                                         atoms.add(p); symNumber+=p.getSymNumber();
+                                                                                    clause.addLiteral(p);
       }
       break;
     default:
@@ -249,7 +246,6 @@ public class Parser implements ParserConstants {
       jj_consume_token(-1);
       throw new ParseException();
     }
-                Clause clause=new Clause(atoms, variables, symNumber);
                 {if (true) return clause;}
     throw new Error("Missing return statement in function");
   }

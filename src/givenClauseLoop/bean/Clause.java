@@ -11,16 +11,29 @@ import givenClauseLoop.core.Unifier;
 public class Clause implements Comparable<Clause>{
 	Set<Predicate> literals;
 	Map<String, Variable> variables;
+	Map<String, Set<Predicate>> nameLit;
 	int symNumber;
-	int litNumber;
 	
-	public Clause(Set<Predicate> literals, Map<String, Variable> variables, int symNumber){
-		this.literals=literals;
+	public Clause(Map<String, Variable> variables){
+		literals=new HashSet<Predicate>();
+		nameLit=new HashMap<String, Set<Predicate>>();
 		this.variables=variables;
-		this.symNumber=symNumber;
+		symNumber=0;
 	}
 	
-	public Set<Predicate> getAtoms(){
+	public void addLiteral(Predicate p){
+		literals.add(p);
+		symNumber+=p.getSymNumber();
+		String signature = ((p.isPositive())? "": "~") + p.getSymbol();
+		Set<Predicate> setPred = nameLit.get(signature);
+		if(setPred==null){ // we have to create a new set
+			setPred=new HashSet<Predicate>();
+			nameLit.put(signature, setPred);
+		}
+		setPred.add(p);
+	}
+	
+	public Set<Predicate> getLiterals(){
 		return literals;
 	}
 
@@ -70,7 +83,7 @@ public class Clause implements Comparable<Clause>{
 			boolean predFound;
 			for(Predicate p1: literals){
 				predFound=false;
-				for(Predicate p2: c.getAtoms())
+				for(Predicate p2: c.getLiterals())
 					if(p1.getSymbol().equals(p2.getSymbol()) && p1.isPositive()==p2.isPositive() &&
 						Unifier.findLeftSubst(p1.getArgs(), p2.getArgs(), false)!=null){
 						predFound=true;
