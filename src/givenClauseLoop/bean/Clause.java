@@ -1,42 +1,29 @@
 package givenClauseLoop.bean;
 
-<<<<<<< HEAD
-import java.util.Set;
-=======
 import java.util.*;
 import givenClauseLoop.core.Unifier;
->>>>>>> variable
+
 
 /**
  * @author Enrico Scapin
  *
  */
 public class Clause implements Comparable<Clause>{
-	Set<Predicate> atoms;
-<<<<<<< HEAD
+	Set<Predicate> literals;
+	Map<String, Variable> variables;
 	int symNumber;
 	int litNumber;
 	
-	public Clause(Set<Predicate> atoms, int symNumber, int litNumber){
-		this.atoms=atoms;
-		this.symNumber=symNumber;
-		this.litNumber=litNumber;
-=======
-	Map<String, Variable>  variables;
-	int symNumber;
-	
-	public Clause(Set<Predicate> atoms, Map<String, Variable> variables, int symNumber){
-		this.atoms=atoms;
+	public Clause(Set<Predicate> literals, Map<String, Variable> variables, int symNumber){
+		this.literals=literals;
 		this.variables=variables;
 		this.symNumber=symNumber;
->>>>>>> variable
 	}
 	
 	public Set<Predicate> getAtoms(){
-		return atoms;
+		return literals;
 	}
-<<<<<<< HEAD
-=======
+
 	
 	/*
 	 * The set of variables of that formula
@@ -46,29 +33,23 @@ public class Clause implements Comparable<Clause>{
 	public Map<String, Variable> getVariables(){
 		return variables;
 	}
->>>>>>> variable
 
-	public int getSymNumber(){
+
+	public int nSymbol(){
 		return symNumber;
 	}
 
-	public int getLitNumber(){
-<<<<<<< HEAD
-		return litNumber;
-=======
-		return atoms.size();
->>>>>>> variable
+	public int nLiteral(){
+		return literals.size();
 	}
 	
 	public String toString(){
 		StringBuffer s = new StringBuffer();
-		for(Predicate p: atoms)
+		for(Predicate p: literals)
 			s.append(p.toString() + " | ");
 		s.delete(s.length()-3, s.length());
 		return s.toString();
 	}
-<<<<<<< HEAD
-=======
 	
 	/**
 	 * Return true iff this clause is a tautology, i.e.
@@ -77,17 +58,17 @@ public class Clause implements Comparable<Clause>{
 	 * @return true if is a tautology, false otherwise
 	 */
 	public boolean isTautology(){
-		for(Predicate p1: atoms)
-			for(Predicate p2: atoms)
+		for(Predicate p1: literals)
+			for(Predicate p2: literals)
 				if(p1!=p2 && p1.isOpposite(p2))
 					return true;
 		return false;
 	}
 	
 	public boolean subsumes(Clause c){
-		if(this.getLitNumber()<=c.getLitNumber()){
+		if(this.nLiteral()<=c.nLiteral()){
 			boolean predFound;
-			for(Predicate p1: atoms){
+			for(Predicate p1: literals){
 				predFound=false;
 				for(Predicate p2: c.getAtoms())
 					if(p1.getSymbol().equals(p2.getSymbol()) && p1.isPositive()==p2.isPositive() &&
@@ -102,9 +83,7 @@ public class Clause implements Comparable<Clause>{
 		}
 		return false;
 	}
-	
-	
->>>>>>> variable
+
 	/**
 	 * Inconsistent with equality.
 	 * Compare respect the number of symbols in these two formulae.
@@ -113,15 +92,11 @@ public class Clause implements Comparable<Clause>{
 	 *
 	 */
 	public int compareTo(Clause f){
-		return this.symNumber-f.getSymNumber();
+		return this.nSymbol()-f.nSymbol();
 	}
 	/**
 	 * The equals() and hashCode() methods are inherited from object,
-<<<<<<< HEAD
-	 * since every time we create a new CNFformula object, it must be different
-=======
 	 * since every time we create a new Clause object, it must be different
->>>>>>> variable
 	 * from the others.
 	 */
 }

@@ -24,12 +24,10 @@ public class Parser implements ParserConstants {
 	 * Queue of all formulae read
 	 */
         private static AbstractQueue<Clause> formulae;
-<<<<<<< HEAD
-=======
+
 
         /**	 * The variables' set of the formula that it's currently reading	 */
         private static Map<String, Variable> variables;
->>>>>>> variable
 
         /**
 	 * All the fixed elements (constants, functions, predicates) that are read
@@ -45,19 +43,11 @@ public class Parser implements ParserConstants {
 	 *@param input CNF formulae
 	 *@param output
 	 */
-<<<<<<< HEAD
-        public static AbstractQueue<Clause> parsing(String input, Map<String, FOLNode> el) throws Exception{
-                functions = new HashMap<String, Integer>();
-                predicates = new HashMap<String, Integer>();
-                formulae  = new PriorityQueue<Clause>();
-                elements=el;
-=======
         public static AbstractQueue<Clause> parsing(String input) throws Exception{
                 formulae  = new PriorityQueue<Clause>();
                 predicates = new HashMap<String, Integer>();
                 functions = new HashMap<String, Integer>();
                 constants = new HashMap<String, Constant>();
->>>>>>> variable
 
                 try{
                         new Parser(new java.io.StringReader(input)).TPTP_file();
@@ -259,13 +249,8 @@ public class Parser implements ParserConstants {
       jj_consume_token(-1);
       throw new ParseException();
     }
-<<<<<<< HEAD
-                Clause formula=new Clause(atoms, symNumber, litNumber);
-                {if (true) return formula;}
-=======
                 Clause clause=new Clause(atoms, variables, symNumber);
                 {if (true) return clause;}
->>>>>>> variable
     throw new Error("Missing return statement in function");
   }
 
