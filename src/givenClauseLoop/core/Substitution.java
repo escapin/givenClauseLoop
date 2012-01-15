@@ -6,17 +6,22 @@ import givenClauseLoop.bean.*;
 
 public class Substitution {
 	
+	
+	public static Literal substitute(Literal lit, Map<Variable, Term> sigma){
+		return new Literal(lit.getSymbol(), lit.sign(), substitute(lit.getArgs(), sigma));
+	}
+	
 	/**
 	 * Given a substitution σ and a list of terms, it apllies σ to 
 	 * that list. If one o more fixed elements will be created, they
 	 * will be added to fixEl map.
 	 * It return a new object List<Term> with the term substituted.
 	 *  
-	 * @param sigma the substitution
 	 * @param args 	the list of terms
+	 * @param sigma the substitution
 	 * @return a new List<Term> in which the substitution has been applied
 	 */
-	public static List<Term> substitute(Map<Variable, Term> sigma, List<Term> args){
+	public static List<Term> substitute(List<Term> args, Map<Variable, Term> sigma){
 		List<Term> newArgs=new LinkedList<Term>();
 		for(Variable v: sigma.keySet())
 			for(Term t: args)
@@ -50,9 +55,7 @@ public class Substitution {
 				args.add(t);
 			}
 			if(newObj){ // true iff a new function must be created
-				Function f=new Function(toSubstitute.getSymbol());
-				f.setArgs(args);
-				return f;
+				return new Function(toSubstitute.getSymbol(), args);
 			}
 			else
 				return toSubstitute;

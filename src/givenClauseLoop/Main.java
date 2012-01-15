@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 import givenClauseLoop.parser.*;
 import givenClauseLoop.bean.*;
+import givenClauseLoop.core.Clause;
 
 public class Main {
 

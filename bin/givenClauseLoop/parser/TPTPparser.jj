@@ -4,7 +4,7 @@ PARSER_BEGIN(Parser)
 package givenClauseLoop.parser;
 
 import java.util.*;
-import givenClauseLoop.bean.*;
+import givenClauseLoop.bean.*;import givenClauseLoop.core.Clause;
 
 public class Parser{
 
@@ -192,10 +192,7 @@ Literal literal():
 						+ "\" has been already read with " + pp.intValue() + " argument(s)");
 			else
 				predicates.put(t2.image, new Integer(args.size()));  
-		}
-		Literal l=new Literal(t2.image, (t1==null)? true: false);
-		l.setArgs(args);
-		return l;
+		}		return new Literal(t2.image, (t1==null)? true: false, args);
 	}
 }
 
@@ -255,9 +252,7 @@ Term term():
 						+ "\" has been already read with " + ff.intValue() + " argument(s)");
 			else
 				functions.put(t1.image, new Integer(args.size()));
-			Function f = new Function(t1.image);
-		  	f.setArgs(args);
-		  	return f;
+			return new Function(t1.image, args);
 		}  	
   	}
 }

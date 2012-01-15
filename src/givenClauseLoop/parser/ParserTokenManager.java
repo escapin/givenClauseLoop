@@ -2,6 +2,7 @@
 package givenClauseLoop.parser;
 import java.util.*;
 import givenClauseLoop.bean.*;
+import givenClauseLoop.core.Clause;
 
 /** Token Manager. */
 public class ParserTokenManager implements ParserConstants

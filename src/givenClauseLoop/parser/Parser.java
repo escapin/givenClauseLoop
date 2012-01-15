@@ -3,6 +3,7 @@ package givenClauseLoop.parser;
 
 import java.util.*;
 import givenClauseLoop.bean.*;
+import givenClauseLoop.core.Clause;
 
 public class Parser implements ParserConstants {
 
@@ -295,9 +296,7 @@ public class Parser implements ParserConstants {
                         else
                                 predicates.put(t2.image, new Integer(args.size()));
                 }
-                Literal l=new Literal(t2.image, (t1==null)? true: false);
-                l.setArgs(args);
-                {if (true) return l;}
+                {if (true) return new Literal(t2.image, (t1==null)? true: false, args);}
     throw new Error("Missing return statement in function");
   }
 
@@ -387,9 +386,7 @@ public class Parser implements ParserConstants {
                         else
                                 functions.put(t1.image, new Integer(args.size()));
 
-                        Function f = new Function(t1.image);
-                        f.setArgs(args);
-                        {if (true) return f;}
+                        {if (true) return new Function(t1.image, args);}
                 }
       break;
     default:

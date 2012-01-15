@@ -218,11 +218,6 @@ public class Unifier {
 			return null;
 		} else {
 			sigma.put(var, x);
-			/* we cannot simply do 'sigma.put(var, x);'
-			 * we must execute the cascadeSubstituion method.
-			 * See cascadeSubstitution method's documentation for more explanation.
-			 */
-			//cascadeSubstitution(var, x, sigma);
 			return sigma;
 		}
 	}

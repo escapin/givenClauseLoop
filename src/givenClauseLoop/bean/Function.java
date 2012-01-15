@@ -9,11 +9,8 @@ public class Function extends Term implements FOLNodeArg {
 	 */
 	private List<Term> args=null;
 	
-	public Function(String symbol){
+	public Function(String symbol, List<Term> args){
 		super.symbol=symbol;
-	}
-	
-	public void setArgs(List<Term> args){
 		this.args=args;
 		for(Term t: this.args){
 			symNumber += t.nSymbols();

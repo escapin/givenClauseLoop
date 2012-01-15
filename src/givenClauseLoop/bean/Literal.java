@@ -2,7 +2,7 @@ package givenClauseLoop.bean;
 
 import java.util.List;
 
-public class Literal extends FOLNode {
+public class Literal extends FOLNode implements FOLNodeArg {
 
 	private boolean sign;
 	
@@ -11,24 +11,30 @@ public class Literal extends FOLNode {
 	 */
 	private List<Term> args=null;
 	
-	public Literal(String symbol, boolean sign){
+	public Literal(String symbol, boolean sign, List<Term> args){
 		super.symbol=symbol;
 		this.sign=sign;
 		if(!sign)	// because also the negation symbol "~" must be counted
 			symNumber++;
-	}
-	
-	public boolean sign(){
-		return sign;
-	}
-	
-	public void setArgs(List<Term> args){
+		
 		this.args=args;
 		for(Term t: this.args){
 			symNumber += t.nSymbols();
 		}
 	}
 	
+	public boolean sign(){
+		return sign;
+	}
+	
+	/**
+	public void setArgs(List<Term> args){
+		this.args=args;
+		for(Term t: this.args){
+			symNumber += t.nSymbols();
+		}
+	}
+	*/
 	public List<Term> getArgs(){
 		return args;
 	}
