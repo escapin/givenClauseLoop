@@ -12,7 +12,7 @@ public class Substitution {
 	}
 	
 	/**
-	 * Given a substitution σ and a list of terms, it apllies σ to 
+	 * Given a substitution σ and a list of terms, it applies σ to 
 	 * that list. If one o more fixed elements will be created, they
 	 * will be added to fixEl map.
 	 * It return a new object List<Term> with the term substituted.

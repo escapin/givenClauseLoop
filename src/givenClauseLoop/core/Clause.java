@@ -1,8 +1,7 @@
 package givenClauseLoop.core;
 
 import java.util.*;
-import givenClauseLoop.bean.Literal;
-import givenClauseLoop.bean.Variable;
+import givenClauseLoop.bean.*;
 
 
 /**
@@ -106,27 +105,47 @@ public class Clause implements Comparable<Clause>{
 		return false;
 	}
 	
-	public boolean subsumes(Clause D){
-		return false;
-	}
-	/*
-		// INIZIO ALGORITMO CHANG LEE pag 95
-		if(!(this == D) && this.nLiterals()<=D.nLiterals()){
-			Map<Variable, Term> theta = new HashMap<Variable, Term>();
-			for(String k : D.getVariables().keySet())
-				theta.put(D.getVariables().get(k), new Constant("##"));
-			Set<Predicate> W = new HashSet<Predicate>();
-			Predicate lTemp;
-			for(Predicate lit : D.getLiterals()){
-				lTemp = new Predicate(lit.getSymbol(), !lit.sign());
-				lTemp.setArgs(Substitution.substitute(theta, lit.getArgs()));
-				W.add(lTemp);
+	public boolean subsumes(Clause c){
+		if(!(this == c) && this.nLiterals()<=c.nLiterals()){
+			// STEP 1 Subsumption Algorithm in Chang Lee books page 95
+			Map<Variable, Term> sigma = new HashMap<Variable, Term>();
+			for(Variable var : c.getVariables())
+				sigma.put(var, new Constant("##"));
+			Set<Clause> W = new HashSet<Clause>();
+			Clause cTemp;
+			for(Literal lit : c.getLiterals()){
+				cTemp = new Clause(); 
+				cTemp.addLiteral(new Literal(lit.getSymbol(), !lit.sign(), Substitution.substitute(lit.getArgs(), sigma)));
+				W.add(cTemp);
 			}
-			
+			// STEP 2-3-4
+			Set<Clause> U = new HashSet<Clause>();
+			U.add(this);
+			return checkSubsumption(U, W);
 		}
 		return false;
 	}	
 		
+	private boolean checkSubsumption(Set<Clause> U, Set<Clause> W){
+		if(U==null || U.size()==0)
+			return false;
+		else if(emptyClause(U))
+			return true;
+		else {
+			Set<Clause> U1 = new HashSet<Clause>();
+			for(Clause c1: U)
+				for(Clause c2: W)
+					U1.addAll(InferenceRules.binaryResolution(c1, c2));
+			return checkSubsumption(U1, W);
+		}
+	}
+	
+	private boolean emptyClause(Set<Clause> clSet){
+		for(Clause c: clSet)
+			if(c.nLiterals()==0)
+				return true;
+		return false;
+	}
 	/*	if(this.nLiterals()<=c.nLiterals()){
 			boolean predFound;
 			Set<Predicate> setLit;
