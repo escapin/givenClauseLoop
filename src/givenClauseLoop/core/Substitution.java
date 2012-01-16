@@ -27,28 +27,22 @@ public class Substitution {
 	}
 	
 	/**
-	 * Given a substitution σ and a list of terms, it applies σ to 
-	 * that list. If one o more fixed elements will be created, they
-	 * will be added to fixEl map.
-	 * It return a new object List<Term> with the term substituted.
+	 * Given a substitution σ and a term, it applies σ to 
+	 * that term.
+	 * It return a new object Term with the term substituted.
 	 *  
-	 * @param args 	the list of terms
+	 * @param toSubstitute term to whom you apply the substitution
 	 * @param sigma the substitution
 	 * @return a new List<Term> in which the substitution has been applied
 	 */
-	public static List<Term> substitute(List<Term> args, Map<Variable, Term> sigma){
-		List<Term> newArgs=new LinkedList<Term>();
-		for(Term t: args)
-			newArgs.add(substitute(t, sigma));
-		return newArgs;
-	}
-	
-	public static Term substitute(Term toSubstitute, Map<Variable, Term> sigma){
+	private static Term substitute(Term toSubstitute, Map<Variable, Term> sigma){
 		if (toSubstitute instanceof Constant)
 			return toSubstitute;
 		else if (toSubstitute instanceof Variable){
 			Term tNew;
-			return ( (tNew=sigma.get((Variable) toSubstitute))==null )? toSubstitute: tNew ; 
+			// we have to always create a new variable because the substitution serves 
+			// to create a new clause and then the variables must be different from the others
+			return ((tNew=sigma.get((Variable) toSubstitute)))==null? new Variable(toSubstitute.getSymbol()) : tNew; 
 		}
 		else { //if(toSubstitute instanceof Function){
 			List<Term> newArgs=new LinkedList<Term>();
@@ -66,4 +60,22 @@ public class Substitution {
 			return newFun? new Function(toSubstitute.getSymbol(), newArgs) : toSubstitute;			
 		}
 	}
+	
+	/**
+	 * Given a substitution σ and a list of terms, it applies σ to 
+	 * that list. If one o more fixed elements will be created, they
+	 * will be added to fixEl map.
+	 * It return a new object List<Term> with the term substituted.
+	 *  
+	 * @param args 	the list of terms
+	 * @param sigma the substitution
+	 * @return a new List<Term> in which the substitution has been applied
+	 
+	private static List<Term> substitute(List<Term> args, Map<Variable, Term> sigma){
+		List<Term> newArgs=new LinkedList<Term>();
+		for(Term t: args)
+			newArgs.add(substitute(t, sigma));
+		return newArgs;
+	}
+	*/
 }

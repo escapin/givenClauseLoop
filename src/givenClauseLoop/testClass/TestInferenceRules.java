@@ -60,7 +60,7 @@ public class TestInferenceRules {
 		for(Clause c1: clauses)
 			for(Clause c2: clauses){
 				if( (lit=c1.simplify(c2)) != null){
-					System.out.println(c2 + "  simplify  " + c1 + (c1.nLiterals()>0? " | " : "") + lit);
+					System.out.println(c2 + "  simplifies  " + c1 + (c1.nLiterals()>0? " | " : "") + lit);
 					c1.addLiteral(lit);
 				}
 			}
