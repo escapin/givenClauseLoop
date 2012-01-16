@@ -40,7 +40,7 @@ public class Literal extends FOLNode implements FOLNodeArg {
 	}
 	
 	public int nArgs(){
-		return args.size();
+		return (args==null)? 0 : args.size();
 	}
 	
 	public String toString(){

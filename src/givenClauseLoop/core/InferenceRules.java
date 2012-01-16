@@ -18,7 +18,7 @@ public class InferenceRules {
 		Map<Variable, Term> sigma;
 		Set<Literal> lMap;
 		for(Literal l1: c1.getLiterals())
-			if( (lMap=c2.getLitMap().get(l1.sign()? "~": "" + l1.getSymbol())) != null )
+			if( (lMap=c2.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null )
 			for(Literal l2: lMap) 
 				// iter on all the opposite predicate in the second clause c2
 				if( (sigma=Unifier.findMGU(l1.getArgs(), l2.getArgs(), false)) != null)
@@ -37,7 +37,7 @@ public class InferenceRules {
 		Map<Variable, Term> sigma;
 		Set<Literal> lMap; 
 		for(Literal l1: c.getLiterals())
-			if( (lMap=c.getLitMap().get(l1.sign()? "": "~" + l1.getSymbol())) != null )
+			if( (lMap=c.getLitMap().get( (l1.sign()? "": "~") + l1.getSymbol()) ) != null )
 				for(Literal l2: lMap)
 					// iters on all the predicates with than name in this clause
 					if( (sigma=Unifier.findMGU(l1.getArgs(), l2.getArgs(), true)) != null)
@@ -55,11 +55,14 @@ public class InferenceRules {
 	 * @return a new clause that is the factor of c clause
 	 */
 	public static Clause createFactor(Clause c, Literal lit, Map<Variable, Term> sigma){
-		Clause newClause = new Clause();
-		for(Literal l1: c.getLiterals())
-			if(l1!=lit)
-				newClause.addLiteral(Substitution.substitute(l1, sigma));
-		return newClause;
+		if(c.getLiterals().contains(lit)){
+			Clause newClause = new Clause();
+			for(Literal l1: c.getLiterals())
+				if(l1!=lit)
+					newClause.addLiteral(Substitution.substitute(l1, sigma));
+			return newClause;
+		}
+		return null;
 	}
 	
 	/**

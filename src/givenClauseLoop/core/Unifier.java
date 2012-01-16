@@ -1,6 +1,7 @@
 package givenClauseLoop.core;
 
 import java.util.*;
+
 import givenClauseLoop.bean.*;
 
 /**
@@ -271,7 +272,7 @@ public class Unifier {
 			for(Variable v2: sigma.keySet())
 				if(!v1.equals(v2)){
 					t2=sigma.get(v2);
-					t=Substitution.substitute(v1, sigma.get(v1), t2);
+					t=substitute(v1, sigma.get(v1), t2);
 					if(t!=t2){
 						sigma.put(v2, t);
 						if(occurCheck(v2, t, sigma))
@@ -280,6 +281,38 @@ public class Unifier {
 				}
 		return sigma;		
 	}
+	
+	
+	/**
+	 * Substitute with the term 'substitution' all the occurrences of variable 'v' in term 'toSubstitute'.
+	 * @param v
+	 * @param substitution
+	 * @param toSubstitute
+	 * @return
+	 */
+	private static Term substitute(Variable v, Term substitution, Term toSubstitute){
+		if(toSubstitute instanceof Constant)
+			return toSubstitute;
+		 else if(toSubstitute instanceof Variable) 
+			return (toSubstitute.equals(v))? substitution : toSubstitute;
+		 else {  //if(toSubstitute instanceof Function){
+			List<Term> newArgs=new LinkedList<Term>();
+			Term tNew;
+			boolean newFun=false; // true iff a new function must be created
+			for(Term tArg: ((Function)toSubstitute).getArgs()){
+				newFun = ((tNew=substitute(v, substitution, tArg)) != tArg) | newFun;
+				/*
+				 * t=substitute(v, substitution, tArg);
+				 * if (!newObj)	
+				 * 	newObj= t != tArg;
+				 */
+				newArgs.add(tNew);
+			}
+			return newFun? new Function(toSubstitute.getSymbol(), newArgs) : toSubstitute;
+		}
+	}
+	
+	
 	
 	/*
 	private Map<Variable, Term> cascadeSubstitution(Map<Variable, Term> sigma){

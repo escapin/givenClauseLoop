@@ -32,19 +32,21 @@ public class Clause implements Comparable<Clause>{
 	}
 	
 	public void addLiteral(Literal l){
-		literals.add(l);
-		symNumber+=l.nSymbols();
-		String signature = ((l.sign())? "": "~") + l.getSymbol();
-		Set<Literal> setLit = litMap.get(signature);
-		if(setLit==null){ // we have to create a new set
-			setLit=new HashSet<Literal>();
-			litMap.put(signature, setLit);
-		} /* else{ // checking for tautology
-			 for(Predicate l1: setLit)
-				 if(l.isOpposite(l1))
-					 isTautology=true;
-			}*/	
-		setLit.add(l);
+		if(l!=null){
+			literals.add(l);
+			symNumber+=l.nSymbols();
+			String signature = ((l.sign())? "": "~") + l.getSymbol();
+			Set<Literal> setLit = litMap.get(signature);
+			if(setLit==null){ // we have to create a new set
+				setLit=new HashSet<Literal>();
+				litMap.put(signature, setLit);
+			} /* else{ // checking for tautology
+				 for(Predicate l1: setLit)
+					 if(l.isOpposite(l1))
+						 isTautology=true;
+				}*/	
+			setLit.add(l);
+		}
 	}
 	
 	public Map<String, Set<Literal>> getLitMap(){
@@ -81,11 +83,15 @@ public class Clause implements Comparable<Clause>{
 	}
 	
 	public String toString(){
-		StringBuffer s = new StringBuffer();
-		for(Literal p: literals)
-			s.append(p.toString() + " | ");
-		s.delete(s.length()-3, s.length());
-		return s.toString();
+		if(literals.size()!=0){
+			StringBuffer s = new StringBuffer();
+			for(Literal p: literals)
+				s.append(p.toString() + " | ");
+			s.delete(s.length()-3, s.length());
+			return s.toString();
+		}
+		return "";
+			
 	}
 	
 	/**
@@ -97,15 +103,15 @@ public class Clause implements Comparable<Clause>{
 	public boolean isTautology(){
 		Set<Literal> setLit;
 		for(Literal l1: literals)
-			if( (setLit = litMap.get(l1.sign()? "~": "" + l1.getSymbol()) ) != null ) // the opposite
+			if( (setLit = litMap.get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null ) // the opposite
 				for(Literal l2: setLit)
 					if(l1!=l2 && l1.isOpposite(l2))
-					return true;
+						return true;
 		return false;
 	}
 	
 	public boolean subsumes(Clause c){
-		if(!(this == c) && this.nLiterals()<=c.nLiterals()){
+		if(this.nLiterals()>0 && this!=c && this.nLiterals()<=c.nLiterals()){
 			// STEP 1 Subsumption Algorithm in Chang Lee books page 95
 			/*
 			Map<Variable, Term> sigma = new HashMap<Variable, Term>();
@@ -137,13 +143,19 @@ public class Clause implements Comparable<Clause>{
 			Set<Literal> lMap;
 			Map<Variable, Term> sigma;
 			Clause cNew;
-			for(Clause c1: Uset){
-				for(Literal l1: c1.getLiterals())
-					if( (lMap=c.getLitMap().get(l1.sign()? "": "~" + l1.getSymbol())) != null )
-						for(Literal l2: lMap)
-							if( (sigma=Unifier.findLeftSubst(l1.getArgs(), l2.getArgs(), false)) != null){
-								if( (cNew=InferenceRules.createFactor(c1, l1, sigma)).nLiterals() == 0 )
+			for(Clause cUset: Uset){
+				for(Literal lUset: cUset.getLiterals())
+					if( (lMap=c.getLitMap().get( (lUset.sign()? "": "~") + lUset.getSymbol()) ) != null )
+						for(Literal lOth: lMap)
+							if( (sigma=Unifier.findLeftSubst(lUset.getArgs(), lOth.getArgs(), false)) != null){
+							/*	System.out.println(cUset);
+								System.out.println(lUset + " --> " + lOth);
+								for(Variable v: sigma.keySet())
+									System.out.println("\t" + v + "<--" + sigma.get(v));
+							*/
+								if( (cNew=InferenceRules.createFactor(cUset, lUset, sigma)).nLiterals() == 0 )
 									return true;
+								//System.out.println(cNew + "\n");
 								Uset1.add(cNew);
 							}
 			}
@@ -167,16 +179,32 @@ public class Clause implements Comparable<Clause>{
 		return false;
 	}
 	
-	public boolean simplify(Literal l1){
-		Set<Literal> setLit;
-		if ( (setLit = litMap.get( l1.sign()? "~": "" + l1.getSymbol()) ) != null) // the opposite
-			for(Literal l2: setLit)
-				if(Unifier.findLeftSubst(l1.getArgs(), l2.getArgs(), false)!= null){
-					literals.remove(l2);
-					setLit.remove(l2);
-					return true;
-				}
-			return false;
+	/**
+	 * Application ofinference rule:
+	 * 
+	 * 		L' | C , L
+	 * 	   ----------------
+	 * 		    C, L
+	 * if Lσ = ~L'
+	 * 
+	 * N.B. The c input clause must have only one literal.
+	 * 
+	 * @param c the clause that should semplify this clause
+	 * @return the literal deleted if a semplification was made, null otherwise.
+	 */
+	public Literal simplify(Clause c){
+		if(c.nLiterals()==1){
+			Set<Literal> setLit;
+			for(Literal lOth: c.getLiterals()) // only one literal
+				if ( (setLit = litMap.get( (lOth.sign()? "~": "") + lOth.getSymbol()) ) != null) // the opposite
+					for(Literal lThis: setLit) // literal of this clause that have the same name of l1
+						if(Unifier.findLeftSubst(lOth.getArgs(), lThis.getArgs(), false)!= null){ // lOth σ = ~lThis
+							literals.remove(lThis);
+							setLit.remove(lThis);
+							return lThis;
+						}
+		}
+		return null;
 	}
 	
 	/**

@@ -16,7 +16,14 @@ public class Substitution {
 	 * applied to the literal inserted in input  
 	 */
 	public static Literal substitute(Literal lit, Map<Variable, Term> sigma){
-		return new Literal(lit.getSymbol(), lit.sign(), substitute(lit.getArgs(), sigma));
+		List<Term> newArgs=new LinkedList<Term>();
+		boolean newLit=false; // true iff a new predicate must be created
+		Term newTerm;
+		for(Term tArg: lit.getArgs()){
+			newLit = ( (newTerm=substitute(tArg, sigma)) != tArg ) | newLit;
+			newArgs.add(newTerm);
+		}
+		return newLit? new Literal(lit.getSymbol(), lit.sign(), newArgs) : lit;
 	}
 	
 	/**
@@ -31,42 +38,32 @@ public class Substitution {
 	 */
 	public static List<Term> substitute(List<Term> args, Map<Variable, Term> sigma){
 		List<Term> newArgs=new LinkedList<Term>();
-		for(Variable v: sigma.keySet())
-			for(Term t: args)
-				newArgs.add(substitute(v, sigma.get(v), t));
+		for(Term t: args)
+			newArgs.add(substitute(t, sigma));
 		return newArgs;
 	}
 	
-	/**
-	 * Substitute with the term 'substitution' all the occurrences of variable 'v' in term 'toSubstitute'.
-	 * @param v
-	 * @param substitution
-	 * @param toSubstitute
-	 * @return
-	 */
-	public static Term substitute(Variable v, Term substitution, Term toSubstitute){
-		if(toSubstitute instanceof Constant)
+	public static Term substitute(Term toSubstitute, Map<Variable, Term> sigma){
+		if (toSubstitute instanceof Constant)
 			return toSubstitute;
-		 else if(toSubstitute instanceof Variable) 
-			return (toSubstitute.equals(v))? substitution : toSubstitute;
-		 else {  //if(toSubstitute instanceof Function){
-			List<Term> args=new LinkedList<Term>();
-			Term t;
-			boolean newObj=false; // true iff a new function must be created
+		else if (toSubstitute instanceof Variable){
+			Term tNew;
+			return ( (tNew=sigma.get((Variable) toSubstitute))==null )? toSubstitute: tNew ; 
+		}
+		else { //if(toSubstitute instanceof Function){
+			List<Term> newArgs=new LinkedList<Term>();
+			Term tNew;
+			boolean newFun=false; // true iff a new function must be created
 			for(Term tArg: ((Function)toSubstitute).getArgs()){
-				newObj = ((t=substitute(v, substitution, tArg)) != tArg) | newObj;
+				newFun = ((tNew=substitute(tArg, sigma)) != tArg) | newFun;
 				/*
-				 * t=substitute(v, substitution, tArg);
+				 * tNew=substitute(tArg, sigma);
 				 * if (!newObj)	
-				 * 	newObj= t != tArg;
+				 * 	newObj= (tNew!=tArg);
 				 */
-				args.add(t);
+				newArgs.add(tNew);
 			}
-			if(newObj){ // true iff a new function must be created
-				return new Function(toSubstitute.getSymbol(), args);
-			}
-			else
-				return toSubstitute;
+			return newFun? new Function(toSubstitute.getSymbol(), newArgs) : toSubstitute;			
 		}
 	}
 }
