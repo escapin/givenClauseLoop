@@ -247,7 +247,6 @@ public class Parser implements ParserConstants {
       jj_consume_token(-1);
       throw new ParseException();
     }
-                clause.setVariables(variables.values());
                 {if (true) return clause;}
     throw new Error("Missing return statement in function");
   }

@@ -167,7 +167,6 @@ Clause cnf_formula():
 	(	<OPEN_BRACKET> p=literal() {clause.addLiteral(p); } ( <VLINE> p=literal() {clause.addLiteral(p); } )* <CLOSE_BRACKET>
 		| 	p=literal() {clause.addLiteral(p); } ( <VLINE> p=literal() {clause.addLiteral(p); } )* )
 	{
-		clause.setVariables(variables.values());
 	  	return clause;
 	}
 }

@@ -15,10 +15,6 @@ public class Clause implements Comparable<Clause>{
 	 */
 	Collection<Literal> literals;
 	
-	/**
-	 * Map of the clause's variables 
-	 */
-	Collection<Variable> variables;
 	
 	/**
 	 * Map that matches a predicate name (sign + symbol) with 
@@ -33,10 +29,6 @@ public class Clause implements Comparable<Clause>{
 		literals=new HashSet<Literal>();
 		litMap=new HashMap<String, Collection<Literal>>();
 		symNumber=0;
-	}
-	
-	public void setVariables(Collection<Variable> setVar){
-		variables=setVar;
 	}
 	
 	public void addLiteral(Literal l){
@@ -63,17 +55,7 @@ public class Clause implements Comparable<Clause>{
 		return literals;
 	}
 
-	
-	/*
-	 * The set of variables of that formula
-	 * 
-	 * @return the variables' set
-	 */
-	public Collection<Variable> getVariables(){
-		return variables;
-	}
-
-	 public int nSymbols(){
+	public int nSymbols(){
 		return symNumber;
 	}
 
@@ -168,25 +150,6 @@ public class Clause implements Comparable<Clause>{
 				return true;
 		return false;
 	}
-	/*	if(this.nLiterals()<=c.nLiterals()){
-			boolean predFound;
-			Set<Predicate> setLit;
-			for(Predicate l1: this.getLiterals()){
-				setLit=c.getLitMap().get( ((l1.sign())? "": "~") + l1.getSymbol() );
-				predFound=false;
-				for(Predicate l2: setLit)
-					if(Unifier.findLeftSubst(l1.getArgs(), l2.getArgs(), false)!=null){
-						predFound=true;
-						break; // Predicate Found!
-					}
-				if(!predFound)
-					return false;
-			}
-			return true;
-		}
-		return false;
-	}
-	*/
 	
 	public boolean simplify(Literal l1){
 		Collection<Literal> setLit = litMap.get( ((l1.sign())? "~": "") + l1.getSymbol() ); // the opposite

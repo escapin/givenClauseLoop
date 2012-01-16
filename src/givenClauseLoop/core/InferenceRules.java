@@ -56,35 +56,20 @@ public class InferenceRules {
 	 */
 	public static Clause createFactor(Clause c, Literal lit, Map<Variable, Term> sigma){
 		Clause newClause = new Clause();
-		Set<Variable> vars=new HashSet<Variable>();
-		Literal lTemp;
 		for(Literal l1: c.getLiterals())
-			if(l1!=lit){
-				lTemp=Substitution.substitute(l1, sigma);
-				vars.addAll(findVariables(lTemp.getArgs()));
-				newClause.addLiteral(lTemp);
-			}	
-		newClause.setVariables(vars);
+			if(l1!=lit)
+				newClause.addLiteral(Substitution.substitute(l1, sigma));
 		return newClause;
 	}
 	
 	private static Clause createResolvent(Clause c1, Literal l1, Clause c2, Literal l2, Map<Variable, Term> sigma){
 		Clause newClause = new Clause();
-		Set<Variable> vars=new HashSet<Variable>();
-		Literal lTemp;
 		for(Literal l3: c1.getLiterals())
-			if(l1!=l3){
-				lTemp=Substitution.substitute(l3, sigma);
-				vars.addAll(findVariables(lTemp.getArgs()));
-				newClause.addLiteral(lTemp);
-			}	
+			if(l1!=l3)
+				newClause.addLiteral(Substitution.substitute(l3, sigma));
 		for(Literal l4: c1.getLiterals())
-			if(l2!=l4){
-				lTemp=Substitution.substitute(l4, sigma);
-				vars.addAll(findVariables(lTemp.getArgs()));
-				newClause.addLiteral(lTemp);
-			}
-		newClause.setVariables(vars);
+			if(l2!=l4)
+				newClause.addLiteral(Substitution.substitute(l4, sigma));
 		return newClause;
 	}
 

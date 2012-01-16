@@ -50,8 +50,10 @@ public class Main {
 			f=formulae.poll();
 			System.out.println(f);
 			s = new StringBuffer();
+			/*
 			for(Variable v: f.getVariables())
 				s.append(v.toString() + "  ");
+			*/
 			System.out.println(s);
 		}
 	}
