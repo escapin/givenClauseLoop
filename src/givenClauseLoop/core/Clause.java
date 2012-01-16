@@ -13,7 +13,7 @@ public class Clause implements Comparable<Clause>{
 	/**
 	 * Set of the clause's predicates
 	 */
-	Collection<Literal> literals;
+	Set<Literal> literals;
 	
 	
 	/**
@@ -21,13 +21,13 @@ public class Clause implements Comparable<Clause>{
 	 * a set of all the literals with that name.
 	 * This allows to implement the inference rule more efficiently 
 	 */
-	Map<String, Collection<Literal>> litMap;
+	Map<String, Set<Literal>> litMap;
 	
 	int symNumber;
 	
 	public Clause(){
 		literals=new HashSet<Literal>();
-		litMap=new HashMap<String, Collection<Literal>>();
+		litMap=new HashMap<String, Set<Literal>>();
 		symNumber=0;
 	}
 	
@@ -35,7 +35,7 @@ public class Clause implements Comparable<Clause>{
 		literals.add(l);
 		symNumber+=l.nSymbols();
 		String signature = ((l.sign())? "": "~") + l.getSymbol();
-		Collection<Literal> setLit = litMap.get(signature);
+		Set<Literal> setLit = litMap.get(signature);
 		if(setLit==null){ // we have to create a new set
 			setLit=new HashSet<Literal>();
 			litMap.put(signature, setLit);
@@ -47,11 +47,11 @@ public class Clause implements Comparable<Clause>{
 		setLit.add(l);
 	}
 	
-	public Map<String, Collection<Literal>> getLitMap(){
+	public Map<String, Set<Literal>> getLitMap(){
 		return litMap;
 	}
 	
-	public Collection<Literal> getLiterals(){
+	public Set<Literal> getLiterals(){
 		return literals;
 	}
 
@@ -61,6 +61,23 @@ public class Clause implements Comparable<Clause>{
 
 	public int nLiterals(){
 		return literals.size();
+	}
+	
+	public Set<Variable> findVariables(){
+		Set<Variable> vars=new HashSet<Variable>();
+		for(Literal lit: this.getLiterals())
+			vars.addAll(findVariables(lit.getArgs()));
+		return vars;
+	}
+	
+	private Set<Variable> findVariables(List<Term> arg){
+		Set<Variable> vars= new HashSet<Variable>();
+		for(Term t: arg)
+			if(t instanceof Variable)
+				vars.add((Variable)t);
+			else if(t instanceof Function)
+				vars.addAll(findVariables(((Function) t).getArgs()));
+		return vars;
 	}
 	
 	public String toString(){
@@ -78,13 +95,12 @@ public class Clause implements Comparable<Clause>{
 	 * @return true if is a tautology, false otherwise
 	 */
 	public boolean isTautology(){
-		Collection<Literal> setLit;
-		for(Literal l1: literals){
-			setLit = litMap.get( ((l1.sign())? "~": "") + l1.getSymbol() ); // the opposite
-			for(Literal l2: setLit)
-				if(l1!=l2 && l1.isOpposite(l2))
+		Set<Literal> setLit;
+		for(Literal l1: literals)
+			if( (setLit = litMap.get(l1.sign()? "~": "" + l1.getSymbol()) ) != null ) // the opposite
+				for(Literal l2: setLit)
+					if(l1!=l2 && l1.isOpposite(l2))
 					return true;
-		}
 		return false;
 	}
 	
@@ -118,7 +134,7 @@ public class Clause implements Comparable<Clause>{
 			return true;
 		else {
 			AbstractQueue<Clause> Uset1 = new PriorityQueue<Clause>();
-			Collection<Literal> lMap;
+			Set<Literal> lMap;
 			Map<Variable, Term> sigma;
 			Clause cNew;
 			for(Clause c1: Uset){
@@ -152,14 +168,15 @@ public class Clause implements Comparable<Clause>{
 	}
 	
 	public boolean simplify(Literal l1){
-		Collection<Literal> setLit = litMap.get( ((l1.sign())? "~": "") + l1.getSymbol() ); // the opposite
-		for(Literal l2: setLit)
-			if(Unifier.findLeftSubst(l1.getArgs(), l2.getArgs(), false)!= null){
-				literals.remove(l2);
-				setLit.remove(l2);
-				return true;
-			}
-		return false;
+		Set<Literal> setLit;
+		if ( (setLit = litMap.get( l1.sign()? "~": "" + l1.getSymbol()) ) != null) // the opposite
+			for(Literal l2: setLit)
+				if(Unifier.findLeftSubst(l1.getArgs(), l2.getArgs(), false)!= null){
+					literals.remove(l2);
+					setLit.remove(l2);
+					return true;
+				}
+			return false;
 	}
 	
 	/**

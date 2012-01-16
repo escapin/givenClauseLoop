@@ -200,7 +200,7 @@ public class Parser implements ParserConstants {
 ****************************************************************/
   static final public Clause cnf_formula() throws ParseException {
           Literal p=null;
-          //Collection<Literal> atoms=new TreeSet<Literal>();          variables = new HashMap<String, Variable>(); // reinizialize the variable set          Clause clause=new Clause();
+          //Set<Literal> atoms=new TreeSet<Literal>();          variables = new HashMap<String, Variable>(); // reinizialize the variable set          Clause clause=new Clause();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case OPEN_BRACKET:
       jj_consume_token(OPEN_BRACKET);

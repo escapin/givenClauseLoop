@@ -161,7 +161,7 @@ void annotations():	{}	{ ( <LOWER_WORD> | <UPPER_WORD> | <SINGLE_QUOTED> )+ }
 Clause cnf_formula():
 	{
 	  Literal p=null;
-	  //Collection<Literal> atoms=new TreeSet<Literal>();	  variables = new HashMap<String, Variable>(); // reinizialize the variable set	  Clause clause=new Clause();
+	  //Set<Literal> atoms=new TreeSet<Literal>();	  variables = new HashMap<String, Variable>(); // reinizialize the variable set	  Clause clause=new Clause();
 	}
 {
 	(	<OPEN_BRACKET> p=literal() {clause.addLiteral(p); } ( <VLINE> p=literal() {clause.addLiteral(p); } )* <CLOSE_BRACKET>

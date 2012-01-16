@@ -251,19 +251,18 @@ public class Unifier {
 		return false;
 	}
 	
+	
+	
 	/**
-	 * Sometimes you get a substitution of the form σ = {z ← x, x ← a}
-	 * Suppose you were to apply this substitution to p(z,x): the correct result is p(a,a).
-	 * The reason is that you need to "cascade" the substitutions; if z takes the value x, 
-	 * you need to make sure that you haven't constrained x to be some other value. 
-	 * It would be incorrect to write p(x,a).
-	 * This has particularly important consequences anytime you are trying to unify two expressions.
-	 *
-	 * σ = {z ← x, x ← a} must become σ = {z ← a, x ← a}
-	 *
-	 * @param sigma	the substitution
-	 * @return the substitution cascaded, null if there are occur checks
- 	 */
+	 * After you have been created the substitution sigma, you need to "cascade" 
+	 * this substitution because there should be instances of variables (that are members 
+	 * of sigma's domain) that are also in the codomain's terms. In this case you have to
+	 * replace all the occurences of these variables with the corresponding term presents
+	 * in the substitution.  
+	 * 
+	 * @param sigma the substitution that must be "cascaded"
+	 * @return the cascaded substitution
+	 */
 	private static Map<Variable, Term> cascadeSubstitution(Map<Variable, Term> sigma){
 		if(sigma==null)
 			return null;
@@ -308,6 +307,19 @@ public class Unifier {
 	}
 	*/
 	/*
+	/**
+	 * Sometimes you get a substitution of the form σ = {z ← x, x ← a}
+	 * Suppose you were to apply this substitution to p(z,x): the correct result is p(a,a).
+	 * The reason is that you need to "cascade" the substitutions; if z takes the value x, 
+	 * you need to make sure that you haven't constrained x to be some other value. 
+	 * It would be incorrect to write p(x,a).
+	 * This has particularly important consequences anytime you are trying to unify two expressions.
+	 *
+	 * σ = {z ← x, x ← a} must become σ = {z ← a, x ← a}
+	 *
+	 * @param sigma	the substitution
+	 * @return the substitution cascaded, null if there are occur checks
+ 	 
 	 Map<Variable, Variable> inverseSigma=new HashMap<Variable, Variable>();
 	 private void cascadeSubstitution(Variable var, Term x, Map<Variable, Term> sigma) {
 		Variable v;

@@ -25,10 +25,10 @@ public class Main {
 			throw new IOException("Failed to open the file.");
 		}
 		//System.out.println(input);
-		AbstractQueue<Clause> formulae=null;
+		AbstractQueue<Clause> clauses=null;
 		try{
 			//PARSING
-			formulae= Parser.parsing(input);
+			clauses= Parser.parsing(input);
 		}catch(Throwable e){
 			System.out.println(e.getMessage());
 		}
@@ -44,16 +44,14 @@ public class Main {
 		*/
 		
 		// print the formulae
-		Clause f;
+		Clause c;
 		StringBuffer s;
-		while(!formulae.isEmpty()){
-			f=formulae.poll();
-			System.out.println(f);
+		while(!clauses.isEmpty()){
+			c=clauses.poll();
+			System.out.println(c);
 			s = new StringBuffer();
-			/*
-			for(Variable v: f.getVariables())
+			for(Variable v: c.findVariables())
 				s.append(v.toString() + "  ");
-			*/
 			System.out.println(s);
 		}
 	}

@@ -6,7 +6,15 @@ import givenClauseLoop.bean.*;
 
 public class Substitution {
 	
-	
+	/**
+	 * Create a new literal that is the result of the substitution sigma
+	 * applied to the literal inserted in input.
+	 * 
+	 * @param lit the literal to whom we applies the substitution 
+	 * @param sigma the substitution
+	 * @return new literal that is the result of the substitution sigma
+	 * applied to the literal inserted in input  
+	 */
 	public static Literal substitute(Literal lit, Map<Variable, Term> sigma){
 		return new Literal(lit.getSymbol(), lit.sign(), substitute(lit.getArgs(), sigma));
 	}
