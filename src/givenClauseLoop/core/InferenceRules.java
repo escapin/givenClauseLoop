@@ -45,6 +45,29 @@ public class InferenceRules {
 		return factors;
 	}
 	
+	/**
+	 * Create a new clause that it is the factor of the clause insert as input.
+	 * The new clause will be 
+	 * 
+	 * @param c
+	 * @param lit
+	 * @param sigma
+	 * @return
+	 */
+	public static Clause createFactor(Clause c, Literal lit, Map<Variable, Term> sigma){
+		Clause newClause = new Clause();
+		Set<Variable> vars=new HashSet<Variable>();
+		Literal lTemp;
+		for(Literal l1: c.getLiterals())
+			if(l1!=lit){
+				lTemp=Substitution.substitute(l1, sigma);
+				vars.addAll(findVariables(lTemp.getArgs()));
+				newClause.addLiteral(lTemp);
+			}	
+		newClause.setVariables(vars);
+		return newClause;
+	}
+	
 	private static Clause createResolvent(Clause c1, Literal l1, Clause c2, Literal l2, Map<Variable, Term> sigma){
 		Clause newClause = new Clause();
 		Set<Variable> vars=new HashSet<Variable>();
@@ -61,20 +84,6 @@ public class InferenceRules {
 				vars.addAll(findVariables(lTemp.getArgs()));
 				newClause.addLiteral(lTemp);
 			}
-		newClause.setVariables(vars);
-		return newClause;
-	}
-	
-	private static Clause createFactor(Clause c, Literal lit, Map<Variable, Term> sigma){
-		Clause newClause = new Clause();
-		Set<Variable> vars=new HashSet<Variable>();
-		Literal lTemp;
-		for(Literal l1: c.getLiterals())
-			if(l1!=lit){
-				lTemp=Substitution.substitute(l1, sigma);
-				vars.addAll(findVariables(lTemp.getArgs()));
-				newClause.addLiteral(lTemp);
-			}	
 		newClause.setVariables(vars);
 		return newClause;
 	}

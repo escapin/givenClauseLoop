@@ -1,6 +1,7 @@
 package givenClauseLoop.core;
 
 import java.util.*;
+
 import givenClauseLoop.bean.*;
 
 
@@ -108,6 +109,7 @@ public class Clause implements Comparable<Clause>{
 	public boolean subsumes(Clause c){
 		if(!(this == c) && this.nLiterals()<=c.nLiterals()){
 			// STEP 1 Subsumption Algorithm in Chang Lee books page 95
+			/*
 			Map<Variable, Term> sigma = new HashMap<Variable, Term>();
 			for(Variable var : c.getVariables())
 				sigma.put(var, new Constant("##"));
@@ -119,18 +121,37 @@ public class Clause implements Comparable<Clause>{
 				W.add(cTemp);
 			}
 			// STEP 2-3-4
-			Set<Clause> U = new HashSet<Clause>();
-			U.add(this);
-			return checkSubsumption(U, W);
+			*/
+			AbstractQueue<Clause> Uset = new PriorityQueue<Clause>();
+			Uset.add(this);
+			return checkSubsumption(Uset, c);
 		}
 		return false;
 	}	
 		
-	private boolean checkSubsumption(Set<Clause> U, Set<Clause> W){
-		if(U==null || U.size()==0)
+	private boolean checkSubsumption(AbstractQueue<Clause> Uset, Clause c){
+		if(Uset==null || Uset.size()==0)
 			return false;
-		else if(emptyClause(U))
+		else if(emptyClause(Uset))
 			return true;
+		else {
+			AbstractQueue<Clause> Uset1 = new PriorityQueue<Clause>();
+			Collection<Literal> lMap;
+			Map<Variable, Term> sigma;
+			Clause cNew;
+			for(Clause c1: Uset){
+				for(Literal l1: c1.getLiterals())
+					if( (lMap=c.getLitMap().get(l1.sign()? "": "~" + l1.getSymbol())) != null )
+						for(Literal l2: lMap)
+							if( (sigma=Unifier.findLeftSubst(l1.getArgs(), l2.getArgs(), false)) != null){
+								if( (cNew=InferenceRules.createFactor(c1, l1, sigma)).nLiterals() == 0 )
+									return true;
+								Uset1.add(cNew);
+							}
+			}
+			return checkSubsumption(Uset1, c);
+		}
+		/*
 		else {
 			Set<Clause> U1 = new HashSet<Clause>();
 			for(Clause c1: U)
@@ -138,9 +159,10 @@ public class Clause implements Comparable<Clause>{
 					U1.addAll(InferenceRules.binaryResolution(c1, c2));
 			return checkSubsumption(U1, W);
 		}
+		*/
 	}
 	
-	private boolean emptyClause(Set<Clause> clSet){
+	private boolean emptyClause(AbstractQueue<Clause> clSet){
 		for(Clause c: clSet)
 			if(c.nLiterals()==0)
 				return true;
