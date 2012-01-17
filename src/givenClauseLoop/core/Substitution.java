@@ -42,7 +42,8 @@ public class Substitution {
 			Term tNew;
 			// we have to always create a new variable because the substitution serves 
 			// to create a new clause and then the variables must be different from the others
-			return ((tNew=sigma.get((Variable) toSubstitute)))==null? new Variable(toSubstitute.getSymbol()) : tNew; 
+			//return ((tNew=sigma.get((Variable) toSubstitute)))==null? new Variable(toSubstitute.getSymbol()) : tNew;
+			return ((tNew=sigma.get((Variable) toSubstitute))==null)? toSubstitute : tNew; 
 		}
 		else { //if(toSubstitute instanceof Function){
 			List<Term> newArgs=new LinkedList<Term>();
