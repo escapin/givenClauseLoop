@@ -153,7 +153,7 @@ public class Clause implements Comparable<Clause>{
 								for(Variable v: sigma.keySet())
 									System.out.println("\t" + v + "<--" + sigma.get(v));
 							*/
-								if( (cNew=InferenceRules.createFactor(cUset, lUset, sigma)).nLiterals() == 0 )
+								if( (cNew=ExpansionRules.createFactor(cUset, lUset, sigma)).nLiterals() == 0 )
 									return true;
 								//System.out.println(cNew + "\n");
 								Uset1.add(cNew);
