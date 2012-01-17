@@ -12,55 +12,14 @@ public class Substitution {
 	 * 
 	 * @param lit the literal to whom we applies the substitution 
 	 * @param sigma the substitution
+	 * @param varMap map that matches each old variable with the corresponding new one already created
 	 * @return new literal that is the result of the substitution sigma
 	 * applied to the literal inserted in input  
 	 */
-	public static Literal substitute(Literal lit, Map<Variable, Term> sigma){
-		List<Term> newArgs=new LinkedList<Term>();
-		boolean newLit=false; // true iff a new predicate must be created
-		Term newTerm;
-		for(Term tArg: lit.getArgs()){
-			newLit = ( (newTerm=substitute(tArg, sigma)) != tArg ) | newLit;
-			newArgs.add(newTerm);
-		}
-		return newLit? new Literal(lit.getSymbol(), lit.sign(), newArgs) : lit;
+	public static Literal substitute(Literal lit, Map<Variable, Term> sigma, Map<Variable, Variable> varMap){
+		return new Literal(lit.getSymbol(), lit.sign(), substitute(lit.getArgs(), sigma, varMap));
 	}
 	
-	/**
-	 * Given a substitution σ and a term, it applies σ to 
-	 * that term.
-	 * It return a new object Term with the term substituted.
-	 *  
-	 * @param toSubstitute term to whom you apply the substitution
-	 * @param sigma the substitution
-	 * @return a new List<Term> in which the substitution has been applied
-	 */
-	private static Term substitute(Term toSubstitute, Map<Variable, Term> sigma){
-		if (toSubstitute instanceof Constant)
-			return toSubstitute;
-		else if (toSubstitute instanceof Variable){
-			Term tNew;
-			// we have to always create a new variable because the substitution serves 
-			// to create a new clause and then the variables must be different from the others
-			//return ((tNew=sigma.get((Variable) toSubstitute)))==null? new Variable(toSubstitute.getSymbol()) : tNew;
-			return ((tNew=sigma.get((Variable) toSubstitute))==null)? toSubstitute : tNew; 
-		}
-		else { //if(toSubstitute instanceof Function){
-			List<Term> newArgs=new LinkedList<Term>();
-			Term tNew;
-			boolean newFun=false; // true iff a new function must be created
-			for(Term tArg: ((Function)toSubstitute).getArgs()){
-				newFun = ((tNew=substitute(tArg, sigma)) != tArg) | newFun;
-				/*
-				 * tNew=substitute(tArg, sigma);
-				 * if (!newObj)	
-				 * 	newObj= (tNew!=tArg);
-				 */
-				newArgs.add(tNew);
-			}
-			return newFun? new Function(toSubstitute.getSymbol(), newArgs) : toSubstitute;			
-		}
-	}
 	
 	/**
 	 * Given a substitution σ and a list of terms, it applies σ to 
@@ -70,13 +29,34 @@ public class Substitution {
 	 *  
 	 * @param args 	the list of terms
 	 * @param sigma the substitution
+	 * @param varMap map that matches each old variable with the corresponding new one  already created
 	 * @return a new List<Term> in which the substitution has been applied
-	 
-	private static List<Term> substitute(List<Term> args, Map<Variable, Term> sigma){
+	*/ 
+	private static List<Term> substitute(List<Term> args, Map<Variable, Term> sigma, Map<Variable, Variable> varMap){
 		List<Term> newArgs=new LinkedList<Term>();
 		for(Term t: args)
-			newArgs.add(substitute(t, sigma));
+			newArgs.add(substitute(t, sigma, varMap));
 		return newArgs;
 	}
-	*/
+	
+	/**
+	 * Given a substitution σ and a term, it applies σ to 
+	 * that term.
+	 * It return a new object Term with the term substituted.
+	 *  
+	 * @param toSubstitute term to whom you apply the substitution
+	 * @param sigma the substitution
+	 * @param varMap map that matches each old variable with the corresponding new one  already created
+	 * @return a new List<Term> in which the substitution has been applied
+	 */
+	private static Term substitute(Term toSubstitute, Map<Variable, Term> sigma, Map<Variable, Variable> varMap){
+		if (toSubstitute instanceof Constant)
+			return toSubstitute;
+		else if (toSubstitute instanceof Variable){
+			Term tNew;
+			return ((tNew=sigma.get((Variable) toSubstitute))==null)? toSubstitute.clone(varMap) : tNew; 
+		}
+		else //if(toSubstitute instanceof Function){
+			return new Function(toSubstitute.getSymbol(), substitute(((Function) toSubstitute).getArgs(), sigma, varMap));
+	}
 }
