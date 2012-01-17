@@ -1,6 +1,6 @@
 package givenClauseLoop.bean;
 
-import java.util.List;
+import java.util.*;
 
 public class Literal extends FOLNode implements FOLNodeArg {
 
@@ -84,5 +84,12 @@ public class Literal extends FOLNode implements FOLNodeArg {
 			return opposite;
 		}
 		return false;
+	}
+	
+	public Literal clone(Map<Variable, Variable> varMap){
+		List<Term> newArgs=new LinkedList<Term>();
+		for(Term t: this.getArgs())
+			newArgs.add(t.clone(varMap));
+		return new Literal(this.getSymbol(), this.sign(), newArgs);
 	}
 }

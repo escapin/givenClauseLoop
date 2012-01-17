@@ -1,6 +1,6 @@
 package givenClauseLoop.bean;
 
-import java.util.List;
+import java.util.*;
 
 public class Function extends Term implements FOLNodeArg {
 
@@ -50,5 +50,12 @@ public class Function extends Term implements FOLNodeArg {
 			s.append(t.toString() + ",");
 		s.replace(s.length()-1, s.length(), ")");
 		return s.toString();
+	}
+	
+	public Term clone(Map<Variable, Variable> varMap){
+		List<Term> newArgs = new LinkedList<Term>();
+		for(Term t: this.getArgs())
+			newArgs.add(t.clone(varMap));
+		return new Function(this.getSymbol(), newArgs);
 	}
 }

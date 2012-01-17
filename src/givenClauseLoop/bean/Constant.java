@@ -1,5 +1,7 @@
 package givenClauseLoop.bean;
 
+import java.util.Map;
+
 public class Constant extends Term {
 
 	public Constant(String symbol){
@@ -8,5 +10,9 @@ public class Constant extends Term {
 	
 	public boolean equal(Object obj){
 		return ( this==obj || ( obj instanceof Constant && this.getSymbol().equals(((Constant) obj).getSymbol()) ) );
+	}
+	
+	public Term clone(Map<Variable, Variable> varMap){
+		return this;
 	}
 }

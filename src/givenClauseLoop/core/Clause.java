@@ -222,4 +222,18 @@ public class Clause implements Comparable<Clause>{
 	 * since every time we create a new Clause object, it must be different
 	 * from the others.
 	 */
+	
+	/**
+	 * Clone this clause and all the objects inside (apart from constants).
+	 * 
+	 * @return a new Clause with different objects inside apart from constants
+	 * 
+	 */
+	public Object clone(){
+		Clause cNew = new Clause();
+		Map<Variable, Variable> varMap = new HashMap<Variable, Variable>();
+		for(Literal l: this.getLiterals())
+			cNew.addLiteral(l.clone(varMap));
+		return cNew;
+	}
 }
