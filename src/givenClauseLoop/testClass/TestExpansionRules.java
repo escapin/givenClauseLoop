@@ -51,7 +51,7 @@ public class TestExpansionRules {
 		AbstractQueue<Clause> qNew;
 		for(Clause c1: clauses){
 			qNew=InferenceRules.factorisation(c1);
-		System.out.println("\n" + c1 + "  factors:");
+		System.out.println("\n" + c1 + "  factors: ");
 		for(Clause c2: qNew)
 			System.out.println("\t\t" + c2);
 		}
