@@ -15,14 +15,16 @@ public class ExpansionRules {
 	 */
 	public static AbstractQueue<Clause> binaryResolution(Clause c1, Clause c2){
 		AbstractQueue<Clause> resolvents= new PriorityQueue<Clause>();
-		Map<Variable, Term> sigma;
-		Set<Literal> lMap;
-		for(Literal l1: c1.getLiterals())
-			if( (lMap=c2.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null )
-			for(Literal l2: lMap) 
-				// iter on all the opposite predicate in the second clause c2
-				if( (sigma=Unifier.findMGU(l1.getArgs(), l2.getArgs(), false)) != null)
-					resolvents.add(createResolvent(c1, l1, c2, l2, sigma));
+		if(c1!=c2){
+			Map<Variable, Term> sigma;
+			Set<Literal> lMap;
+			for(Literal l1: c1.getLiterals())
+				if( (lMap=c2.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null )
+					for(Literal l2: lMap) 
+						// iter on all the opposite predicate in the second clause c2
+						if( (sigma=Unifier.findMGU(l1.getArgs(), l2.getArgs(), false)) != null)
+							resolvents.add(createResolvent(c1, l1, c2, l2, sigma));			
+		}
 		return resolvents;
 	}
 	

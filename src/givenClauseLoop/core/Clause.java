@@ -82,16 +82,8 @@ public class Clause implements Comparable<Clause>{
 		return vars;
 	}
 	
-	public String toString(){
-		if(literals.size()!=0){
-			StringBuffer s = new StringBuffer();
-			for(Literal p: literals)
-				s.append(p.toString() + " | ");
-			s.delete(s.length()-3, s.length());
-			return s.toString();
-		}
-		return "";
-			
+	public boolean isEmpty(){
+		return this.getLiterals().size()==0;
 	}
 	
 	/**
@@ -132,7 +124,7 @@ public class Clause implements Comparable<Clause>{
 		}
 		return false;
 	}	
-		
+	
 	private boolean checkSubsumption(AbstractQueue<Clause> Uset, Clause c){
 		if(Uset==null || Uset.size()==0)
 			return false;
@@ -235,5 +227,17 @@ public class Clause implements Comparable<Clause>{
 		for(Literal l: this.getLiterals())
 			cNew.addLiteral(l.clone(varMap));
 		return cNew;
+	}
+	
+	public String toString(){
+		if(literals.size()!=0){
+			StringBuffer s = new StringBuffer();
+			for(Literal p: literals)
+				s.append(p.toString() + " | ");
+			s.delete(s.length()-3, s.length());
+			return s.toString();
+		}
+		return "";
+			
 	}
 }

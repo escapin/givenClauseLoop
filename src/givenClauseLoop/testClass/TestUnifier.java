@@ -19,10 +19,10 @@ public class TestUnifier {
 		
 		arg1="Z, X, L, f(Q) ";
 		arg2="Z, g(X), M, f(b)";
-		
-		arg1="Y, f(X)";
-		arg2="a, Y";
-		boolean sameClause=true;
+		//Q(x,f(x)) Q(y,y)
+		arg1="X, f(X)";
+		arg2="Y, Y";
+		boolean sameClause=false;
 		
 		List<Term>[] lar=new List[2];
 		lar=Parser.getArguments(arg1, arg2, sameClause);

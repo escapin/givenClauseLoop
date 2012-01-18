@@ -239,7 +239,7 @@ public class Unifier {
 	private static boolean occurCheck(Variable var, Term x, Map<Variable, Term> sigma) {
 		if (x instanceof Variable && var.equals(x)) { // (1) you cannot unify the same variable 
 			return true;
-		} else if (x instanceof Variable && sigma.containsKey(x)) {
+		} else if (x instanceof Variable && sigma.containsKey(x)){
 			// (1) recursion in case of variables' chains
 			return occurCheck(var, sigma.get(x), sigma);
 		} else if (x instanceof Function) {
