@@ -10,7 +10,7 @@ public class InfoLoop {
 	public int nResolutions;
 	public int nFactorisations;
 	public int nSubsumptions;
-	public int nSemplifications;
+	public int nSimplifications;
 	public int nTautology;
 	
 	public LoopResult res;
@@ -23,7 +23,7 @@ public class InfoLoop {
 		nResolutions=0;
 		nFactorisations=0;
 		nSubsumptions=0;
-		nSemplifications=0;
+		nSimplifications=0;
 		nTautology=0;
 	}
 

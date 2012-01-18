@@ -5,10 +5,12 @@ import givenClauseLoop.bean.LoopResult;
 import java.util.*;
 
 public class ResearchPlan {
+	
+	public static InfoLoop info;
 
 	public static InfoLoop OtterLoop(AbstractQueue<Clause> toBeSelected){
 		AbstractQueue<Clause> selected = new PriorityQueue<Clause>();
-		InfoLoop info = new InfoLoop();
+		info = new InfoLoop();
 		info.clausesGenerated=toBeSelected.size();
 		
 		AbstractQueue<Clause> newClauses;
@@ -16,8 +18,9 @@ public class ResearchPlan {
 		
 		while(!toBeSelected.isEmpty()){ // GIVEN CLAUSE LOOP
 			givenClause=toBeSelected.poll();
+			
 			if(!givenClause.isEmpty())
-				if(givenClause.isTautology())
+				if(givenClause.isTautology()) // TAUTOLOGY
 					info.nTautology++;
 				else {
 					selected.add(givenClause);
@@ -26,49 +29,90 @@ public class ResearchPlan {
 					newClauses=ExpansionRules.factorisation(givenClause);
 					info.nFactorisations += newClauses.size();
 					info.clausesGenerated += newClauses.size(); 
+					// CONTRACTION RULES
+					if(contractionRules(newClauses, toBeSelected, selected))
+						return info;
 					
-					// CONTRACTION RULES with SELECTED QUEUE
-					for(Clause cNew: newClauses)
-						if(cNew.isEmpty()) // empty clause generated
-							return returnUNSAT(info);
-						else if(cNew.isTautology()){
-							info.nTautology++;
-							newClauses.remove(cNew);
-						} else{
-							for(Clause cSel: selected)
-								// SIMPLIFICATIONS
-								if(cNew.simplify(cSel)!=null){
-									info.nSemplifications++;
-									if(cNew.isEmpty())
-										return returnUNSAT(info);
-									selected.remove(cSel);
-								} else if(cSel.simplify(cNew)!=null){
-									info.nSemplifications++;
-									if(cSel.isEmpty())
-										return returnUNSAT(info);
-									newClauses.remove(cNew);
-								// SUBSUMPTIONS
-								} else if(cNew.subsumes(cSel)){
-									info.nSubsumptions++;
-									selected.remove(cSel);
-								} else if (cSel.subsumes(cNew)){
-									info.nSubsumptions++;
-									newClauses.remove(cNew);
-								}
-						}
+					// ADD CLAUSES GENERATED in TO_BE_SELECTED
+					if(newClauses.size()!=0)
+						toBeSelected.addAll(newClauses);
+					
+					// APPLIED BINARY_RESOLUTION
+					for(Clause cSel: selected){
+						newClauses=ExpansionRules.binaryResolution(givenClause, cSel);
+						info.nResolutions += newClauses.size();
+						info.clausesGenerated += newClauses.size();
+						// CONTRACTION RULES
+						if(contractionRules(newClauses, toBeSelected, selected))
+							return info;
+					}
+					// ADD CLAUSES GENERATED in TO_BE_SELECTED
+					if(newClauses.size()!=0)
+						toBeSelected.addAll(newClauses);
 				}
 		}
-		
 		//info.clausesNotSelected = (toBeSelected.isEmpty())? 0: info.clausesGenerated - selected.size();
 		info.res = (toBeSelected.isEmpty())? LoopResult.SAT : LoopResult.TIME_EXPIRED;
 		return info;
 	}
 	
-	private static InfoLoop returnUNSAT(InfoLoop info){
-		info.res = LoopResult.UNSAT;
-		return info;
+	private static boolean contractionRules(AbstractQueue<Clause> newClauses, AbstractQueue<Clause> toBeSelected, 
+			AbstractQueue<Clause> selected){
+		boolean clauseRemoved;
+		for(Clause cNew: newClauses){
+			clauseRemoved=false;
+			if(cNew.isEmpty()){ // empty clause generated
+				info.res = LoopResult.UNSAT;
+				return true;
+			} else if(cNew.isTautology()){ // TAUTOLOGY
+				info.nTautology++;
+				newClauses.remove(cNew);
+				clauseRemoved=true;
+			} else{
+				// CONTRACTION RULES with SELECTED QUEUE
+				clauseRemoved=simplSubsRules(cNew, selected);
+				if(info.res==LoopResult.UNSAT)
+					return true;
+				if(clauseRemoved)
+					newClauses.remove(cNew);
+				else {
+					// CONTRACTION RULES with TO_BE_SELECTED QUEUE
+					clauseRemoved=simplSubsRules(cNew, toBeSelected);
+					if(info.res==LoopResult.UNSAT)
+						return true;
+					if(clauseRemoved)
+						newClauses.remove(cNew);
+				}
+			}
+		}
+		return false;
 	}
-	public static void Eloop(AbstractQueue<Clause> toBeSelected){
-		
+	
+	private static boolean simplSubsRules(Clause cNew, AbstractQueue<Clause> clauseSet){
+		for(Clause cSel: clauseSet){
+				// SIMPLIFICATIONS
+				if(cNew.simplify(cSel)!=null){
+					info.nSimplifications++;
+					if(cNew.isEmpty()){ // empty clause generated
+						info.res = LoopResult.UNSAT;
+						return false;
+					}
+				} else if(cSel.simplify(cNew)!=null){
+					info.nSimplifications++;
+					if(cSel.isEmpty()){	// empty clause generated
+						info.res = LoopResult.UNSAT;
+						return false;
+					}
+				}
+				// SUBSUMPTIONS
+				if(cNew.subsumes(cSel)){
+					info.nSubsumptions++;
+					clauseSet.remove(cSel);
+				} else if (cSel.subsumes(cNew)){
+					info.nSubsumptions++;
+					return true;
+				}
+		}
+		return false;
 	}
 }
