@@ -9,7 +9,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.AbstractQueue;
+import java.util.NavigableSet;
 
 public class TestFactorisationRule {
 
@@ -30,7 +30,7 @@ public class TestFactorisationRule {
 			throw new IOException("Failed to open the file.");
 		}
 		//System.out.println(input);
-		AbstractQueue<Clause> clauses=null;
+		NavigableSet<Clause> clauses=null;
 		try{
 			//PARSING
 			clauses= Parser.parsing(input);
@@ -48,7 +48,7 @@ public class TestFactorisationRule {
 		}
 		System.out.print("\n\n");
 		System.out.println("FACTORISATION:");
-		AbstractQueue<Clause> qNew;
+		NavigableSet<Clause> qNew;
 		for(Clause c1: clauses){
 			qNew=ExpansionRules.factorisation(c1);
 		System.out.println("\n" + c1 + "  factors: ");

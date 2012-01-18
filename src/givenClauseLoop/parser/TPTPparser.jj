@@ -25,7 +25,7 @@ public class Parser{
 	/**
 	 * Queue of all formulae read
 	 */
-	private static AbstractQueue<Clause> formulae;
+	private static NavigableSet<Clause> formulae;
 	/**	 * The variables' set of the formula that it's currently reading	 */	private static Map<String, Variable> variables;
 
 	/**
@@ -42,8 +42,8 @@ public class Parser{
 	 *@param input CNF formulae
 	 *@param output
 	 */
-	public static AbstractQueue<Clause> parsing(String input) throws Exception{
-		formulae  = new PriorityQueue<Clause>();		predicates = new HashMap<String, Integer>();		functions = new HashMap<String, Integer>();
+	public static NavigableSet<Clause> parsing(String input) throws Exception{
+		formulae  = new TreeSet<Clause>();		predicates = new HashMap<String, Integer>();		functions = new HashMap<String, Integer>();
 		constants = new HashMap<String, Constant>();
 		
 		try{	

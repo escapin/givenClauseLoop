@@ -8,16 +8,16 @@ public class ResearchPlan {
 	
 	public static InfoLoop info;
 
-	public static InfoLoop OtterLoop(AbstractQueue<Clause> toBeSelected){
-		AbstractQueue<Clause> selected = new PriorityQueue<Clause>();
+	public static InfoLoop OtterLoop(NavigableSet<Clause> toBeSelected){
+		NavigableSet<Clause> selected = new TreeSet<Clause>();
 		info = new InfoLoop();
 		info.clausesGenerated=toBeSelected.size();
 		
-		AbstractQueue<Clause> newClauses;
+		NavigableSet<Clause> newClauses;
 		Clause givenClause;
 		
 		while(!toBeSelected.isEmpty()){ // GIVEN CLAUSE LOOP
-			givenClause=toBeSelected.poll();
+			givenClause=toBeSelected.pollFirst();
 			
 			if(!givenClause.isEmpty())
 				if(givenClause.isTautology()) // TAUTOLOGY
@@ -56,8 +56,8 @@ public class ResearchPlan {
 		return info;
 	}
 	
-	private static boolean contractionRules(AbstractQueue<Clause> newClauses, AbstractQueue<Clause> toBeSelected, 
-			AbstractQueue<Clause> selected){
+	private static boolean contractionRules(NavigableSet<Clause> newClauses, NavigableSet<Clause> toBeSelected, 
+			NavigableSet<Clause> selected){
 		boolean clauseRemoved;
 		for(Clause cNew: newClauses){
 			clauseRemoved=false;
@@ -88,7 +88,8 @@ public class ResearchPlan {
 		return false;
 	}
 	
-	private static boolean simplSubsRules(Clause cNew, AbstractQueue<Clause> clauseSet){
+	private static boolean simplSubsRules(Clause cNew, NavigableSet<Clause> clauseSet){
+		//NavigableSet<Clause> newClSet ;
 		for(Clause cSel: clauseSet){
 				// SIMPLIFICATIONS
 				if(cNew.simplify(cSel)!=null){

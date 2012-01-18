@@ -9,7 +9,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.AbstractQueue;
+import java.util.NavigableSet;
 
 public class TestResolutionRule {
 
@@ -30,7 +30,7 @@ public class TestResolutionRule {
 			throw new IOException("Failed to open the file.");
 		}
 		//System.out.println(input);
-		AbstractQueue<Clause> clauses=null;
+		NavigableSet<Clause> clauses=null;
 		try{
 			//PARSING
 			clauses= Parser.parsing(input);
@@ -48,7 +48,7 @@ public class TestResolutionRule {
 		}
 		System.out.print("\n\n");
 		System.out.println("RESOLUTION:");
-		AbstractQueue<Clause> qNew;
+		NavigableSet<Clause> qNew;
 		Map<Clause, Clause> alreadyConsidered = new HashMap<Clause, Clause>();
 		for(Clause c1: clauses)
 			for(Clause c2: clauses)

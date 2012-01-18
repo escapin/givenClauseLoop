@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 import givenClauseLoop.parser.*;
 import givenClauseLoop.bean.*;
-import givenClauseLoop.core.Clause;
+import givenClauseLoop.core.*;
 
 public class Main {
 
@@ -25,7 +25,7 @@ public class Main {
 			throw new IOException("Failed to open the file.");
 		}
 		//System.out.println(input);
-		AbstractQueue<Clause> clauses=null;
+		NavigableSet<Clause> clauses=null;
 		try{
 			//PARSING
 			clauses= Parser.parsing(input);
@@ -44,15 +44,29 @@ public class Main {
 		*/
 		
 		// print the formulae
-		Clause c;
+		
 		StringBuffer s;
-		while(!clauses.isEmpty()){
-			c=clauses.poll();
+		for(Clause c: clauses){
 			System.out.println(c);
 			s = new StringBuffer();
 			for(Variable v: c.findVariables())
 				s.append(v.toString() + "  ");
 			System.out.println(s);
 		}
+		/*
+		Clause c;
+		while(!clauses.isEmpty()){
+			c=clauses.pollFirst();
+			System.out.println(c);
+			s = new StringBuffer();
+			for(Variable v: c.findVariables())
+				s.append(v.toString() + "  ");
+			System.out.println(s);
+		}*/
+		InfoLoop info=ResearchPlan.OtterLoop(clauses);
+		if(info.res==LoopResult.SAT)
+			System.out.println("SAT");
+		else
+			System.out.println("UNSAT");
 	}
 }
