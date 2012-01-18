@@ -58,15 +58,20 @@ public class ResearchPlan {
 	
 	private static boolean contractionRules(NavigableSet<Clause> newClauses, NavigableSet<Clause> toBeSelected, 
 			NavigableSet<Clause> selected){
-		boolean clauseRemoved;
-		for(Clause cNew: newClauses){
+		Iterator<Clause> iter=newClauses.iterator();
+		Clause	cNew=new Clause();
+		boolean clauseRemoved=false;
+		while(iter.hasNext()){
+			if(!clauseRemoved)
+				cNew = iter.next();
+			
 			clauseRemoved=false;
 			if(cNew.isEmpty()){ // empty clause generated
 				info.res = LoopResult.UNSAT;
 				return true;
 			} else if(cNew.isTautology()){ // TAUTOLOGY
 				info.nTautology++;
-				newClauses.remove(cNew);
+				cNew=remClauseGetNext(cNew, newClauses, iter);
 				clauseRemoved=true;
 			} else{
 				// CONTRACTION RULES with SELECTED QUEUE
@@ -74,14 +79,14 @@ public class ResearchPlan {
 				if(info.res==LoopResult.UNSAT)
 					return true;
 				if(clauseRemoved)
-					newClauses.remove(cNew);
+					cNew=remClauseGetNext(cNew, newClauses, iter);
 				else {
 					// CONTRACTION RULES with TO_BE_SELECTED QUEUE
 					clauseRemoved=simplSubsRules(cNew, toBeSelected);
 					if(info.res==LoopResult.UNSAT)
 						return true;
 					if(clauseRemoved)
-						newClauses.remove(cNew);
+						cNew=remClauseGetNext(cNew, newClauses, iter);
 				}
 			}
 		}
@@ -89,31 +94,48 @@ public class ResearchPlan {
 	}
 	
 	private static boolean simplSubsRules(Clause cNew, NavigableSet<Clause> clauseSet){
-		//NavigableSet<Clause> newClSet ;
-		for(Clause cSel: clauseSet){
-				// SIMPLIFICATIONS
-				if(cNew.simplify(cSel)!=null){
-					info.nSimplifications++;
-					if(cNew.isEmpty()){ // empty clause generated
-						info.res = LoopResult.UNSAT;
-						return false;
-					}
-				} else if(cSel.simplify(cNew)!=null){
-					info.nSimplifications++;
-					if(cSel.isEmpty()){	// empty clause generated
-						info.res = LoopResult.UNSAT;
-						return false;
-					}
+		Iterator<Clause> iter=clauseSet.iterator();
+		Clause cSel=new Clause();
+		boolean clauseRemoved=false;
+		while(iter.hasNext()){
+			if(!clauseRemoved)
+				cSel = iter.next();
+			
+			clauseRemoved=false;
+			// SIMPLIFICATIONS
+			if(cNew.simplify(cSel)!=null){
+				info.nSimplifications++;
+				if(cNew.isEmpty()){ // empty clause generated
+					info.res = LoopResult.UNSAT;
+					return false;
 				}
-				// SUBSUMPTIONS
-				if(cNew.subsumes(cSel)){
-					info.nSubsumptions++;
-					clauseSet.remove(cSel);
-				} else if (cSel.subsumes(cNew)){
-					info.nSubsumptions++;
-					return true;
+			} else if(cSel.simplify(cNew)!=null){
+				info.nSimplifications++;
+				if(cSel.isEmpty()){	// empty clause generated
+					info.res = LoopResult.UNSAT;
+					return false;
 				}
+			}
+			// SUBSUMPTIONS
+			if(cNew.subsumes(cSel)){
+				info.nSubsumptions++;
+				// if we have to remove this element, we have to find the next one before 
+				cSel=remClauseGetNext(cSel, clauseSet, iter);
+				clauseRemoved=true;
+			} else if (cSel.subsumes(cNew)){
+				info.nSubsumptions++;
+				return true;
+			}
 		}
 		return false;
+	}
+	
+	private static Clause remClauseGetNext(Clause c, NavigableSet<Clause> set, Iterator<Clause> iter){
+		Clause cNext=null;
+		// if we have to remove this element, we have to find the next one before 
+		if(iter.hasNext())
+			cNext = iter.next();
+		set.remove(c);
+		return cNext;
 	}
 }

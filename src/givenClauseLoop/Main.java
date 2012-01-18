@@ -63,6 +63,7 @@ public class Main {
 				s.append(v.toString() + "  ");
 			System.out.println(s);
 		}*/
+		System.out.println();
 		InfoLoop info=ResearchPlan.OtterLoop(clauses);
 		if(info.res==LoopResult.SAT)
 			System.out.println("SAT");
