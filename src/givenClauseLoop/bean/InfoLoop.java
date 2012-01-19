@@ -1,5 +1,7 @@
 package givenClauseLoop.bean;
 
+import givenClauseLoop.core.Clause;
+
 public class InfoLoop {
 	
 	public int clausesRead;
@@ -14,6 +16,10 @@ public class InfoLoop {
 	public int nTautology;
 	
 	public LoopResult res;
+	
+	public Clause	c1=null, 
+					c2=null;
+	public RuleEmptyClause rule;
 	
 	public InfoLoop(){
 		clausesRead=0;

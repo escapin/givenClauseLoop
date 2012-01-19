@@ -53,6 +53,8 @@ public class Main {
 				s.append(v.toString() + "  ");
 			System.out.println(s);
 		}
+		
+		/*
 		Iterator<Clause> iter1 = clauses.iterator();
 		Iterator<Clause> iter2 = clauses.iterator();
 		System.out.println("\n" + ((iter1==iter2)? "true" : "false"));
@@ -65,13 +67,25 @@ public class Main {
 				System.out.println(c1 + "\t" + c2);
 			}
 		}
-			
-		/*
-		InfoLoop info=ResearchPlan.OtterLoop(clauses);
+		*/	
+		System.out.println();
+		InfoLoop info=ResearchPlan.givenClauseLoop(clauses, LoopType.E_LOOP);
+		System.out.println("\n");
 		if(info.res==LoopResult.SAT)
 			System.out.println("SAT");
-		else
+		else{
 			System.out.println("UNSAT");
-		*/
+			switch(info.rule){
+				case BINARY_RESOLUTION:
+					System.out.println("Binary Resolution: ");
+					System.out.println("\t" + info.c1 + "\t\t" + info.c2);
+					break;
+				case SIMPLIFICATION:
+					System.out.println("Simplification:");
+					System.out.println("\t" + info.c1 + "  simplifies  " + info.c2);
+					break;
+			}
+		}
+			
 	}
 }
