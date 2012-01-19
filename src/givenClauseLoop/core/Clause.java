@@ -139,7 +139,7 @@ public class Clause implements Comparable<Clause>{
 				for(Literal lUset: cUset.getLiterals())
 					if( (lMap=c.getLitMap().get( (lUset.sign()? "": "~") + lUset.getSymbol()) ) != null )
 						for(Literal lOth: lMap)
-							if( (sigma=Unifier.findLeftSubst(lUset.getArgs(), lOth.getArgs(), false)) != null){
+							if( (sigma=Unifier.findLeftSubst(lUset.getArgs(), lOth.getArgs())) != null){
 							/*	System.out.println(cUset);
 								System.out.println(lUset + " --> " + lOth);
 								for(Variable v: sigma.keySet())
@@ -190,7 +190,7 @@ public class Clause implements Comparable<Clause>{
 			for(Literal lOth: c.getLiterals()) // only one literal
 				if ( (setLit = litMap.get( (lOth.sign()? "~": "") + lOth.getSymbol()) ) != null) // the opposite
 					for(Literal lThis: setLit) // literal of this clause that have the same name of l1
-						if(Unifier.findLeftSubst(lOth.getArgs(), lThis.getArgs(), false)!= null){ // lOth σ = ~lThis
+						if(Unifier.findLeftSubst(lOth.getArgs(), lThis.getArgs())!= null){ // lOth σ = ~lThis
 							literals.remove(lThis);
 							setLit.remove(lThis);
 							return lThis;

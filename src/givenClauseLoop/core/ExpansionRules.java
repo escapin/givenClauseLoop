@@ -41,7 +41,7 @@ public class ExpansionRules {
 	public static Clause binaryResolution(Clause c1, Literal l1, Clause c2, Literal l2){
 		if(c1!=c2){
 			Map<Variable, Term> sigma;
-			if( (sigma=Unifier.findMGU(l1.getArgs(), l2.getArgs(), false)) != null)
+			if( (sigma=Unifier.findMGU(l1.getArgs(), l2.getArgs())) != null)
 				return createResolvent(c1, l1, c2, l2, sigma);			
 		}
 		return null;
@@ -66,10 +66,10 @@ public class ExpansionRules {
 		// create a new clause that becomes the factor
 		Clause newClause = new Clause();
 		for(Literal l3: c1.getLiterals())
-			if(l1!=l3)
+			if(l3!=l1)
 				newClause.addLiteral(Substitution.substitute(l3, sigma, varMap));
 		for(Literal l4: c2.getLiterals())
-			if(l2!=l4)
+			if(l4!=l2)
 				newClause.addLiteral(Substitution.substitute(l4, sigma, varMap));
 		return newClause;
 	}
@@ -110,7 +110,7 @@ public class ExpansionRules {
 		Map<Variable, Term> sigma;
 		// iter on all the predicates with than name in this clause
 		if( l1!=l2 && alreadyFactorised.get(l2)!=l1 && 
-			(sigma=Unifier.findMGU(l1.getArgs(), l2.getArgs(), true)) != null){
+			(sigma=Unifier.findMGU(l1.getArgs(), l2.getArgs())) != null){
 			/*
 			System.out.println(c);
 			StringBuffer s = new StringBuffer();

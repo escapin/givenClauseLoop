@@ -45,8 +45,21 @@ public class ResearchPlan {
 			givenClause=toBeSelected.pollFirst();
 			selected.add(givenClause);
 			
-			System.out.print("\r" + toBeSelected.size() + "\t\t\t" + selected.size());
+			System.out.print("\r" + toBeSelected.size() + ".........................." + selected.size() + "      ");
 			/*
+			if(toBeSelected.size()==9 && selected.size()==10){
+				System.out.println("\nTO BE SELECTED\n");
+				Iterator<Clause> it1 = toBeSelected.iterator();
+				Iterator<Clause> it2 = selected.iterator();
+				while(it1.hasNext())
+					System.out.println(it1.next());
+				System.out.println("\n\nSELECTED\n");
+				while(it2.hasNext())
+					System.out.println(it2.next());
+				System.out.println("\n\n");
+			}
+			// "\r" backspace
+		
 			System.out.print(toBeSelected.size() + "\t");
 			if(i%15==0)
 				System.out.println();
@@ -69,7 +82,7 @@ public class ResearchPlan {
 								if(lType==LoopType.OTTER_LOOP && contractionRules(cNew, toBeSelected))
 										return info;
 								if(cNew!=null)
-									toBeSelected.add(cNew);
+									toBeSelected.add(cNew);		
 							}
 							else
 								info.nTautology++;
@@ -79,7 +92,7 @@ public class ResearchPlan {
 			// FIND BINARY RESOLVENTS
 			toBeRemoved = new HashSet<Clause>();
 			for(Clause cSel: selected)
-				if(!toBeRemoved.contains(cSel))
+				if(givenClause!=cSel && !toBeRemoved.contains(cSel))
 					for(Literal l1: givenClause.getLiterals())
 						if( (lMap=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null )
 							for(Literal l2: lMap){
@@ -100,8 +113,18 @@ public class ResearchPlan {
 											return info;
 										if(lType==LoopType.OTTER_LOOP && contractionRules(cNew, toBeSelected))
 												return info;
-										if(cNew!=null)
+										if(cNew!=null){
+											/*
+											if(selected.size()==20){ // toBeSelected.size()==7 && 
+												System.out.println("\n" + givenClause);
+												System.out.println(l1);
+												System.out.println(cSel);
+												System.out.println(l2 + "\n");
+												System.out.println(cNew + "\n");
+											}
+											*/
 											toBeSelected.add(cNew);
+										}
 									}
 									else
 										info.nTautology++;

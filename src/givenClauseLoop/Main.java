@@ -68,6 +68,7 @@ public class Main {
 			}
 		}
 		*/	
+		System.out.println("\nClauses inserted: " + clauses.size());
 		System.out.println();
 		InfoLoop info=ResearchPlan.givenClauseLoop(clauses, LoopType.E_LOOP);
 		System.out.println("\n");
