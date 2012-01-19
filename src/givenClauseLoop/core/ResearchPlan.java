@@ -29,7 +29,7 @@ public class ResearchPlan {
 			else {
 				selected.add(givenClause);
 					
-				// FIND FACTOR
+				// FIND FACTORS
 				alreadyFactorised = new HashMap<Literal, Literal>(); // in order to avoid double factorisations
 				for(Literal l1: givenClause.getLiterals())
 					if( (lMap=givenClause.getLitMap().get( (l1.sign()? "": "~") + l1.getSymbol()) ) != null)
@@ -54,7 +54,7 @@ public class ResearchPlan {
 							}
 						}	
 				
-				// FIND BINARY RESOLVENT
+				// FIND BINARY RESOLVENTS
 				Set<Clause> toBeRemoved = new HashSet<Clause>();
 				for(Clause cSel: selected){
 					for(Literal l1: givenClause.getLiterals())
@@ -90,9 +90,18 @@ public class ResearchPlan {
 		return info;
 	}
 	
+	/**
+	 * 
+	 * @param cNew the clause with which the contractionRules should be applied. If it has to be removed, it will became null.
+	 * @param clauseSet
+	 * @return true if the empty clause is found, false otherwise
+	 */
 	private static boolean contractionRules(Clause cNew, NavigableSet<Clause> clauseSet){
 		if(cNew!=null){
-			for(Clause cSel: clauseSet){
+			Iterator<Clause> iter = clauseSet.iterator();
+			Clause cSel;
+			while(iter.hasNext()){
+				cSel=iter.next();
 				// SIMPLIFICATIONS
 				if(cNew.simplify(cSel)!=null){
 					info.nSimplifications++;
@@ -110,7 +119,8 @@ public class ResearchPlan {
 				// SUBSUMPTIONS
 				if(cNew.subsumes(cSel)){
 					info.nSubsumptions++;
-					clauseSet.remove(cSel); // ???
+					iter.remove(); 	// Removes from the clauseSet collection the last element returned by the iterator
+									// is like clauseSet.remove(cSel);
 				} else if (cSel.subsumes(cNew)){
 					info.nSubsumptions++;
 					cNew=null; // cNew does not have to be considered

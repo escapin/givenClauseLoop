@@ -53,20 +53,25 @@ public class Main {
 				s.append(v.toString() + "  ");
 			System.out.println(s);
 		}
+		Iterator<Clause> iter1 = clauses.iterator();
+		Iterator<Clause> iter2 = clauses.iterator();
+		System.out.println("\n" + ((iter1==iter2)? "true" : "false"));
+		Clause c1, c2;
+		while(iter1.hasNext()){
+			c1=iter1.next();
+			iter2 = clauses.iterator();
+			while(iter2.hasNext()){
+				c2=iter2.next();
+				System.out.println(c1 + "\t" + c2);
+			}
+		}
+			
 		/*
-		Clause c;
-		while(!clauses.isEmpty()){
-			c=clauses.pollFirst();
-			System.out.println(c);
-			s = new StringBuffer();
-			for(Variable v: c.findVariables())
-				s.append(v.toString() + "  ");
-			System.out.println(s);
-		}*/
 		InfoLoop info=ResearchPlan.OtterLoop(clauses);
 		if(info.res==LoopResult.SAT)
 			System.out.println("SAT");
 		else
 			System.out.println("UNSAT");
+		*/
 	}
 }

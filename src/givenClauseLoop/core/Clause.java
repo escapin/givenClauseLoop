@@ -118,20 +118,20 @@ public class Clause implements Comparable<Clause>{
 			}
 			// STEP 2-3-4
 			*/
-			AbstractQueue<Clause> Uset = new PriorityQueue<Clause>();
+			NavigableSet<Clause> Uset = new TreeSet<Clause>();
 			Uset.add(this);
 			return checkSubsumption(Uset, c);
 		}
 		return false;
 	}	
 	
-	private boolean checkSubsumption(AbstractQueue<Clause> Uset, Clause c){
+	private boolean checkSubsumption(NavigableSet<Clause> Uset, Clause c){
 		if(Uset==null || Uset.size()==0)
 			return false;
 		else if(emptyClause(Uset))
 			return true;
 		else {
-			AbstractQueue<Clause> Uset1 = new PriorityQueue<Clause>();
+			NavigableSet<Clause> Uset1 = new TreeSet<Clause>();
 			Set<Literal> lMap;
 			Map<Variable, Term> sigma;
 			Clause cNew;
@@ -164,7 +164,7 @@ public class Clause implements Comparable<Clause>{
 		*/
 	}
 	
-	private boolean emptyClause(AbstractQueue<Clause> clSet){
+	private boolean emptyClause(NavigableSet<Clause> clSet){
 		for(Clause c: clSet)
 			if(c.nLiterals()==0)
 				return true;
