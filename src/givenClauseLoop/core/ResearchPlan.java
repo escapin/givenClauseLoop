@@ -1,6 +1,7 @@
 package givenClauseLoop.core;
 
 import givenClauseLoop.bean.InfoLoop;
+import givenClauseLoop.bean.Literal;
 import givenClauseLoop.bean.LoopResult;
 import java.util.*;
 
@@ -10,52 +11,116 @@ public class ResearchPlan {
 
 	public static InfoLoop OtterLoop(NavigableSet<Clause> toBeSelected){
 		NavigableSet<Clause> selected = new TreeSet<Clause>();
+		
 		info = new InfoLoop();
 		info.clausesGenerated=toBeSelected.size();
 		
 		NavigableSet<Clause> newClauses;
-		Clause givenClause;
-		
+		Clause givenClause,
+			   cNew;
+		Set<Literal> lMap;
+		Map<Literal, Literal> alreadyFactorised;
 		while(!toBeSelected.isEmpty()){ // GIVEN CLAUSE LOOP
+			
 			givenClause=toBeSelected.pollFirst();
 			
-			if(!givenClause.isEmpty())
-				if(givenClause.isTautology()) // TAUTOLOGY
-					info.nTautology++;
-				else {
-					selected.add(givenClause);
+			if(givenClause.isTautology()) // TAUTOLOGY
+				info.nTautology++;
+			else {
+				selected.add(givenClause);
 					
-					// APPLIED FACTORISATION
-					newClauses=ExpansionRules.factorisation(givenClause);
-					info.nFactorisations += newClauses.size();
-					info.clausesGenerated += newClauses.size(); 
-					// CONTRACTION RULES
-					if(contractionRules(newClauses, toBeSelected, selected))
-						return info;
-					
-					// ADD CLAUSES GENERATED in TO_BE_SELECTED
-					if(newClauses.size()!=0)
-						toBeSelected.addAll(newClauses);
-					
-					// APPLIED BINARY_RESOLUTION
-					for(Clause cSel: selected){
-						newClauses=ExpansionRules.binaryResolution(givenClause, cSel);
-						info.nResolutions += newClauses.size();
-						info.clausesGenerated += newClauses.size();
-						// CONTRACTION RULES
-						if(contractionRules(newClauses, toBeSelected, selected))
-							return info;
-					}
-					// ADD CLAUSES GENERATED in TO_BE_SELECTED
-					if(newClauses.size()!=0)
-						toBeSelected.addAll(newClauses);
+				// FIND FACTOR
+				alreadyFactorised = new HashMap<Literal, Literal>(); // in order to avoid double factorisations
+				for(Literal l1: givenClause.getLiterals())
+					if( (lMap=givenClause.getLitMap().get( (l1.sign()? "": "~") + l1.getSymbol()) ) != null)
+						for(Literal l2: lMap){
+							cNew=ExpansionRules.factorisation(givenClause, l1, l2, alreadyFactorised);
+							if(cNew!=null){ // a factor has been found
+								info.nFactorisations++;
+								info.clausesGenerated++;
+								if(cNew.isEmpty()){
+									info.res = LoopResult.UNSAT;
+									return info;
+								}
+								if(!cNew.isTautology()){	
+									// CONTRACTION RULES
+									if(contractionRules(cNew, selected))
+										return info;
+									if(contractionRules(cNew, toBeSelected))
+										return info;
+									if(cNew!=null)
+										toBeSelected.add(cNew);
+								}
+							}
+						}	
+				
+				// FIND BINARY RESOLVENT
+				Set<Clause> toBeRemoved = new HashSet<Clause>();
+				for(Clause cSel: selected){
+					for(Literal l1: givenClause.getLiterals())
+						if( (lMap=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null )
+							for(Literal l2: lMap){
+								cNew=ExpansionRules.binaryResolution(givenClause, l1, cSel, l2);
+								if(cNew!=null){
+									info.nResolutions++;
+									info.clausesGenerated++;
+									if(cNew.isEmpty()){
+										info.res = LoopResult.UNSAT;
+										return info;
+									}
+									if(!cNew.isTautology()){
+										// CONTRACTION RULES
+										if(contractionRules(cNew, selected, toBeRemoved)) // ???
+											return info;
+										if(contractionRules(cNew, toBeSelected))
+											return info;
+										if(cNew!=null)
+											toBeSelected.add(cNew);
+									}
+								}
+									
+							}
 				}
+				for(Clause rmCl: toBeRemoved)
+					selected.remove(rmCl);
+			}
 		}
 		//info.clausesNotSelected = (toBeSelected.isEmpty())? 0: info.clausesGenerated - selected.size();
 		info.res = (toBeSelected.isEmpty())? LoopResult.SAT : LoopResult.TIME_EXPIRED;
 		return info;
 	}
 	
+	private static boolean contractionRules(Clause cNew, NavigableSet<Clause> clauseSet){
+		if(cNew!=null){
+			for(Clause cSel: clauseSet){
+				// SIMPLIFICATIONS
+				if(cNew.simplify(cSel)!=null){
+					info.nSimplifications++;
+					if(cNew.isEmpty()){ // empty clause generated
+						info.res = LoopResult.UNSAT;
+						return true;
+					}
+				} else if(cSel.simplify(cNew)!=null){
+					info.nSimplifications++;
+					if(cSel.isEmpty()){	// empty clause generated
+						info.res = LoopResult.UNSAT;
+						return true;
+					}
+				}
+				// SUBSUMPTIONS
+				if(cNew.subsumes(cSel)){
+					info.nSubsumptions++;
+					clauseSet.remove(cSel); // ???
+				} else if (cSel.subsumes(cNew)){
+					info.nSubsumptions++;
+					cNew=null; // cNew does not have to be considered
+				}
+			}
+		}
+		return false;
+	}
+	
+	/*
 	private static boolean contractionRules(NavigableSet<Clause> newClauses, NavigableSet<Clause> toBeSelected, 
 			NavigableSet<Clause> selected){
 		boolean clauseRemoved;
@@ -116,4 +181,5 @@ public class ResearchPlan {
 		}
 		return false;
 	}
+	*/
 }
