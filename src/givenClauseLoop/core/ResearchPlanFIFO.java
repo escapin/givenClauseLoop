@@ -8,13 +8,16 @@ import givenClauseLoop.bean.RuleEmptyClause;
 
 import java.util.*;
 
-public class ResearchPlan {
+public class ResearchPlanFIFO {
 	
 	public static InfoLoop info;
 
 	public static InfoLoop givenClauseLoop(NavigableSet<Clause> toBeSelected, LoopType lType){
-		NavigableSet<Clause> selected = new TreeSet<Clause>();
+		LinkedList<Clause> selected = new LinkedList<Clause>();
 		
+		LinkedList<Clause> list = new LinkedList<Clause>();
+		for(Clause c: toBeSelected)
+			list.add(c);
 		
 		Clause givenClause,
 				cNew;
@@ -25,9 +28,9 @@ public class ResearchPlan {
 		
 		
 		info = new InfoLoop();
-		info.clausesGenerated=toBeSelected.size();
+		info.clausesGenerated=list.size();
 		
-		Iterator<Clause> iter = toBeSelected.iterator();
+		Iterator<Clause> iter = list.iterator();
 		while(iter.hasNext()){
 			givenClause = iter.next();
 			if(givenClause.isEmpty())
@@ -39,19 +42,18 @@ public class ResearchPlan {
 		}
 				
 		
-		
 		System.out.println("ITERS\tTO BE SELECTED" + "\t\t" + "SELECTED");
 		int i=0;
-		while(!toBeSelected.isEmpty()){ // GIVEN CLAUSE LOOP
-			givenClause=toBeSelected.pollFirst();
+		while(!list.isEmpty()){ // GIVEN CLAUSE LOOP
+			givenClause=list.removeFirst();
 			selected.add(givenClause);
 			
 			i++;
 			System.out.print("\r" + i + ")  " + toBeSelected.size() + ".........................." + selected.size() + "      ");
 			/*
-			if(toBeSelected.size()==9 && selected.size()==10){
+			if(list.size()==9 && selected.size()==10){
 				System.out.println("\nTO BE SELECTED\n");
-				Iterator<Clause> it1 = toBeSelected.iterator();
+				Iterator<Clause> it1 = list.iterator();
 				Iterator<Clause> it2 = selected.iterator();
 				while(it1.hasNext())
 					System.out.println(it1.next());
@@ -62,7 +64,7 @@ public class ResearchPlan {
 			}
 			// "\r" backspace
 		
-			System.out.print(toBeSelected.size() + "\t");
+			System.out.print(list.size() + "\t");
 			if(i%15==0)
 				System.out.println();
 			i++;
@@ -81,10 +83,10 @@ public class ResearchPlan {
 								// CONTRACTION RULES
 								if(contractionRules(cNew, selected))
 									return info;
-								if(lType==LoopType.OTTER_LOOP && contractionRules(cNew, toBeSelected))
-									return info;
+								if(lType==LoopType.OTTER_LOOP && contractionRules(cNew, list))
+										return info;
 								if(cNew!=null)
-									toBeSelected.add(cNew);		
+									list.add(cNew);		
 							}
 							else
 								info.nTautology++;
@@ -94,11 +96,10 @@ public class ResearchPlan {
 			// FIND BINARY RESOLVENTS
 			toBeRemoved = new HashSet<Clause>();
 			for(Clause cSel: selected)
-				if(!toBeRemoved.contains(cSel))
+				if(givenClause!=cSel && !toBeRemoved.contains(cSel))
 					for(Literal l1: givenClause.getLiterals())
-						if( !toBeRemoved.contains(cSel) && (lMap=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null )
+						if( (lMap=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null )
 							for(Literal l2: lMap){
-								cNew=null;
 								cNew=ExpansionRules.binaryResolution(givenClause, l1, cSel, l2);
 								if(cNew!=null){ // a binary resolvent has been found
 									info.nResolutions++;
@@ -114,21 +115,21 @@ public class ResearchPlan {
 										// CONTRACTION RULES
 										if(contractionRules(cNew, selected, toBeRemoved))
 											return info;
-										if(lType==LoopType.OTTER_LOOP && contractionRules(cNew, toBeSelected))
+										if(lType==LoopType.OTTER_LOOP && contractionRules(cNew, list))
 											return info;
 										if(cNew!=null)
-											toBeSelected.add(cNew);
-									} else
+											list.add(cNew);
+									}
+									else
 										info.nTautology++;
-								}
-									
+								}		
 							}
-			for(Clause rmCl: toBeRemoved)
-				selected.remove(rmCl);
+				for(Clause rmCl: toBeRemoved)
+					selected.remove(rmCl);
 		} // END OF GIVEN CLAUSE LOOP
 		
-		//info.clausesNotSelected = (toBeSelected.isEmpty())? 0: info.clausesGenerated - selected.size();
-		info.res = (toBeSelected.isEmpty())? LoopResult.SAT : LoopResult.TIME_EXPIRED;
+		//info.clausesNotSelected = (list.isEmpty())? 0: info.clausesGenerated - selected.size();
+		info.res = (list.isEmpty())? LoopResult.SAT : LoopResult.TIME_EXPIRED;
 		return info;
 	}
 	
@@ -138,7 +139,7 @@ public class ResearchPlan {
 	 * @param clauseSet
 	 * @return true if the empty clause is found, false otherwise
 	 */
-	private static boolean contractionRules(Clause cNew, NavigableSet<Clause> clauseSet){
+	private static boolean contractionRules(Clause cNew, List<Clause> clauseSet){
 		if(cNew!=null){
 			Iterator<Clause> iter = clauseSet.iterator();
 			Clause 	cSel,
@@ -191,7 +192,7 @@ public class ResearchPlan {
 	 * @param clauseSet
 	 * @return true if the empty clause is found, false otherwise
 	 */
-	private static boolean contractionRules(Clause cNew, NavigableSet<Clause> clauseSet, Set<Clause> toBeRemoved){
+	private static boolean contractionRules(Clause cNew, List<Clause> clauseSet, Set<Clause> toBeRemoved){
 		if(cNew!=null){
 			for(Clause cSel: clauseSet)
 				if(!toBeRemoved.contains(cSel)){
@@ -234,69 +235,4 @@ public class ResearchPlan {
 		}
 		return false;
 	}
-	
-	
-	
-	/*
-	private static boolean contractionRules(NavigableSet<Clause> newClauses, NavigableSet<Clause> toBeSelected, 
-			NavigableSet<Clause> selected){
-		boolean clauseRemoved;
-		for(Clause cNew: newClauses){
-			clauseRemoved=false;
-			if(cNew.isEmpty()){ // empty clause generated
-				info.res = LoopResult.UNSAT;
-				return true;
-			} else if(cNew.isTautology()){ // TAUTOLOGY
-				info.nTautology++;
-				newClauses.remove(cNew);
-				clauseRemoved=true;
-			} else{
-				// CONTRACTION RULES with SELECTED QUEUE
-				clauseRemoved=simplSubsRules(cNew, selected);
-				if(info.res==LoopResult.UNSAT)
-					return true;
-				if(clauseRemoved)
-					newClauses.remove(cNew);
-				else {
-					// CONTRACTION RULES with TO_BE_SELECTED QUEUE
-					clauseRemoved=simplSubsRules(cNew, toBeSelected);
-					if(info.res==LoopResult.UNSAT)
-						return true;
-					if(clauseRemoved)
-						newClauses.remove(cNew);
-				}
-			}
-		}
-		return false;
-	}
-	
-	private static boolean simplSubsRules(Clause cNew, NavigableSet<Clause> clauseSet){
-		//NavigableSet<Clause> newClSet ;
-		for(Clause cSel: clauseSet){
-				// SIMPLIFICATIONS
-				if(cNew.simplify(cSel)!=null){
-					info.nSimplifications++;
-					if(cNew.isEmpty()){ // empty clause generated
-						info.res = LoopResult.UNSAT;
-						return false;
-					}
-				} else if(cSel.simplify(cNew)!=null){
-					info.nSimplifications++;
-					if(cSel.isEmpty()){	// empty clause generated
-						info.res = LoopResult.UNSAT;
-						return false;
-					}
-				}
-				// SUBSUMPTIONS
-				if(cNew.subsumes(cSel)){
-					info.nSubsumptions++;
-					clauseSet.remove(cSel);
-				} else if (cSel.subsumes(cNew)){
-					info.nSubsumptions++;
-					return true;
-				}
-		}
-		return false;
-	}
-	*/
 }

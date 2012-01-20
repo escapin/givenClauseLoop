@@ -209,11 +209,34 @@ public class Clause implements Comparable<Clause>{
 	public int compareTo(Clause f){
 		return this.nSymbols()-f.nSymbols();
 	}
-	/**
-	 * The equals() and hashCode() methods are inherited from object,
-	 * since every time we create a new Clause object, it must be different
-	 * from the others.
-	 */
+	
+	/*
+	public boolean equals(Object o){
+		if(this==o)
+			return true;
+		if(o instanceof Clause){
+			Clause c = (Clause) o;
+			if(this.nLiterals()==c.nLiterals()){
+				boolean litFound=false;
+				Set<Literal> setLit;
+				for(Literal l1: this.getLiterals()){
+					litFound=false;
+					if((setLit=c.getLitMap().get( (l1.sign()? "": "~") + l1.getSymbol()) ) != null )
+						for(Literal l2: setLit)
+							if(l1.toString().equals(l2.toString())){
+								litFound=true;
+								break;
+							}
+						if(!litFound)
+							return false;
+					}
+				return true;
+			}
+		}
+		return false;
+	}
+	*/
+	
 	
 	/**
 	 * Clone this clause and all the objects inside (apart from constants).

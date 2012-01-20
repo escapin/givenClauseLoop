@@ -27,28 +27,7 @@ public class Unifier {
 		return cascadeSubstitution(sigma);
 	}
 	
-	/**
-	 * Returns a Map<Variable, Term> representing the most general unifier, MGU (i.e. 
-	 * a set of variable/term pairs) or null which is used to indicate a failure to
-	 * find MGU.
-	 * The third parameter allows to specify if the two lists are composed by terms 
-	 * coming from the same clause or not. This can save a lot of time because 
-	 * cascadeSubstitution method is onerous.
-	 * 
-	 * @param arg1 the terms' list of the first predicate
-	 * @param arg2 the terms' list of the second predicate
-	 * @param sameClause true iff the two lists are composed by terms coming from the same clause 
-	 * @return a Map<Variable, Term> representing the substitution (i.e. a set
-	 *         of variable/term pairs) or null which is used to indicate a
-	 *         failure to find MGU.
-	 
-	public static Map<Variable, Term> findMGU(List<Term> arg1, List<Term> arg2, boolean sameClause){
-		Map<Variable, Term> sigma = new HashMap<Variable, Term>();
-		sigma = unify(arg1, arg2, sigma);
-		return (sameClause)? cascadeSubstitution(sigma): sigma;
-		//return cascadeSubstitution(sigma);
-	}
-	*/
+	
 	
 	/**
 	 * Returns a Map<Variable, Term> representing the left-substitution (i.e. a set
@@ -68,37 +47,11 @@ public class Unifier {
 			Map<Variable, Term> sigma = new HashMap<Variable, Term>();
 			for(int i=0;i<arg1.size();i++)
 				sigma=unifyLeft(arg1.get(i), arg2.get(i), sigma);
-			return cascadeSubstitution(sigma);
+			return sigma;
 		}
 	}
 	
-	/**
-	 * Returns a Map<Variable, Term> representing the left-substitution (i.e. a set
-	 * of variable/term pairs) or null which is used to indicate a failure to
-	 * unify.
-	 * The third parameter allows to specify if the two lists are composed by terms 
-	 * coming from the same clause or not. This can save a lot of time because 
-	 * cascadeSubstitution method is onerous.
-	 * 
-	 * @param arg1 the terms' list of the first predicate
-	 * @param arg2 the terms' list of the first predicate
-	 * @param sameClause true iff the two lists are composed by terms coming from the same clause 
-	 * @return a Map<Variable, Term> representing the substitution (i.e. a set
-	 *         of variable/term pairs) or null which is used to indicate a
-	 *         failure to unify.
 	
-	public static Map<Variable, Term> findLeftSubst(List<Term> arg1, List<Term> arg2, boolean sameClause){
-		if(arg1==null || arg2==null || arg1.size()!=arg2.size())
-			return null;
-		else{
-			Map<Variable, Term> sigma = new HashMap<Variable, Term>();
-			for(int i=0;i<arg1.size();i++)
-				sigma=unifyLeft(arg1.get(i), arg2.get(i), sigma);
-			return (sameClause)? cascadeSubstitution(sigma): sigma;
-			//return cascadeSubstitution(sigma);
-		}
-	}
-	 */
 	/**
 	 * Returns a Map<Variable, Term> representing the substitution (i.e. a set
 	 * of variable/term pairs) or null which is used to indicate a failure to
