@@ -103,7 +103,7 @@ public class Clause implements Comparable<Clause>{
 	}
 	
 	public boolean subsumes(Clause c){
-		if(this.nLiterals()>0 && this!=c && this.nLiterals()<=c.nLiterals()){
+		if(this!=c && this.nLiterals()>0 && this.nLiterals()<=c.nLiterals()){
 			// STEP 1 Subsumption Algorithm in Chang Lee books page 95
 			/*
 			Map<Variable, Term> sigma = new HashMap<Variable, Term>();
@@ -185,7 +185,7 @@ public class Clause implements Comparable<Clause>{
 	 * @return the literal deleted if a semplification was made, null otherwise.
 	 */
 	public Literal simplify(Clause c){
-		if(c.nLiterals()==1){
+		if(this!=c && c.nLiterals()==1){
 			Set<Literal> setLit;
 			for(Literal lOth: c.getLiterals()) // only one literal
 				if ( (setLit = litMap.get( (lOth.sign()? "~": "") + lOth.getSymbol()) ) != null) // the opposite
@@ -217,14 +217,16 @@ public class Clause implements Comparable<Clause>{
 		if(o instanceof Clause){
 			Clause c = (Clause) o;
 			if(this.nLiterals()==c.nLiterals()){
-				boolean litFound=false;
-				Set<Literal> setLit;
+				boolean litFound;
+				Set<Literal> setLit,
+							 alreadyMatched = new HashSet<Literal>();
 				for(Literal l1: this.getLiterals()){
 					litFound=false;
 					if((setLit=c.getLitMap().get( (l1.sign()? "": "~") + l1.getSymbol()) ) != null )
 						for(Literal l2: setLit)
-							if(l1.toString().equals(l2.toString())){
+							if(!alreadyMatched.contains(l2) && l1.toString().equals(l2.toString())){
 								litFound=true;
+								alreadyMatched.add(l2);
 								break;
 							}
 						if(!litFound)

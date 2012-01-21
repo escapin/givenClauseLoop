@@ -14,16 +14,16 @@ public class ResearchPlan {
 	private static NavigableSet<Clause> toBeSelected;
 	private static NavigableSet<Clause> selected;
 	
-
+	static boolean flag=false;
+	
 	public static InfoLoop givenClauseLoop(NavigableSet<Clause> toBeSel, LoopType lType){
 		info = new InfoLoop();
 		toBeSelected = toBeSel;
 		selected = new TreeSet<Clause>();
+		info.clausesGenerated=toBeSelected.size();
 		info.loopType=lType;
 		
 		Clause givenClause;
-		
-		info.clausesGenerated=toBeSelected.size();
 		
 		Iterator<Clause> iter = toBeSelected.iterator();
 		while(iter.hasNext()){
@@ -34,8 +34,7 @@ public class ResearchPlan {
 				info.nTautology++;
 				iter.remove();
 			}
-		}
-		givenClause=null;		
+		}		
 		
 		/*
 		if(toBeSelected.size()==9 && selected.size()==10){
@@ -62,10 +61,13 @@ public class ResearchPlan {
 		int i=0;
 		
 		while(!toBeSelected.isEmpty()){ // GIVEN CLAUSE LOOP
-			givenClause=toBeSelected.pollFirst();
-			selected.add(givenClause);
 			i++;
 			System.out.print("\r" + i + ")  " + toBeSelected.size() + ".........................." + selected.size() + "      ");
+			
+			givenClause=toBeSelected.pollFirst();
+			selected.add(givenClause);
+			
+			flag=false;
 			
 			// FIND FACTORS
 			if(findFactors(givenClause))
@@ -73,6 +75,22 @@ public class ResearchPlan {
 			// FIND BINARY RESOLVENTS
 			if(findResolvents(givenClause))
 				return info;
+			
+			if(flag){
+				System.out.println("\nTO BE SELECTED OUT:");
+				for(Clause c: selected)
+					System.out.println(c);
+				System.out.println("\n\n");
+				
+				System.out.println("\nSELECTED OUT:");
+				for(Clause c: selected)
+					System.out.println(c);
+				System.out.println("\n");
+				
+				flag=false;
+			}
+			
+			
 		} // END OF GIVEN CLAUSE LOOP
 		
 		//info.clausesNotSelected = (toBeSelected.isEmpty())? 0: info.clausesGenerated - selected.size();
@@ -82,7 +100,6 @@ public class ResearchPlan {
 	
 	
 	private static boolean findFactors(Clause givenClause){
-		// FIND FACTORS
 		Clause cNew;
 		Set<Literal> lMap;
 		Map<Literal, Literal> alreadyFactorised = new HashMap<Literal, Literal>(); // in order to avoid double factorisations
@@ -94,11 +111,11 @@ public class ResearchPlan {
 						info.nFactorisations++;
 						info.clausesGenerated++;
 						if(!cNew.isTautology()){	
-							cNew=contractionRules(cNew, selected); // CONTRACTION RULES with selected
+							cNew=contractionRules(cNew, selected, null); // CONTRACTION RULES with selected
 							if(info.res==LoopResult.UNSAT)
 								return true;
 							if(cNew!=null && info.loopType==LoopType.OTTER_LOOP){
-								cNew=contractionRules(cNew, toBeSelected); // CONTRACTION RULES with toBeSelected									
+								cNew=contractionRules(cNew, toBeSelected, null); // CONTRACTION RULES with toBeSelected									
 								if(info.res==LoopResult.UNSAT)
 									return true;
 							}
@@ -117,15 +134,15 @@ public class ResearchPlan {
 		Set<Clause> toBeRemoved = new HashSet<Clause>();
 		Set<Literal> lMap;
 		for(Clause cSel: selected)
-			if(!toBeRemoved.contains(cSel))
+			if(givenClause!=cSel && !toBeRemoved.contains(cSel))
 				for(Literal l1: givenClause.getLiterals())
 					if( !toBeRemoved.contains(cSel) && (lMap=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null )
 						for(Literal l2: lMap){
-							cNew=null;
 							cNew=ExpansionRules.binaryResolution(givenClause, l1, cSel, l2);
 							if(cNew!=null){ // a binary resolvent has been found
 								info.nResolutions++;
 								info.clausesGenerated++;
+								//System.out.println("\t" + cNew);
 								if(cNew.isEmpty()){
 									info.c1=givenClause;
 									info.c2=cSel;
@@ -138,7 +155,7 @@ public class ResearchPlan {
 									if(info.res==LoopResult.UNSAT)
 										return true;
 									if(cNew!=null && info.loopType==LoopType.OTTER_LOOP){
-										cNew=contractionRules(cNew, toBeSelected); // CONTRACTION RULES with toBeSelected									
+										cNew=contractionRules(cNew, toBeSelected, null); // CONTRACTION RULES with toBeSelected									
 										if(info.res==LoopResult.UNSAT)
 											return true;
 									}
@@ -148,8 +165,10 @@ public class ResearchPlan {
 									info.nTautology++;
 							}
 						}
-		for(Clause rmCl: toBeRemoved)
+		for(Clause rmCl: toBeRemoved){
+			//System.out.println(rmCl);
 			selected.remove(rmCl);
+		}
 		return false;	
 	}
 	
@@ -160,14 +179,20 @@ public class ResearchPlan {
 	 * @param clauseSet
 	 * @return true if the empty clause is found, false otherwise
 	 */
-	private static Clause contractionRules(Clause cNew, NavigableSet<Clause> clauseSet){
+	private static Clause contractionRules(Clause cNew, NavigableSet<Clause> clauseSet, Set<Clause> toBeRemoved){
 		if(cNew!=null){
 			Iterator<Clause> iter = clauseSet.iterator();
-			Clause 	cSel,
+			Clause 	cSel=new Clause(),
 					cTemp;
 			Literal l;
+			boolean notToBeConsidered=false;
 			while(iter.hasNext()){
-				cSel=iter.next();
+				do{
+					cSel=iter.next();
+				}while(toBeRemoved!=null && (notToBeConsidered=toBeRemoved.contains(cSel)) && iter.hasNext());
+				if(notToBeConsidered && !iter.hasNext()) // if this element have not to be considered but there isn't other after
+					return cNew;
+				
 				// SIMPLIFICATIONS
 				if((l=cNew.simplify(cSel))!=null){
 					info.nSimplifications++;
@@ -193,14 +218,31 @@ public class ResearchPlan {
 					}
 				}
 				// SUBSUMPTIONS
-				if(cNew.subsumes(cSel)){
-					info.nSubsumptions++;
-					iter.remove(); 	// Removes from the clauseSet collection the last element returned by the iterator
-									// is like clauseSet.remove(cSel);
-				} else if (cSel.subsumes(cNew)){
+				if (cSel.subsumes(cNew)){
+					//System.out.println("\n" + cSel + " subsumes " + cNew);
 					info.nSubsumptions++;
 					return null;
+				} else if(cNew.subsumes(cSel)){
+					info.nSubsumptions++;
+					if(toBeRemoved!=null)
+						toBeRemoved.add(cSel);
+					else{
+						iter.remove(); 	// Removes from the clauseSet collection the last element returned by the iterator
+										// is like clauseSet.remove(cSel);
+						System.out.println("\n\n" + cNew + " SUBSUMES " + cSel + "\n\n");
+						flag=true;
+					}
+						//if(clauseSet.contains(cSel))
+						//System.out.println("\n" + cSel + "\t REMOVED");
+					//if(toBeRemoved!=null && toBeRemoved.contains(cSel))
+					//	System.out.println("toBeRemoved contains " + cSel);
 				}
+			}
+			if(flag){
+				System.out.println("\n");
+				for(Clause c: clauseSet)
+					System.out.println(c);
+				System.out.println("\n\n" + cNew);
 			}
 		}
 		return cNew;
@@ -211,7 +253,7 @@ public class ResearchPlan {
 	 * @param cNew the clause with which the contractionRules should be applied. If it has to be removed, it will became null.
 	 * @param clauseSet
 	 * @return true if the empty clause is found, false otherwise
-	 */
+	
 	private static Clause contractionRules(Clause cNew, NavigableSet<Clause> clauseSet, Set<Clause> toBeRemoved){
 		if(cNew!=null){
 			for(Clause cSel: clauseSet)
@@ -254,7 +296,7 @@ public class ResearchPlan {
 		}
 		return cNew;
 	}
-	
+	 */
 	
 	
 	/*

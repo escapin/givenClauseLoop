@@ -42,7 +42,14 @@ public class ExpansionRules {
 		if(c1!=c2){
 			Map<Variable, Term> sigma;
 			if( (sigma=Unifier.findMGU(l1.getArgs(), l2.getArgs())) != null)
+			{
+				/*System.out.println(l1 + "\t\t" + l2);
+				for(Variable v: sigma.keySet())
+					System.out.println(v + " <-- " + sigma.get(v));
+				System.out.println();*/
 				return createResolvent(c1, l1, c2, l2, sigma);			
+			}
+				
 		}
 		return null;
 	}

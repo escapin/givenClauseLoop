@@ -48,7 +48,7 @@ public class TestResolutionRule {
 		}
 		System.out.print("\n\n");
 		System.out.println("RESOLUTION:");
-		NavigableSet<Clause> qNew;
+		NavigableSet<Clause> qNew=new TreeSet<Clause>();
 		Map<Clause, Clause> alreadyConsidered = new HashMap<Clause, Clause>();
 		for(Clause c1: clauses)
 			for(Clause c2: clauses)
@@ -60,6 +60,15 @@ public class TestResolutionRule {
 					for(Clause c3: qNew)
 						System.out.println("\t" + c3);
 				}
+		
+		System.out.println();
+		for(Clause c1: clauses)
+			for(Clause c3: qNew)
+				if(c1.subsumes(c3))
+					System.out.println(c1 + "  subsumes " + c3);
+				else if(c3.subsumes(c1))
+					System.out.println(c1 + "  subsumes " + c3);
+		
 	}
 }
 
