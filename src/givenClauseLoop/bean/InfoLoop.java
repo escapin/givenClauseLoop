@@ -21,6 +21,8 @@ public class InfoLoop {
 					c2=null;
 	public RuleEmptyClause rule;
 	
+	public LoopType loopType;
+	
 	public InfoLoop(){
 		clausesRead=0;
 		clausesGenerated=0;
