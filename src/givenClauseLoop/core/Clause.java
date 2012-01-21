@@ -251,6 +251,7 @@ public class Clause implements Comparable<Clause>{
 	}
 	
 	public String toString(){
+		/*
 		if(literals.size()!=0){
 			StringBuffer s = new StringBuffer("[");
 			for(Literal p: literals)
@@ -260,6 +261,7 @@ public class Clause implements Comparable<Clause>{
 			return s.toString();
 		}
 		return "[]";
-			
+		*/
+		return literals.toString();
 	}
 }

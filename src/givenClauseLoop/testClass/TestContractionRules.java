@@ -8,7 +8,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.NavigableSet;
+import java.util.*;
 
 public class TestContractionRules {
 
@@ -27,7 +27,7 @@ public class TestContractionRules {
 			throw new IOException("Failed to open the file.");
 		}
 		//System.out.println(input);
-		NavigableSet<Clause> clauses=null;
+		Queue<Clause> clauses=null;
 		try{
 			//PARSING
 			clauses= Parser.parsing(input);

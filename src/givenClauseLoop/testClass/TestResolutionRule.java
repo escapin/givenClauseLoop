@@ -9,7 +9,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.NavigableSet;
+import java.util.*;
 
 public class TestResolutionRule {
 
@@ -30,7 +30,7 @@ public class TestResolutionRule {
 			throw new IOException("Failed to open the file.");
 		}
 		//System.out.println(input);
-		NavigableSet<Clause> clauses=null;
+		Queue<Clause> clauses=null;
 		try{
 			//PARSING
 			clauses= Parser.parsing(input);
@@ -38,6 +38,11 @@ public class TestResolutionRule {
 			System.out.println(e.getMessage());
 		}
 		
+		System.out.println("clauses: " + clauses.size());
+		for(Clause c: clauses)
+			System.out.println(c);
+		
+		/*
 		StringBuffer s;
 		for(Clause c: clauses){
 			System.out.println(c);
@@ -46,6 +51,7 @@ public class TestResolutionRule {
 				s.append(v.toString() + "  ");
 			System.out.println(s);
 		}
+		*/
 		System.out.print("\n\n");
 		System.out.println("RESOLUTION:");
 		NavigableSet<Clause> qNew=new TreeSet<Clause>();
@@ -59,9 +65,10 @@ public class TestResolutionRule {
 					qNew=ExpansionRules.binaryResolution(c1, c2);
 					for(Clause c3: qNew)
 						System.out.println("\t" + c3);
+						
 				}
 		
-		System.out.println();
+		System.out.println("\n");
 		for(Clause c1: clauses)
 			for(Clause c3: qNew)
 				if(c1.subsumes(c3))

@@ -11,13 +11,13 @@ import java.util.*;
 public class ResearchPlan {
 	
 	private static InfoLoop info;
-	private static NavigableSet<Clause> toBeSelected;
-	private static NavigableSet<Clause> selected;
+	private static Collection<Clause> toBeSelected;
+	private static Collection<Clause> selected;
 	
-	public static InfoLoop givenClauseLoop(NavigableSet<Clause> toBeSel, LoopType lType){
+	public static InfoLoop givenClauseLoop(Queue<Clause> toBeSel, LoopType lType){
 		info = new InfoLoop();
 		toBeSelected = toBeSel;
-		selected = new TreeSet<Clause>();
+		selected = new HashSet<Clause>();
 		info.clausesGenerated=toBeSelected.size();
 		info.loopType=lType;
 		
@@ -25,9 +25,7 @@ public class ResearchPlan {
 		
 		for(Iterator<Clause> iter = toBeSelected.iterator(); iter.hasNext(); ){
 			givenClause = iter.next();
-			if(givenClause.isEmpty())
-				iter.remove();
-			else if(givenClause.isTautology()){
+			if(givenClause.isTautology()){
 				info.nTautology++;
 				iter.remove();
 			}
@@ -40,7 +38,7 @@ public class ResearchPlan {
 			i++;
 			//System.out.print("\r" + i + ")  " + toBeSelected.size() + ".........................." + selected.size() + "      ");
 			
-			givenClause=toBeSelected.pollFirst();
+			givenClause=((Queue<Clause>) toBeSelected).poll();
 			selected.add(givenClause);
 			System.out.print("\r" + i + ")  " + toBeSelected.size() + ".........................." + selected.size() + "      ");
 			
@@ -72,6 +70,7 @@ public class ResearchPlan {
 						info.nFactorisations++;
 						info.clausesGenerated++;
 						if(!cNew.isTautology()){	
+							
 							cNew=contractionRules(cNew, selected, null); // CONTRACTION RULES with selected
 							if(info.res==LoopResult.UNSAT)
 								return true;
@@ -82,6 +81,7 @@ public class ResearchPlan {
 							}
 							if(cNew!=null)
 								toBeSelected.add(cNew);		
+								
 						}
 						else
 							info.nTautology++;
@@ -130,6 +130,7 @@ public class ResearchPlan {
 											if(info.res==LoopResult.UNSAT)
 												return true;
 										}
+										
 										if(cNew!=null)
 											toBeSelected.add(cNew);
 									} else
@@ -166,7 +167,7 @@ public class ResearchPlan {
 	 * @param clauseSet
 	 * @return true if the empty clause is found, false otherwise
 	 */
-	private static Clause contractionRules(Clause cNew, NavigableSet<Clause> clauseSet, Set<Clause> toBeRemoved){
+	private static Clause contractionRules(Clause cNew, Collection<Clause> clauseSet, Set<Clause> toBeRemoved){
 		if(cNew!=null){
 			Clause 	cSel=new Clause(),
 					cTemp;
@@ -217,7 +218,7 @@ public class ResearchPlan {
 						for(Clause c: toBeRemoved)
 							System.out.println("\t" + c);*/
 					}else
-						iter.remove(); 	// Removes from the clauseSet collection the last element returned by the iterator
+						iter.remove(); 	// Removes from the clauseSet Queue the last element returned by the iterator
 										// is like clauseSet.remove(cSel);	
 				} 
 			}		

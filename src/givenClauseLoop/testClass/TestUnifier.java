@@ -25,7 +25,7 @@ public class TestUnifier {
 		boolean sameClause=false;
 		
 		List<Term>[] lar=new List[2];
-		lar=Parser.getArguments(arg1, arg2, sameClause);
+		//lar=Parser.getArguments(arg1, arg2, sameClause);
 		/**
 			for(Term t: lar[0])
 				System.out.println(t);

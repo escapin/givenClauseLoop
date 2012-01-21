@@ -12,7 +12,13 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, Exception{
-		String input=args[0];
+		LoopType lType=LoopType.OTTER_LOOP;
+		if(args[0].equals("-o"))
+			lType=LoopType.OTTER_LOOP;
+		else if(args[0].equals("-e"))
+			lType=LoopType.E_LOOP;
+		
+		String input=args[1];
 		try{
 			BufferedReader in = new BufferedReader(new FileReader(input));
 			input="";
@@ -25,25 +31,13 @@ public class Main {
 			throw new IOException("Failed to open the file.");
 		}
 		//System.out.println(input);
-		NavigableSet<Clause> clauses=null;
+		Queue<Clause> clauses=null;
 		try{
 			//PARSING
 			clauses= Parser.parsing(input);
 		}catch(Throwable e){
 			System.out.println(e.getMessage());
 		}
-		
-		/*
-		for(String k: el.keySet())
-			System.out.println(el.get(k));
-			
-		if(el.size()==0)
-			System.out.println("Equals to 0");
-		if(el.size()!=0)
-			System.out.println("Not Equals to 0");
-		*/
-		
-		// print the formulae
 		
 		StringBuffer s;
 		for(Clause c: clauses){
@@ -54,23 +48,15 @@ public class Main {
 			System.out.println(s);
 		}
 		
-		/*
-		Iterator<Clause> iter1 = clauses.iterator();
-		Iterator<Clause> iter2 = clauses.iterator();
-		System.out.println("\n" + ((iter1==iter2)? "true" : "false"));
-		Clause c1, c2;
-		while(iter1.hasNext()){
-			c1=iter1.next();
-			iter2 = clauses.iterator();
-			while(iter2.hasNext()){
-				c2=iter2.next();
-				System.out.println(c1 + "\t" + c2);
-			}
-		}
-		*/	
+		
 		System.out.println("\nClauses inserted: " + clauses.size());
 		System.out.println();
-		InfoLoop info=ResearchPlan.givenClauseLoop(clauses, LoopType.OTTER_LOOP);
+		
+		
+		Queue<Clause> list= new LinkedList<Clause>();
+		for(Clause c: clauses)
+			list.add(c);
+		InfoLoop info=ResearchPlan.givenClauseLoop(list, lType);
 		System.out.println("\n");
 		if(info.res==LoopResult.SAT)
 			System.out.println("SAT");

@@ -25,7 +25,7 @@ public class Parser{
 	/**
 	 * Queue of all formulae read
 	 */
-	private static NavigableSet<Clause> formulae;
+	private static Queue<Clause> formulae;
 	/**	 * The variables' set of the formula that it's currently reading	 */	private static Map<String, Variable> variables;
 
 	/**
@@ -42,8 +42,8 @@ public class Parser{
 	 *@param input CNF formulae
 	 *@param output
 	 */
-	public static NavigableSet<Clause> parsing(String input) throws Exception{
-		formulae  = new TreeSet<Clause>();		predicates = new HashMap<String, Integer>();		functions = new HashMap<String, Integer>();
+	public static Queue<Clause> parsing(String input) throws Exception{
+		formulae  = new PriorityQueue<Clause>();		predicates = new HashMap<String, Integer>();		functions = new HashMap<String, Integer>();
 		constants = new HashMap<String, Constant>();
 		
 		try{	
@@ -54,8 +54,7 @@ public class Parser{
 		}
 		return formulae;
     }
-
-    public static List<Term>[] getArguments(String arg1, String arg2, boolean sameClause) throws Exception{
+	public static List<Term>[] getArguments(String arg1, String arg2, boolean sameClause) throws Exception{
 		functions = new HashMap<String, Integer>();
 		constants = new HashMap<String, Constant>();
 		List<Term>[] lar = new List[2];		try{		  	variables = new HashMap<String, Variable>();	
@@ -123,8 +122,7 @@ void TPTP_input():{}
 {
 	( cnf_annotated() )*
 }
-//List<Term> TPTP_args(): {List<Term> l;} {	<OPEN_BRACKET>  l=arguments()  <CLOSE_BRACKET> <EOF> { return l;}	}
-/**
+/**
  * An annotated CNF formula
  */ 
 void cnf_annotated():
@@ -133,8 +131,7 @@ void cnf_annotated():
 	}
 {
 	<CNF>  <OPEN_BRACKET> name() <COMMA>  formula_role() <COMMA>  f=cnf_formula()  ( <COMMA> annotations() )? <CLOSE_BRACKET> <DOT>
-	{
-	  formulae.add(f);
+	{	  formulae.add(f);
 	}
 }
 
@@ -151,7 +148,7 @@ void formula_role(): {}	{	<LOWER_WORD>	}
 /**
 * The CNF annotations
 */
-void annotations():	{}	{ ( <LOWER_WORD> | <UPPER_WORD> | <SINGLE_QUOTED> )+ }
+void annotations():	{}	{ <LOWER_WORD> | <SINGLE_QUOTED> | <UPPER_WORD> | <INTEGER> }
 
 
 /****************************************************************
@@ -164,8 +161,8 @@ Clause cnf_formula():
 	  //Set<Literal> atoms=new TreeSet<Literal>();	  variables = new HashMap<String, Variable>(); // reinizialize the variable set	  Clause clause=new Clause();
 	}
 {
-	(	<OPEN_BRACKET> p=literal() {clause.addLiteral(p); } ( <VLINE> p=literal() {clause.addLiteral(p); } )* <CLOSE_BRACKET>
-		| 	p=literal() {clause.addLiteral(p); } ( <VLINE> p=literal() {clause.addLiteral(p); } )* )
+	(	  <OPEN_BRACKET> p=literal() {clause.addLiteral(p); } ( <VLINE> p=literal() {clause.addLiteral(p); } )* <CLOSE_BRACKET>
+	  | 	p=literal() {clause.addLiteral(p); } ( <VLINE> p=literal() {clause.addLiteral(p); } )*	)
 	{
 	  	return clause;
 	}
