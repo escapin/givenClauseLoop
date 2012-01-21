@@ -42,4 +42,16 @@ public abstract class FOLNode{
 	public String toString(){
 		return symbol;
 	}
+	
+	public boolean equals(Object o){
+		if(this instanceof Literal){
+			return ((Literal) this).equals(o);
+		} else if(this instanceof Constant)
+			return ((Constant) this).equals(o);
+		else if(this instanceof Variable){
+			return ((Variable) this).equals(o);
+		} else{ // if(this instanceof Function){
+			return ((Function) this).equals(o);
+		}
+	}
 }

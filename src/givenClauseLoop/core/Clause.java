@@ -40,11 +40,7 @@ public class Clause implements Comparable<Clause>{
 			if(setLit==null){ // we have to create a new set
 				setLit=new HashSet<Literal>();
 				litMap.put(signature, setLit);
-			} /* else{ // checking for tautology
-				 for(Predicate l1: setLit)
-					 if(l.isOpposite(l1))
-						 isTautology=true;
-				}*/	
+			}
 			setLit.add(l);
 		}
 	}
@@ -83,7 +79,7 @@ public class Clause implements Comparable<Clause>{
 	}
 	
 	public boolean isEmpty(){
-		return this.getLiterals().size()==0;
+		return literals.size()==0;
 	}
 	
 	/**

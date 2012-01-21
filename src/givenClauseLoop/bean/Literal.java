@@ -61,10 +61,10 @@ public class Literal extends FOLNode implements FOLNodeArg {
 		if(obj instanceof Literal){
 			Literal p = (Literal) obj;
 			if(this.getSymbol().equals(p.getSymbol()) && this.sign()==p.sign() && this.nArgs()==p.nArgs()){
-				boolean same=true;
-				for(int i=0; same && i<this.nArgs(); i++)
-					same = this.getArgs().get(i).equals(p.getArgs().get(i));
-				return same;
+				for(int i=0; i<this.nArgs(); i++)
+					if ( !(this.getArgs().get(i).equals(p.getArgs().get(i)) ) )
+						return false;
+				return true;
 			}
 		}
 		return false;
@@ -77,11 +77,11 @@ public class Literal extends FOLNode implements FOLNodeArg {
 	 * @return
 	 */
 	public boolean isOpposite(Literal p){
-		if(this.getSymbol().equals(p.getSymbol()) && this.sign()!=p.sign() && this.nArgs()==p.nArgs()){
-			boolean opposite=true;
-			for(int i=0; opposite && i<this.nArgs(); i++)
-				opposite = this.getArgs().get(i).equals(p.getArgs().get(i));
-			return opposite;
+		if(p!=null && symbol.equals(p.getSymbol()) && sign!=p.sign() && this.nArgs()==p.nArgs()){
+			for(int i=0; i<this.nArgs(); i++)
+				if( !( this.getArgs().get(i).equals(p.getArgs().get(i)) ) )
+					return false;		
+			return true;
 		}
 		return false;
 	}

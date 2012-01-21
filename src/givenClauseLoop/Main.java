@@ -70,7 +70,7 @@ public class Main {
 		*/	
 		System.out.println("\nClauses inserted: " + clauses.size());
 		System.out.println();
-		InfoLoop info=ResearchPlan.givenClauseLoop(clauses, LoopType.E_LOOP);
+		InfoLoop info=ResearchPlan.givenClauseLoop(clauses, LoopType.OTTER_LOOP);
 		System.out.println("\n");
 		if(info.res==LoopResult.SAT)
 			System.out.println("SAT");

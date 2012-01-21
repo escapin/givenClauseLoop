@@ -20,5 +20,4 @@ public abstract class Term extends FOLNode{
 			return ((Function) this).clone(varMap);
 		}
 	}
-	
 }

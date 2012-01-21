@@ -8,7 +8,7 @@ public class Constant extends Term {
 		this.symbol=symbol;
 	}
 	
-	public boolean equal(Object obj){
+	public boolean equals(Object obj){
 		return ( this==obj || ( obj instanceof Constant && this.getSymbol().equals(((Constant) obj).getSymbol()) ) );
 	}
 	
