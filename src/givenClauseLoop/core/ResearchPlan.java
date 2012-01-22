@@ -18,6 +18,8 @@ public class ResearchPlan {
 		info = new InfoLoop();
 		toBeSelected = toBeSel;
 		selected = new HashSet<Clause>();
+		//selected = new LinkedHashSet<Clause>();
+		
 		info.clausesGenerated=toBeSelected.size();
 		info.loopType=lType;
 		
@@ -36,7 +38,6 @@ public class ResearchPlan {
 		
 		while(!toBeSelected.isEmpty()){ // GIVEN CLAUSE LOOP
 			i++;
-			//System.out.print("\r" + i + ")  " + toBeSelected.size() + ".........................." + selected.size() + "      ");
 			
 			givenClause=((Queue<Clause>) toBeSelected).poll();
 			selected.add(givenClause);
@@ -195,6 +196,7 @@ public class ResearchPlan {
 					}
 				} else if((l=cSel.simplify(cNew))!=null){
 					info.nSimplifications++;
+					
 					if(cSel.isEmpty()){	// empty clause generated
 						info.c1=cNew;
 						cTemp=new Clause();
@@ -225,118 +227,4 @@ public class ResearchPlan {
 		}
 		return cNew;
 	}
-	
-	/**
-	 * 
-	 * @param cNew the clause with which the contractionRules should be applied. If it has to be removed, it will became null.
-	 * @param clauseSet
-	 * @return true if the empty clause is found, false otherwise
-	
-	private static Clause contractionRules(Clause cNew, NavigableSet<Clause> clauseSet, Set<Clause> toBeRemoved){
-		if(cNew!=null){
-			for(Clause cSel: clauseSet)
-				if(!toBeRemoved.contains(cSel)){
-					Literal l;
-					Clause cTemp;
-					// SIMPLIFICATIONS
-					if((l=cNew.simplify(cSel))!=null){
-						info.nSimplifications++;
-						if(cNew.isEmpty()){ // empty clause generated
-							info.c1=cSel;
-							cTemp=new Clause();
-							cTemp.addLiteral(l);
-							info.c2=cTemp;
-							info.rule=RuleEmptyClause.SIMPLIFICATION;
-							info.res = LoopResult.UNSAT;
-							return cNew;
-						}
-					} else if((l=cSel.simplify(cNew))!=null){
-						info.nSimplifications++;
-						if(cSel.isEmpty()){	// empty clause generated
-							info.c1=cNew;
-							cTemp=new Clause();
-							cTemp.addLiteral(l);
-							info.c2=cTemp;
-							info.rule=RuleEmptyClause.SIMPLIFICATION;
-							info.res = LoopResult.UNSAT;
-							return cNew;
-						}
-					}
-					// SUBSUMPTIONS
-					if(cNew.subsumes(cSel)){
-						info.nSubsumptions++;
-						toBeRemoved.add(cSel);
-					} else if (cSel.subsumes(cNew)){
-						info.nSubsumptions++;
-						return null;
-					}
-				}
-		}
-		return cNew;
-	}
-	 */
-	
-	
-	/*
-	private static boolean contractionRules(NavigableSet<Clause> newClauses, NavigableSet<Clause> toBeSelected, 
-			NavigableSet<Clause> selected){
-		boolean clauseRemoved;
-		for(Clause cNew: newClauses){
-			clauseRemoved=false;
-			if(cNew.isEmpty()){ // empty clause generated
-				info.res = LoopResult.UNSAT;
-				return true;
-			} else if(cNew.isTautology()){ // TAUTOLOGY
-				info.nTautology++;
-				newClauses.remove(cNew);
-				clauseRemoved=true;
-			} else{
-				// CONTRACTION RULES with SELECTED QUEUE
-				clauseRemoved=simplSubsRules(cNew, selected);
-				if(info.res==LoopResult.UNSAT)
-					return true;
-				if(clauseRemoved)
-					newClauses.remove(cNew);
-				else {
-					// CONTRACTION RULES with TO_BE_SELECTED QUEUE
-					clauseRemoved=simplSubsRules(cNew, toBeSelected);
-					if(info.res==LoopResult.UNSAT)
-						return true;
-					if(clauseRemoved)
-						newClauses.remove(cNew);
-				}
-			}
-		}
-		return false;
-	}
-	
-	private static boolean simplSubsRules(Clause cNew, NavigableSet<Clause> clauseSet){
-		//NavigableSet<Clause> newClSet ;
-		for(Clause cSel: clauseSet){
-				// SIMPLIFICATIONS
-				if(cNew.simplify(cSel)!=null){
-					info.nSimplifications++;
-					if(cNew.isEmpty()){ // empty clause generated
-						info.res = LoopResult.UNSAT;
-						return false;
-					}
-				} else if(cSel.simplify(cNew)!=null){
-					info.nSimplifications++;
-					if(cSel.isEmpty()){	// empty clause generated
-						info.res = LoopResult.UNSAT;
-						return false;
-					}
-				}
-				// SUBSUMPTIONS
-				if(cNew.subsumes(cSel)){
-					info.nSubsumptions++;
-					clauseSet.remove(cSel);
-				} else if (cSel.subsumes(cNew)){
-					info.nSubsumptions++;
-					return true;
-				}
-		}
-		return false;
-	}
-	*/
 }

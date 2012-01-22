@@ -49,7 +49,7 @@ public class Parser{
 		try{	
 			new Parser(new java.io.StringReader(input)).TPTP_file();
 		}catch(Throwable e){
-			// Catching Throwable is ugly but JavaCC throws Error objects!
+			// Catching Throwable is ugly but JavaCC throws Error objects!			e.printStackTrace();
 			throw new ParseException("Syntax check failed: " + e.getMessage());
 		}
 		return formulae;
@@ -61,7 +61,7 @@ public class Parser{
 			Parser par=new Parser(new java.io.StringReader(arg1));			lar[0]=par.arguments();						// only here you can use ReInit. Not when you call the static class out of this file!			par.ReInit(new java.io.StringReader(arg2));			if(!sameClause) // if the two Literal come from different clauses all the variables are different				variables = new HashMap<String, Variable>();			lar[1]=par.arguments();			return lar;
 		}catch(Throwable e){
 			// Catching Throwable is ugly but JavaCC throws Error objects!
-			e.printStackTrace();
+			//e.printStackTrace();
 			throw new ParseException("Syntax check failed: " + e.getMessage());
 		}
 	}
@@ -77,17 +77,13 @@ SPECIAL_TOKEN: {
 			}
 TOKEN: {	<VLINE:				"|">
 		|	<NOT:				"~">
-		| 	<OPEN_BRACKET:		"(">
-		| 	<CLOSE_BRACKET:		")">
-		| 	<DOT:				".">
+		| 	<OPEN_BRACKET:		"(">		| 	<CLOSE_BRACKET:		")">		| 	<DOT:				".">
 		|	<COMMA:				",">
 		| 	<CNF:				"cnf"> 
-		// WORD
-		| 	<LOWER_WORD:		( <LOWER_ALFA> | <DOLLAR_LOWER_ALFA> ) (<ALFA_NUMERIC>)* >
+		// WORD		| 	<LOWER_WORD:		( <LOWER_ALFA> | <DOLLAR_LOWER_ALFA> ) (<ALFA_NUMERIC>)* >
 		|	<UPPER_WORD:		( <UPPER_ALFA> | <DOLLAR_UPPER_ALFA> ) (<ALFA_NUMERIC>)* >
 			//|	<ATOMIC_WORD:		<LOWER_WORD> | <SINGLE_QUOTED> >
-		|	<SINGLE_QUOTED: 	<SINGLE_QUOTE> (<SQ_CHAR>)+ <SINGLE_QUOTE> >	
-		// symbol: 	(# means 'private regular expression')
+		|	<SINGLE_QUOTED: 	<SINGLE_QUOTE> (<SQ_CHAR>)+ <SINGLE_QUOTE> >			//|	<SYMBOL:			~["(" , ")" , "'" , "\134"]>		// symbol: 	(# means 'private regular expression')
 		|	<#LOWER_ALFA:		["a"-"z"]>
 		| 	<#UPPER_ALFA:		["A"-"Z"]>
 		| 	<#DOLLAR_LOWER_ALFA: <DEF_SYS><LOWER_ALFA> >
@@ -130,7 +126,7 @@ void cnf_annotated():
 	  Clause f;
 	}
 {
-	<CNF>  <OPEN_BRACKET> name() <COMMA>  formula_role() <COMMA>  f=cnf_formula()  ( <COMMA> annotations() )? <CLOSE_BRACKET> <DOT>
+	<CNF>  <OPEN_BRACKET> name() <COMMA>  formula_role() <COMMA>  f=cnf_formula()  ( <COMMA> annotations() )* <CLOSE_BRACKET> <DOT>
 	{	  formulae.add(f);
 	}
 }
@@ -138,18 +134,16 @@ void cnf_annotated():
 /**
 * The CNF name
 */
-void name(): {}	{ <LOWER_WORD> | <SINGLE_QUOTED> | <INTEGER> }
-
-/**
+void name(): {}	{ <LOWER_WORD> | <SINGLE_QUOTED> | <UPPER_WORD> | <INTEGER> }/**
 * The CNF formula role
 */
-void formula_role(): {}	{	<LOWER_WORD>	}
-
+void formula_role(): {}	{	name()	}
+
 /**
 * The CNF annotations
 */
-void annotations():	{}	{ <LOWER_WORD> | <SINGLE_QUOTED> | <UPPER_WORD> | <INTEGER> }
-
+void annotations():	{}	{	"[" annotations() (<COMMA> annotations() )* "]"							|	(	name()	( <OPEN_BRACKET> annotations() (<COMMA> annotations() )*  <CLOSE_BRACKET> )? )							| 	( <OPEN_BRACKET> annotations() (<COMMA> annotations() )*  <CLOSE_BRACKET> )							}
+								
 
 /****************************************************************
 **  CNF FORMULAE (variables implicitly universally quantified) **
@@ -194,7 +188,7 @@ Literal literal():
 
 List<Term> arguments():
 	{
-	  List<Term> args=new LinkedList<Term>();
+	  List<Term> args=new ArrayList<Term>();
 	  Term t;
 	}
 {

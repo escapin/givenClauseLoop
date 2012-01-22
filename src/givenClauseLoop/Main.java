@@ -39,6 +39,7 @@ public class Main {
 			System.out.println(e.getMessage());
 		}
 		
+		/*
 		StringBuffer s;
 		for(Clause c: clauses){
 			System.out.println(c);
@@ -47,7 +48,7 @@ public class Main {
 				s.append(v.toString() + "  ");
 			System.out.println(s);
 		}
-		
+		*/
 		
 		System.out.println("\nClauses inserted: " + clauses.size());
 		System.out.println();

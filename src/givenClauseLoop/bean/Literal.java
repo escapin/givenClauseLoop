@@ -17,9 +17,12 @@ public class Literal extends FOLNode implements FOLNodeArg {
 		if(!sign)	// because also the negation symbol "~" must be counted
 			symNumber++;
 		
-		this.args=args;
-		for(Term t: this.args){
-			symNumber += t.nSymbols();
+		if(args==null)
+			this.args=new ArrayList<Term>(0);
+		else{
+			this.args=args;
+			for(Term t: this.args)
+				symNumber += t.nSymbols();
 		}
 	}
 	
@@ -27,14 +30,7 @@ public class Literal extends FOLNode implements FOLNodeArg {
 		return sign;
 	}
 	
-	/**
-	public void setArgs(List<Term> args){
-		this.args=args;
-		for(Term t: this.args){
-			symNumber += t.nSymbols();
-		}
-	}
-	*/
+	
 	public List<Term> getArgs(){
 		return args;
 	}
@@ -44,6 +40,9 @@ public class Literal extends FOLNode implements FOLNodeArg {
 	}
 	
 	public String toString(){
+		if(args.size()==0)
+			return sign? symbol : "~" + symbol;
+		
 		StringBuffer s = new StringBuffer(symbol + "(");
 		for(Term t: args)
 			s.append(t.toString() + ",");
@@ -87,7 +86,7 @@ public class Literal extends FOLNode implements FOLNodeArg {
 	}
 	
 	public Literal clone(Map<Variable, Variable> varMap){
-		List<Term> newArgs=new LinkedList<Term>();
+		List<Term> newArgs=new ArrayList<Term>();
 		for(Term t: this.getArgs())
 			newArgs.add(t.clone(varMap));
 		return new Literal(this.getSymbol(), this.sign(), newArgs);

@@ -326,6 +326,7 @@ cnf(174,plain,
     ( $false ),
     173,
     [proof]).
+
 %------------------------------------------------------------------------------
 %----ORIGINAL SYSTEM OUTPUT
 % # Preprocessing time       : 0.014 s

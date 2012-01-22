@@ -102,6 +102,8 @@ public interface ParserConstants {
     "<NUMERIC>",
     "<ZERO_NUMERIC>",
     "<NON_ZERO_NUMERIC>",
+    "\"[\"",
+    "\"]\"",
   };
 
 }
