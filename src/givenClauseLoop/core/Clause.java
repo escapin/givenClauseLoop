@@ -173,14 +173,14 @@ public class Clause implements Comparable<Clause>{
 	 * 		L' | C , L
 	 * 	   ----------------
 	 * 		    C, L
-	 * if Lσ = ~L'
-	 * 
+	 * if Lσ = ~L
 	 * N.B. The c input clause must have only one literal.
 	 * 
-	 * @param c the clause that should semplify this clause
-	 * @return the literal deleted if a semplification was made, null otherwise.
+	 * @param c the clause that should simplify this clause
+	 * @param rmFromLitMap it should be true iff this literal has to be removed also from litMap
+	 * @return the literal deleted if a simplification was made, null otherwise.
 	 */
-	public Literal simplify(Clause c){
+	public Literal simplify(Clause c, boolean rmFromLitMap){
 		if(this!=c && c.nLiterals()==1){
 			Set<Literal> setLit;
 			for(Literal lOth: c.getLiterals()) // only one literal
@@ -188,7 +188,8 @@ public class Clause implements Comparable<Clause>{
 					for(Literal lThis: setLit) // literal of this clause that have the same name of l1
 						if(Unifier.findLeftSubst(lOth.getArgs(), lThis.getArgs())!= null){ // lOth σ = ~lThis
 							literals.remove(lThis);
-							setLit.remove(lThis);
+							if(rmFromLitMap)
+								setLit.remove(lThis);
 							return lThis;
 						}
 		}
@@ -251,17 +252,6 @@ public class Clause implements Comparable<Clause>{
 	}
 	
 	public String toString(){
-		/*
-		if(literals.size()!=0){
-			StringBuffer s = new StringBuffer("[");
-			for(Literal p: literals)
-				s.append(p.toString() + " | ");
-			s.delete(s.length()-3, s.length());
-			s.append("]");
-			return s.toString();
-		}
-		return "[]";
-		*/
 		return literals.toString();
 	}
 }

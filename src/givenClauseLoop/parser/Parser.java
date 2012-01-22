@@ -44,8 +44,8 @@ public class Parser implements ParserConstants {
 	 *@param input CNF formulae
 	 *@param output
 	 */
-        public static Queue<Clause> parsing(String input) throws Exception{
-                formulae  = new PriorityQueue<Clause>();
+        public static void parsing(String input, Queue<Clause> clauses) throws Exception{
+                formulae  = clauses;
                 predicates = new HashMap<String, Integer>();
                 functions = new HashMap<String, Integer>();
                 constants = new HashMap<String, Constant>();
@@ -56,7 +56,6 @@ public class Parser implements ParserConstants {
                         // Catching Throwable is ugly but JavaCC throws Error objects!                        e.printStackTrace();
                         throw new ParseException("Syntax check failed: " + e.getMessage());
                 }
-                return formulae;
     }
 
         public static List<Term>[] getArguments(String arg1, String arg2, boolean sameClause) throws Exception{
