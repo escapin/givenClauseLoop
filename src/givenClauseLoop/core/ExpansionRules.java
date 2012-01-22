@@ -13,8 +13,8 @@ public class ExpansionRules {
 	 * @param c2 the second clause
 	 * @return set of all the binary resolvents
 	 */
-	public static NavigableSet<Clause> binaryResolution(Clause c1, Clause c2){
-		NavigableSet<Clause> resolvents= new TreeSet<Clause>();
+	public static Queue<Clause> binaryResolution(Clause c1, Clause c2){
+		Queue<Clause> resolvents= new PriorityQueue<Clause>();
 		Clause cNew;
 		if(c1!=c2){
 			Set<Literal> lMap;
@@ -88,8 +88,8 @@ public class ExpansionRules {
 	 * @param c 
 	 * @return set of all the factors
 	 */
-	public static NavigableSet<Clause> factorisation(Clause c){
-		NavigableSet<Clause> factors= new TreeSet<Clause>();
+	public static Queue<Clause> factorisation(Clause c){
+		Queue<Clause> factors= new PriorityQueue<Clause>();
 		Clause cNew;
 		Set<Literal> lMap; 
 		Map<Literal, Literal> alreadyFactorised = new HashMap<Literal, Literal>(); // in order to avoid double factorisations

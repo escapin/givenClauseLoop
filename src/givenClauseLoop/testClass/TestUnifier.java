@@ -2,8 +2,8 @@ package givenClauseLoop.testClass;
 
 import java.util.*;
 
+import givenClauseLoop.TPTPparser.*;
 import givenClauseLoop.bean.*;
-import givenClauseLoop.parser.*;
 
 public class TestUnifier {
 

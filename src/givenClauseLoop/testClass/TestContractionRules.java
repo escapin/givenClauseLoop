@@ -1,8 +1,8 @@
 package givenClauseLoop.testClass;
 
+import givenClauseLoop.TPTPparser.*;
 import givenClauseLoop.bean.*;
 import givenClauseLoop.core.Clause;
-import givenClauseLoop.parser.Parser;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -30,7 +30,7 @@ public class TestContractionRules {
 		Queue<Clause> clauses=new PriorityQueue<Clause>();
 		try{
 			//PARSING
-			Parser.parsing(input, clauses);
+			TPTPparser.parsing(input, clauses);
 		}catch(Throwable e){
 			System.out.println(e.getMessage());
 		}

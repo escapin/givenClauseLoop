@@ -1,0 +1,85 @@
+PARSER_BEGIN(CommandLineParser)
+
+package givenClauseLoop.CommandLineParser;
+
+import givenClauseLoop.bean.CommandOptions;
+import givenClauseLoop.bean.EnumClass;
+
+public class CommandLineParser{
+
+	private static CommandOptions opt;
+	
+	public static CommandOptions parsing(String[] args) throws Exception{
+		StringBuffer input = new StringBuffer();
+		opt = new CommandOptions();
+		for(String s: args)
+			input.append(" {{" + s + "}}");
+			
+		try{	
+			new CommandLineParser(new java.io.StringReader(input.toString())).start();
+			if(opt.filePath.equals(""))
+				throw new ParseException("no file path found");
+		}catch(Throwable e){
+			// Catching Throwable is ugly but JavaCC throws Error objects!
+			//e.printStackTrace();
+			throw new ParseException("Syntax check failed: " + e.getMessage());
+		}
+		return opt;
+	}
+}
+
+PARSER_END(CommandLineParser)
+
+SKIP:  { " " | "\t" | "\n" | "\r" }	// "\r" is the backspace escape symbol
+
+TOKEN:	{	<FIFO_STRATEGY: 	"-fifo">
+		|	<BFS_STRATEGY:		"-queue">
+		|	<LOOP_TYPE:			"-o" | "-e">
+		|	<TIME:				"-time">
+		| 	<RESEARCH_STRATEGY:	"-exp" | "-contr">
+		|   <FILEPATH:			<CHAR2>(<CHAR1>)*>
+		|	<NUMERIC:			(["0"-"9"])+> 
+		|	<#CHAR1:			~["{" , "}"] >
+		| 	<#CHAR2:			~["-", "{" , "}"] > 	//["\33"-"\172"] | ["\174"] | ["\176"]> 	
+		}
+void start(): { }
+{
+  ( "{{" argument() "}}" )+ <EOF>
+}
+
+void argument(): {Token t1=null, t2=null;}
+{
+  	t1=<FIFO_STRATEGY>
+  	{
+    opt.clauseStrategy = EnumClass.clauseStrategy.FIFO;
+	}
+  | t1=<BFS_STRATEGY> (t2=<NUMERIC>)?
+  {
+    opt.clauseStrategy = EnumClass.clauseStrategy.MIN_QUEUE;
+    if(t2!=null)
+    	opt.peakGivenRatio=  (new Integer(t2.image)).intValue();
+   	
+  }
+  | t1=<LOOP_TYPE>
+  {
+	if(t1.image.equals("-o"))
+    	opt.loopType = EnumClass.LoopType.OTTER_LOOP;
+    else
+    	opt.loopType = EnumClass.LoopType.E_LOOP;
+  }
+  | t1=<TIME> (t2=<NUMERIC>)+
+  {
+    opt.timeOut = (new Integer(t2.image)).intValue();
+  }
+  | t1=<RESEARCH_STRATEGY>
+  {
+	if(t1.image.equals("-exp"))
+    	opt.researchStrategy = EnumClass.researchStrategy.EXP_BEFORE;
+    else
+    	opt.researchStrategy = EnumClass.researchStrategy.CONTR_BEFORE;
+  }
+  | t1=<FILEPATH>
+  {
+    opt.filePath=t1.image;
+  }
+}

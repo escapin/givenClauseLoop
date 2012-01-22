@@ -1,7 +1,7 @@
 package givenClauseLoop.testClass;
 
+import givenClauseLoop.TPTPparser.*;
 import givenClauseLoop.core.Clause;
-import givenClauseLoop.parser.Parser;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -24,7 +24,7 @@ public class TestParser {
 		Queue<Clause> clauses=new PriorityQueue<Clause>();
 		try{
 			//PARSING
-			Parser.parsing(input1, clauses);
+			TPTPparser.parsing(input1, clauses);
 		}catch(Throwable e){
 			System.out.println(e.getMessage());
 		}

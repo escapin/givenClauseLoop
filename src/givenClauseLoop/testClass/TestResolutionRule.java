@@ -1,9 +1,9 @@
 package givenClauseLoop.testClass;
 
 import java.util.*;
-import givenClauseLoop.bean.Variable;
+
+import givenClauseLoop.TPTPparser.*;
 import givenClauseLoop.core.*;
-import givenClauseLoop.parser.Parser;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -33,7 +33,7 @@ public class TestResolutionRule {
 		Queue<Clause> clauses=new PriorityQueue<Clause>();
 		try{
 			//PARSING
-			Parser.parsing(input, clauses);
+			TPTPparser.parsing(input, clauses);
 		}catch(Throwable e){
 			System.out.println(e.getMessage());
 		}
@@ -54,7 +54,7 @@ public class TestResolutionRule {
 		*/
 		System.out.print("\n\n");
 		System.out.println("RESOLUTION:");
-		NavigableSet<Clause> qNew=new TreeSet<Clause>();
+		Queue<Clause> qNew=new PriorityQueue<Clause>();
 		Map<Clause, Clause> alreadyConsidered = new HashMap<Clause, Clause>();
 		for(Clause c1: clauses)
 			for(Clause c2: clauses)

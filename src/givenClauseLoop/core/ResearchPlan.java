@@ -1,11 +1,6 @@
 package givenClauseLoop.core;
 
-import givenClauseLoop.bean.InfoLoop;
-import givenClauseLoop.bean.Literal;
-import givenClauseLoop.bean.LoopResult;
-import givenClauseLoop.bean.LoopType;
-import givenClauseLoop.bean.RuleEmptyClause;
-
+import givenClauseLoop.bean.*;
 
 import java.util.*;
 
@@ -15,14 +10,15 @@ public class ResearchPlan {
 	private static Collection<Clause> toBeSelected;
 	private static Collection<Clause> selected;
 	
-	public static InfoLoop givenClauseLoop(Queue<Clause> toBeSel, LoopType lType){
+	public static InfoLoop givenClauseLoop(Queue<Clause> toBeSel, CommandOptions opt){
 		info = new InfoLoop();
 		toBeSelected = toBeSel;
-		selected = new HashSet<Clause>();
+		selected = new LinkedList<Clause>();
+		//selected = new HashSet<Clause>();
 		//selected = new LinkedHashSet<Clause>();
 		
 		info.clausesGenerated=toBeSelected.size();
-		info.loopType=lType;
+		info.loopType=opt.loopType;
 		
 		Clause givenClause;
 		
@@ -42,8 +38,7 @@ public class ResearchPlan {
 			System.out.print("\r" + i + ")      \t" + toBeSelected.size() + "......................" + selected.size() + "      ");			
 			
 			givenClause=((Queue<Clause>) toBeSelected).poll();
-			selected.add(givenClause);
-
+			
 			// FIND FACTORS
 			if(findFactors(givenClause))
 				return info;
@@ -51,10 +46,11 @@ public class ResearchPlan {
 			if(findResolvents(givenClause))
 				return info;
 			
+			selected.add(givenClause);
 			
 		} // END OF GIVEN CLAUSE LOOP
 		
-		info.res = (toBeSelected.isEmpty())? LoopResult.SAT : LoopResult.TIME_EXPIRED;
+		info.res = (toBeSelected.isEmpty())? EnumClass.LoopResult.SAT : EnumClass.LoopResult.TIME_EXPIRED;
 		return info;
 	}
 	
@@ -73,11 +69,11 @@ public class ResearchPlan {
 						if(!cNew.isTautology()){	
 							
 							cNew=contractionRules(cNew, selected, null, null, null); // CONTRACTION RULES with selected
-							if(info.res==LoopResult.UNSAT)
+							if(info.res==EnumClass.LoopResult.UNSAT)
 								return true;
-							if(cNew!=null && info.loopType==LoopType.OTTER_LOOP){
+							if(cNew!=null && info.loopType==EnumClass.LoopType.OTTER_LOOP){
 								cNew=contractionRules(cNew, toBeSelected, null, null, null); // CONTRACTION RULES with toBeSelected									
-								if(info.res==LoopResult.UNSAT)
+								if(info.res==EnumClass.LoopResult.UNSAT)
 									return true;
 							}
 							if(cNew!=null)
@@ -99,7 +95,7 @@ public class ResearchPlan {
 		Literal l2;
 		boolean notToBeConsidered=false;
 		for(Clause cSel: selected)
-			if(givenClause!=cSel && !toBeRemoved.contains(cSel))
+			if(cSel!=givenClause && !toBeRemoved.contains(cSel))
 				for(Literal l1: givenClause.getLiterals())
 					if(!toBeRemoved.contains(cSel) && (lSet=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null ){
 						lRm.clear();
@@ -126,19 +122,19 @@ public class ResearchPlan {
 								if(cNew.isEmpty()){
 									info.c1=givenClause;
 									info.c2=cSel;
-									info.rule=RuleEmptyClause.BINARY_RESOLUTION;
-									info.res = LoopResult.UNSAT;
+									info.rule=EnumClass.Rule.BINARY_RESOLUTION;
+									info.res = EnumClass.LoopResult.UNSAT;
 									return true;
 								}
 								
 								if(!cNew.isTautology()){
 									cNew=contractionRules(cNew, selected, toBeRemoved, lSet, lRm); // CONTRACTION RULES with selected
-									if(info.res==LoopResult.UNSAT)
+									if(info.res==EnumClass.LoopResult.UNSAT)
 										return true;
-									if(cNew!=null && info.loopType==LoopType.OTTER_LOOP){
+									if(cNew!=null && info.loopType==EnumClass.LoopType.OTTER_LOOP){
 										cNew=contractionRules(cNew, toBeSelected, null, null, null); 
 										// CONTRACTION RULES with toBeSelected									
-										if(info.res==LoopResult.UNSAT)
+										if(info.res==EnumClass.LoopResult.UNSAT)
 											return true;
 									}
 									
@@ -207,8 +203,8 @@ public class ResearchPlan {
 						cTemp=new Clause();
 						cTemp.addLiteral(l);
 						info.c2=cTemp;
-						info.rule=RuleEmptyClause.SIMPLIFICATION;
-						info.res = LoopResult.UNSAT;
+						info.rule=EnumClass.Rule.SIMPLIFICATION;
+						info.res = EnumClass.LoopResult.UNSAT;
 						return cNew;
 					}
 				} else if((l=cSel.simplify(cNew, false))!=null){
@@ -222,8 +218,8 @@ public class ResearchPlan {
 						cTemp=new Clause();
 						cTemp.addLiteral(l);
 						info.c2=cTemp;
-						info.res = LoopResult.UNSAT;
-						info.rule=RuleEmptyClause.SIMPLIFICATION;
+						info.res = EnumClass.LoopResult.UNSAT;
+						info.rule=EnumClass.Rule.SIMPLIFICATION;
 						return cNew;
 					}
 				}

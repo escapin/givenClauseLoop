@@ -1,9 +1,9 @@
 package givenClauseLoop.testClass;
 
+import givenClauseLoop.TPTPparser.*;
 import givenClauseLoop.bean.Variable;
 import givenClauseLoop.core.Clause;
 import givenClauseLoop.core.ExpansionRules;
-import givenClauseLoop.parser.Parser;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -33,7 +33,7 @@ public class TestFactorisationRule {
 		Queue<Clause> clauses=new PriorityQueue<Clause>();
 		try{
 			//PARSING
-			Parser.parsing(input, clauses);
+			TPTPparser.parsing(input, clauses);
 		}catch(Throwable e){
 			System.out.println(e.getMessage());
 		}
@@ -48,7 +48,7 @@ public class TestFactorisationRule {
 		}
 		System.out.print("\n\n");
 		System.out.println("FACTORISATION:");
-		NavigableSet<Clause> qNew;
+		Queue<Clause> qNew;
 		for(Clause c1: clauses){
 			qNew=ExpansionRules.factorisation(c1);
 		System.out.println("\n" + c1 + "  factors: ");
