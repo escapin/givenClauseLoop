@@ -30,10 +30,10 @@ public class TestResolutionRule {
 			throw new IOException("Failed to open the file.");
 		}
 		//System.out.println(input);
-		Queue<Clause> clauses=null;
+		Queue<Clause> clauses=new PriorityQueue<Clause>();
 		try{
 			//PARSING
-			clauses= Parser.parsing(input);
+			Parser.parsing(input, clauses);
 		}catch(Throwable e){
 			System.out.println(e.getMessage());
 		}

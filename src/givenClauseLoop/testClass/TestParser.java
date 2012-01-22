@@ -21,10 +21,10 @@ public class TestParser {
 				"\n		cnf(test, test, (~go(Y1,Y1,g(a))) ).";
 		
 		//System.out.println(input);
-		Queue<Clause> clauses=null;
+		Queue<Clause> clauses=new PriorityQueue<Clause>();
 		try{
 			//PARSING
-			clauses= Parser.parsing(input1);
+			Parser.parsing(input1, clauses);
 		}catch(Throwable e){
 			System.out.println(e.getMessage());
 		}

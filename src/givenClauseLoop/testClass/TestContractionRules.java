@@ -27,10 +27,10 @@ public class TestContractionRules {
 			throw new IOException("Failed to open the file.");
 		}
 		//System.out.println(input);
-		Queue<Clause> clauses=null;
+		Queue<Clause> clauses=new PriorityQueue<Clause>();
 		try{
 			//PARSING
-			clauses= Parser.parsing(input);
+			Parser.parsing(input, clauses);
 		}catch(Throwable e){
 			System.out.println(e.getMessage());
 		}
@@ -59,7 +59,7 @@ public class TestContractionRules {
 		Literal lit;
 		for(Clause c1: clauses)
 			for(Clause c2: clauses){
-				if( (lit=c1.simplify(c2)) != null){
+				if( (lit=c1.simplify(c2, false)) != null){
 					System.out.println(c2 + "  simplifies  " + c1 + (c1.nLiterals()>0? " | " : "") + lit);
 					c1.addLiteral(lit);
 				}
