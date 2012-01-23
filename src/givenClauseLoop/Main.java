@@ -20,6 +20,11 @@ public class Main {
 		try{
 			info= new InfoLoop();
 			opt = CommandLineParser.parsing(args);
+			if(opt.help.length()>0){
+				System.out.println(opt.help);
+				System.exit(-1);
+			}
+				
 			StringBuffer input= new StringBuffer();
 			try{
 				BufferedReader in = new BufferedReader(new FileReader(opt.filePath));

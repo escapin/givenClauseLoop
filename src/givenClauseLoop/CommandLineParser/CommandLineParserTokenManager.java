@@ -2,6 +2,7 @@
 package givenClauseLoop.CommandLineParser;
 import givenClauseLoop.bean.CommandOptions;
 import givenClauseLoop.bean.EnumClass;
+import java.io.*;
 
 /** Token Manager. */
 public class CommandLineParserTokenManager implements CommandLineParserConstants
@@ -18,7 +19,7 @@ private static final int jjStopStringLiteralDfa_0(int pos, long active0)
       case 0:
          if ((active0 & 0xeL) != 0L)
             return 1;
-         if ((active0 & 0x10L) != 0L)
+         if ((active0 & 0x4010L) != 0L)
             return 8;
          return -1;
       default :
@@ -48,7 +49,7 @@ static private int jjMoveStringLiteralDfa0_0()
       case 32:
          return jjStartNfaWithStates_0(0, 1, 1);
       case 45:
-         return jjMoveStringLiteralDfa1_0(0x10L);
+         return jjMoveStringLiteralDfa1_0(0x4010L);
       default :
          return jjMoveNfa_0(0, 0);
    }
@@ -64,6 +65,8 @@ static private int jjMoveStringLiteralDfa1_0(long active0)
    {
       case 102:
          return jjMoveStringLiteralDfa2_0(active0, 0x10L);
+      case 104:
+         return jjMoveStringLiteralDfa2_0(active0, 0x4000L);
       default :
          break;
    }
@@ -80,6 +83,8 @@ static private int jjMoveStringLiteralDfa2_0(long old0, long active0)
    }
    switch(curChar)
    {
+      case 101:
+         return jjMoveStringLiteralDfa3_0(active0, 0x4000L);
       case 105:
          return jjMoveStringLiteralDfa3_0(active0, 0x10L);
       default :
@@ -100,6 +105,8 @@ static private int jjMoveStringLiteralDfa3_0(long old0, long active0)
    {
       case 102:
          return jjMoveStringLiteralDfa4_0(active0, 0x10L);
+      case 108:
+         return jjMoveStringLiteralDfa4_0(active0, 0x4000L);
       default :
          break;
    }
@@ -119,6 +126,10 @@ static private int jjMoveStringLiteralDfa4_0(long old0, long active0)
       case 111:
          if ((active0 & 0x10L) != 0L)
             return jjStopAtPos(4, 4);
+         break;
+      case 112:
+         if ((active0 & 0x4000L) != 0L)
+            return jjStopAtPos(4, 14);
          break;
       default :
          break;
@@ -354,14 +365,14 @@ static final int[] jjnextStates = {
 /** Token literal values. */
 public static final String[] jjstrLiteralImages = {
 "", null, null, null, "\55\146\151\146\157", null, null, null, null, null, 
-null, null, null, "\11", };
+null, null, null, "\11", "\55\150\145\154\160", };
 
 /** Lexer state names. */
 public static final String[] lexStateNames = {
    "DEFAULT",
 };
 static final long[] jjtoToken = {
-   0x27f1L, 
+   0x67f1L, 
 };
 static final long[] jjtoSkip = {
    0xeL, 

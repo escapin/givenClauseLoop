@@ -9,16 +9,16 @@ public class ResearchPlan {
 	private static InfoLoop info;
 	private static CommandOptions opt;
 	private static Collection<Clause> toBeSelected;
-	private static Collection<Clause> selected;
+	private static Collection<Clause> alreadySelected;
 	private static Collection<Clause>  oldest;
 	
 	public static InfoLoop givenClauseLoop(Queue<Clause> toBeSel, CommandOptions option, InfoLoop infoLoop){
 		toBeSelected = toBeSel;
 		opt=option;
 		info = infoLoop;
-		//selected = new LinkedList<Clause>();
-		selected = new HashSet<Clause>();
-		//selected = new LinkedHashSet<Clause>();
+		//alreadySelected = new LinkedList<Clause>();
+		alreadySelected = new HashSet<Clause>();
+		//alreadySelected = new LinkedHashSet<Clause>();
 		info.clausesGenerated=toBeSelected.size();
 		info.loopType=opt.loopType;
 		
@@ -36,7 +36,8 @@ public class ResearchPlan {
 		}
 		
 		int i=0;
-		System.out.println("ITERS\t\tTO BE SELECTED" + "\t\t" + "SELECTED");
+		System.out.println("ITERS\t\tTO BE SELECTED" + "\t\t" + "ALREADY SELECTED");
+		info.res=EnumClass.LoopResult.TIME_EXPIRED;
 		while(!toBeSelected.isEmpty()){ // GIVEN CLAUSE LOOP
 			i++;
 			
@@ -51,10 +52,10 @@ public class ResearchPlan {
 			}
 			
 			if(opt.researchStrategy==EnumClass.researchStrategy.EXP_BEFORE)
-				selected.add(givenClause);
-			//selected.add(Clause) givenClause.clone());
+				alreadySelected.add(givenClause);
+			//alreadySelected.add(Clause) givenClause.clone());
 			
-			System.out.print("\r" + i + ")      \t" + toBeSelected.size() + "......................." + selected.size() + "      ");
+			System.out.print("\r" + i + ")      \t" + toBeSelected.size() + "......................." + alreadySelected.size() + "      ");
 			
 			// FIND FACTORS
 			if(findFactors(givenClause))
@@ -70,7 +71,7 @@ public class ResearchPlan {
 			}
 			
 			if(opt.researchStrategy!=EnumClass.researchStrategy.EXP_BEFORE)
-				selected.add(givenClause);
+				alreadySelected.add(givenClause);
 			
 		} // END OF GIVEN CLAUSE LOOP
 		
@@ -90,7 +91,7 @@ public class ResearchPlan {
 						info.nFactorisations++;
 						if(!cNew.isTautology()){	
 							
-							cNew=contractionRules(cNew, selected, null, null, null); // CONTRACTION RULES with selected
+							cNew=contractionRules(cNew, alreadySelected, null, null, null); // CONTRACTION RULES with alreadySelected
 							if(info.res==EnumClass.LoopResult.UNSAT)
 								return true;
 							if(cNew!=null && info.loopType==EnumClass.LoopType.OTTER_LOOP){
@@ -114,7 +115,7 @@ public class ResearchPlan {
 	private static boolean findExpResolvents(Clause givenClause){
 		Queue<Clause> resolvents= new LinkedList<Clause>();
 		Clause cNew;
-		for(Clause cSel: selected)
+		for(Clause cSel: alreadySelected)
 			if(givenClause!=cSel){
 				Set<Literal> lMap;
 				for(Literal l1: givenClause.getLiterals())
@@ -122,6 +123,7 @@ public class ResearchPlan {
 						for(Literal l2: lMap){
 							cNew=ExpansionRules.binaryResolution(givenClause, l1, cSel, l2);
 							if(cNew!=null){
+								info.nResolutions++;
 								if(cNew.isEmpty()){
 									info.c1=givenClause;
 									info.c2=cSel;
@@ -158,7 +160,7 @@ public class ResearchPlan {
 				
 		for(Clause c: resolvents)
 			if(!c.isTautology()){
-				c=contractionRules(c, selected, null, null, null); // CONTRACTION RULES with selected
+				c=contractionRules(c, alreadySelected, null, null, null); // CONTRACTION RULES with alreadySelected
 				if(info.res==EnumClass.LoopResult.UNSAT)
 					return true;
 				if(c!=null && info.loopType==EnumClass.LoopType.OTTER_LOOP){
@@ -187,7 +189,7 @@ public class ResearchPlan {
 						lRm = new HashSet<Literal>();
 		Literal l2;
 		boolean notToBeConsidered=false;
-		for(Clause cSel: selected)
+		for(Clause cSel: alreadySelected)
 			if(cSel!=givenClause && !toBeRemoved.contains(cSel))
 				for(Literal l1: givenClause.getLiterals())
 					if(!toBeRemoved.contains(cSel) && (lSet=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null ){
@@ -212,7 +214,7 @@ public class ResearchPlan {
 								}
 								
 								if(!cNew.isTautology()){
-									cNew=contractionRules(cNew, selected, toBeRemoved, lSet, lRm); // CONTRACTION RULES with selected
+									cNew=contractionRules(cNew, alreadySelected, toBeRemoved, lSet, lRm); // CONTRACTION RULES with alreadySelected
 									if(info.res==EnumClass.LoopResult.UNSAT)
 										return true;
 									if(cNew!=null && info.loopType==EnumClass.LoopType.OTTER_LOOP){
@@ -235,7 +237,7 @@ public class ResearchPlan {
 					}
 						
 		for(Clause rmCl: toBeRemoved)
-			selected.remove(rmCl);
+			alreadySelected.remove(rmCl);
 		
 		return false;	
 	}

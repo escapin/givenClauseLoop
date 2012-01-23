@@ -4,12 +4,13 @@ package givenClauseLoop.CommandLineParser;
 
 import givenClauseLoop.bean.CommandOptions;
 import givenClauseLoop.bean.EnumClass;
+import java.io.*;
 
-public class CommandLineParser{
+public class CommandLineParser {
 
 	private static CommandOptions opt;
 	
-	public static CommandOptions parsing(String[] args) throws Exception{
+	public static CommandOptions parsing(String[] args) throws FileNotFoundException, IOException, Exception{
 		try{
 		  	if(args.length==0)
 		  		throw new ParseException("no file path found");
@@ -20,7 +21,7 @@ public class CommandLineParser{
 				input.append("\t" + args[i] + "\t");	
 			//System.out.println(input);
 			new CommandLineParser(new java.io.StringReader(input.toString())).start();
-			if(opt.filePath.equals(""))
+			if(opt.help.length()==0 && opt.filePath.equals(""))
 				throw new ParseException("no file path found");
 		}catch(Throwable e){
 			// Catching Throwable is ugly but JavaCC throws Error objects!
@@ -89,4 +90,7 @@ void filePath(): {Token t;}
   {
     opt.filePath=t.image;
   }
-  }
+  | "-help"  {
+   	opt.help.append("Usage:\n\t" + 
+			"java -jar givenClauseLoop.jar [-fifo | -best | -bestN] [-o | -e] [-timeN] [-contr | -exp] filePath\n\t" +
+			"java -jar givenClauseLoop.jar -help");  }	 }
