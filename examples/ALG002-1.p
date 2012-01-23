@@ -26,6 +26,8 @@
 
 % Comments :
 %--------------------------------------------------------------------------
+cnf(right_identity,axiom,
+    ( product(X,multiplicative_identity,X) )).
 
 cnf(not_abelian,axiom,
     ( ~ product(multiplicative_identity,multiplicative_identity,additive_identity) )).
@@ -81,4 +83,3 @@ cnf(prove_a_inverse_greater_than_0,negated_conjecture,
     ( ~ greater_than_0(multiplicative_inverse(a)) )).
 
 %--------------------------------------------------------------------------
-
