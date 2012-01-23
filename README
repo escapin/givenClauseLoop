@@ -17,8 +17,8 @@ Default usage:	java -jar givenClauseLoop.jar filePath
 Given clause selection strategy: 
 -fifo	the given clause is the oldest for insertion sort
 -best	the given clause is the least one where the order is defined by symbols' number in each clause
--bestN	such as above but with a number N that represents the Peak Given Ration: each N iterations the
-	given clause is not the least one but the oldest one
+-bestN	such as above but with a number N that represents the Peak Given Ration: each N iterations 
+	the given clause is not the least one but the oldest one
 
 Deletion strategy:
 -o	based on Otter theorem proover, aims at keeping the union of To-be-selected and Already-selected inter-reduced
@@ -28,9 +28,9 @@ Time out:
 -timeN	if specified, it allows to stop the execution of the given clause loop also if the correct result has not been found
 
 Research strategy:
--contr	every time a new clause is generated applying binary resolution, checks if it is possible to apply a contraction rule
+-contr	every time a new clause is generated applying binary resolution, checks if it is possible to apply a contraction rule 
 	(tautology, subsumption, clauses' simplification) with the clause in To-be-selected and Already-selected
--exp	creates all the binary resolvents from the given clause and all the clauses in Already-selected, and then try to apply
+-exp	creates all the binary resolvents from the given clause and all the clauses in Already-selected, and then try to apply 
 	contraction rules (tautology, subsumption, clauses' simplification)
 
 
