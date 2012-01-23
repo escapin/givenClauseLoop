@@ -43,26 +43,20 @@ public class Main {
 					System.out.println(" Found " + clauses.size() + " clauses");
 					
 					System.out.println("\nGiven Clause Loop parameters:");
-					System.out.println("\tloop type: " 
+					System.out.println("\tloop type:\t\t" 
 							+ ((opt.loopType==EnumClass.LoopType.OTTER_LOOP)? "Otter": "E"));
-					System.out.println("\tselection strategy: " 
+					System.out.println("\tselection strategy:\t" 
 							+ ((opt.clauseStrategy==EnumClass.clauseStrategy.FIFO)? "fifo": "best visit first (min priority queue)"));
-					System.out.println("\tpeek given ratio: " 
+					System.out.println("\tpeak given ratio:\t" 
 							+ ((opt.peakGivenRatio>0)? opt.peakGivenRatio: "not inserted"));
-					System.out.println("\tresearch strategy: " 
+					System.out.println("\tresearch strategy:\t" 
 							+ ((opt.researchStrategy==EnumClass.researchStrategy.CONTR_BEFORE)? 
 									"contraction rules before": "expansion rules before"));
-					System.out.println("\ttime out: " 
+					System.out.println("\ttime out:\t\t" 
 							+ ((opt.timeOut>0)? opt.timeOut + "s": "infinite"));
 					
 					
-					/*
-					System.out.println("Executing Given Clause Loop...");
-	        		start=System.currentTimeMillis();
-					ResearchPlan.givenClauseLoop(clauses, opt, info);
-					loopTime=System.currentTimeMillis()-start;
-					*/
-	        		System.out.println("\nExecuting Given Clause Loop...");	
+					System.out.println("\nExecuting Given Clause Loop...");	
 					Callable<Object> task = new Callable<Object>() {
 			        	public Object call() {
 			        		ResearchPlan.givenClauseLoop(clauses, opt, info);
@@ -112,28 +106,28 @@ public class Main {
 	private static void printResult(){
 		StringBuffer s = new StringBuffer("\n\nResult: ");
 		if(info.res==EnumClass.LoopResult.SAT)
-			s.append("SATISFIABLE");
+			s.append("SATISFIABLE\n");
 		else if(info.res==EnumClass.LoopResult.UNSAT){
-			s.append("UNSATISFIABLE");
+			s.append("UNSATISFIABLE\n");
 			switch(info.rule){
 				case BINARY_RESOLUTION:
-					System.out.println("Binary Resolution: ");
-					System.out.println("\t" + info.c1 + "\t\t" + info.c2);
+					s.append("Binary Resolution: \n" +
+							"\t" + info.c1 + "\t\t" + info.c2 + "\n");
 					break;
 				case SIMPLIFICATION:
-					System.out.println("Simplification:");
-					System.out.println("\t" + info.c1 + "  simplifies  " + info.c2);
+					s.append("Simplification: \n" +	
+							"\t" + info.c1 + "  simplifies  " + info.c2 + "\n");
 					break;
 			}
 		} else
-			s.append("TIME EXPIRED");
+			s.append("TIME EXPIRED\n");
 		
-		s.append("\n\tClause generated: " + (info.nFactorisations+info.nResolutions));
-		s.append("\n\t\tFactors: " + info.nFactorisations);
-		s.append("\n\t\tBinary resolvents: " + info.nResolutions);
-		s.append("\n\tTautologies:\t\t" + info.nTautology);
-		s.append("\n\tSubsumptions:\t\t" + info.nSubsumptions);
-		s.append("\n\tSimplifications:\t" + info.nSimplifications);
+		s.append("\nClause generated: " + (info.nFactorisations+info.nResolutions));
+		s.append("\n\tFactors: " + info.nFactorisations);
+		s.append("\n\tBinary resolvents: " + info.nResolutions);
+		s.append("\nTautologies:\t\t" + info.nTautology);
+		s.append("\nSubsumptions:\t\t" + info.nSubsumptions);
+		s.append("\nSimplifications:\t" + info.nSimplifications);
 		
 		
 		s.append("\n\nElapsed clock time:\t" + 

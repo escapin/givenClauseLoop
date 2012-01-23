@@ -1,0 +1,55 @@
+henry@VGN:~/workspace/givenClauseLoop/bin$ java givenClauseLoop.Main -fifo -o -time75 ../examples/ANA002-1.p 
+FILE: ANA002-1.p
+Parsing...
+ Found 18 clauses
+
+Given Clause Loop parameters:
+	loop type:		Otter
+	selection strategy:	fifo
+	peak given ratio:	not inserted
+	research strategy:	contraction rules before
+	time out:		75s
+
+Executing Given Clause Loop...
+ITERS		TO BE SELECTED		SELECTED
+43)             0.......................22       
+
+Result: SATISFIABLE
+
+Clause generated: 447
+	Factors: 5
+	Binary resolvents: 442
+Tautologies:		15
+Subsumptions:		427
+Simplifications:	185
+
+Elapsed clock time:	0m 4,0430s	(4043ms)
+henry@VGN:~/workspace/givenClauseLoop/bin$ java givenClauseLoop.Main -best -o -time75 ../examples/ANA002-1.p 
+FILE: ANA002-1.p
+Parsing...
+ Found 18 clauses
+
+Given Clause Loop parameters:
+	loop type:		Otter
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	contraction rules before
+	time out:		75s
+
+Executing Given Clause Loop...
+ITERS		TO BE SELECTED		SELECTED
+21)             9.......................20       
+
+Result: UNSATISFIABLE
+Binary Resolution: 
+	[in_interval(Lower,n0,f(upper_bound))]		[~in_interval(f(X),n0,f(X))]
+
+Clause generated: 89
+	Factors: 4
+	Binary resolvents: 85
+Tautologies:		3
+Subsumptions:		73
+Simplifications:	45
+
+Elapsed clock time:	0m 0,1050s	(105ms)
+henry@VGN:~/workspace/givenClauseLoop/bin$

@@ -207,34 +207,9 @@ public class Clause implements Comparable<Clause>{
 		return this.nSymbols()-f.nSymbols();
 	}
 	
-	/*
 	public boolean equals(Object o){
-		if(this==o)
-			return true;
-		if(o instanceof Clause){
-			Clause c = (Clause) o;
-			if(this.nLiterals()==c.nLiterals()){
-				boolean litFound;
-				Set<Literal> setLit,
-							 alreadyMatched = new HashSet<Literal>();
-				for(Literal l1: this.getLiterals()){
-					litFound=false;
-					if((setLit=c.getLitMap().get( (l1.sign()? "": "~") + l1.getSymbol()) ) != null )
-						for(Literal l2: setLit)
-							if(!alreadyMatched.contains(l2) && l1.toString().equals(l2.toString())){
-								litFound=true;
-								alreadyMatched.add(l2);
-								break;
-							}
-						if(!litFound)
-							return false;
-					}
-				return true;
-			}
-		}
-		return false;
+		return this==o;
 	}
-	*/
 	
 	
 	/**

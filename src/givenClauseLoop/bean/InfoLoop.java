@@ -1,5 +1,6 @@
 package givenClauseLoop.bean;
 
+import givenClauseLoop.bean.*;
 import givenClauseLoop.core.Clause;
 
 public class InfoLoop {
@@ -16,8 +17,8 @@ public class InfoLoop {
 	
 	public EnumClass.LoopResult res;
 	
-	public Clause	c1=null, 
-					c2=null;
+	public Clause	c1, c2;
+	
 	public EnumClass.Rule rule;
 	
 	public EnumClass.LoopType loopType;
@@ -29,6 +30,10 @@ public class InfoLoop {
 		nSubsumptions=0;
 		nSimplifications=0;
 		nTautology=0;
+		res=EnumClass.LoopResult.TIME_EXPIRED;
+		loopType=EnumClass.LoopType.OTTER_LOOP;
+		c1=null;
+		c2=null;
 	}
 
 }

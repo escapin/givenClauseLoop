@@ -33,7 +33,7 @@ public class Substitution {
 	 * @return a new List<Term> in which the substitution has been applied
 	*/ 
 	private static List<Term> substitute(List<Term> args, Map<Variable, Term> sigma, Map<Variable, Variable> varMap){
-		List<Term> newArgs=new LinkedList<Term>();
+		List<Term> newArgs=new ArrayList<Term>(args.size());
 		for(Term t: args)
 			newArgs.add(substitute(t, sigma, varMap));
 		return newArgs;
