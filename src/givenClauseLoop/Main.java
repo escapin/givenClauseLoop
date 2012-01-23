@@ -2,6 +2,7 @@ package givenClauseLoop;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 import givenClauseLoop.TPTPparser.TPTPparser;
 import givenClauseLoop.CommandLineParser.CommandLineParser;
@@ -9,13 +10,15 @@ import givenClauseLoop.bean.*;
 import givenClauseLoop.core.*;
 
 public class Main {
+	
+	private static long	loopTime, start;
+	private static CommandOptions opt = null;
+	private static Queue<Clause> clauses;
+	private static InfoLoop info;
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) throws FileNotFoundException, IOException, Exception{
-		CommandOptions opt = null;
+	public static void main(String[] args) throws FileNotFoundException, IOException, RuntimeException, Exception{
 		try{
+			info= new InfoLoop();
 			opt = CommandLineParser.parsing(args);
 			StringBuffer input= new StringBuffer();
 			try{
@@ -28,45 +31,69 @@ public class Main {
 				String fileName = ((i=opt.filePath.lastIndexOf("/"))!=-1)? opt.filePath.substring(i+1) : opt.filePath; 
 				
 				System.out.println("FILE: " + fileName);
-				Queue<Clause> clauses =  
+				clauses =  
 					(opt.clauseStrategy==EnumClass.clauseStrategy.FIFO)? new LinkedList<Clause>() : new PriorityQueue<Clause>();
 				
 				try{
+					
 					System.out.println("Parsing...");
 					//PARSING
 					TPTPparser.parsing(input.toString(), clauses);
 					
-					System.out.println(" Found " + clauses.size() + " clauses\n");
+					System.out.println(" Found " + clauses.size() + " clauses");
+					
+					System.out.println("\nGiven Clause Loop parameters:");
+					System.out.println("\tloop type: " 
+							+ ((opt.loopType==EnumClass.LoopType.OTTER_LOOP)? "Otter": "E"));
+					System.out.println("\tselection strategy: " 
+							+ ((opt.clauseStrategy==EnumClass.clauseStrategy.FIFO)? "fifo": "best visit first (min priority queue)"));
+					System.out.println("\tpeek given ratio: " 
+							+ ((opt.peakGivenRatio>0)? opt.peakGivenRatio: "not inserted"));
+					System.out.println("\tresearch strategy: " 
+							+ ((opt.researchStrategy==EnumClass.researchStrategy.CONTR_BEFORE)? 
+									"contraction rules before": "expansion rules before"));
+					System.out.println("\ttime out: " 
+							+ ((opt.timeOut>0)? opt.timeOut + "s": "infinite"));
 					
 					
-					long	loopTime,
-							start=System.currentTimeMillis();
-					InfoLoop info=ResearchPlan.givenClauseLoop(clauses, opt);
-							loopTime=System.currentTimeMillis()-start;
+					/*
+					System.out.println("Executing Given Clause Loop...");
+	        		start=System.currentTimeMillis();
+					ResearchPlan.givenClauseLoop(clauses, opt, info);
+					loopTime=System.currentTimeMillis()-start;
+					*/
+	        		System.out.println("\nExecuting Given Clause Loop...");	
+					Callable<Object> task = new Callable<Object>() {
+			        	public Object call() {
+			        		ResearchPlan.givenClauseLoop(clauses, opt, info);
+							return new Object();
+			          }
+			        };
 					
-					
-					System.out.println("\n");
-					if(info.res==EnumClass.LoopResult.SAT)
-						System.out.println("SAT");
-					else{
-						System.out.println("UNSAT");
-						switch(info.rule){
-							case BINARY_RESOLUTION:
-								System.out.println("Binary Resolution: ");
-								System.out.println("\t" + info.c1 + "\t\t" + info.c2);
-								break;
-							case SIMPLIFICATION:
-								System.out.println("Simplification:");
-								System.out.println("\t" + info.c1 + "  simplifies  " + info.c2);
-								break;
-						}
+					ExecutorService executor = Executors.newCachedThreadPool();
+					start=System.currentTimeMillis();
+					FutureTask<Object> future = (FutureTask<Object>) executor.submit(task);
+					try{
+						//System.out.println(opt.timeOut);
+						if(opt.timeOut==0)
+							future.get();
+						else 
+							future.get(opt.timeOut, TimeUnit.SECONDS); // TIME OUT
+					} catch (java.util.concurrent.TimeoutException e) {
+						loopTime=System.currentTimeMillis()-start;
+						executor.shutdownNow();
+						future.cancel(true);
+						info.res = EnumClass.LoopResult.TIME_EXPIRED;
+						printResult();
+						System.exit(-1);
+					} finally {
+						loopTime=System.currentTimeMillis()-start;
+						executor.shutdownNow();
+						future.cancel(true);
+						printResult();
+						System.exit(-1);
 					}
-					System.out.println("\nElapsed clock time:\t" + 
-								(int) ((loopTime / 1000) / 60) + "m " + 
-								String.format("%.4f", (loopTime/1000d)%60) + "s\t" 
-										+ "(" + loopTime + "ms)");
-					
-				}catch(Throwable e){
+			    }catch(Throwable e){
 					System.out.println(e.getMessage());
 				}
 				
@@ -76,7 +103,43 @@ public class Main {
 				throw new IOException("Failed to open the file.");
 			}
 		}catch(Throwable e){
-		System.out.println(e.getMessage());
+			//System.out.println(e.getMessage());
+			throw new Exception(e);
 		}
+	}
+
+
+	private static void printResult(){
+		StringBuffer s = new StringBuffer("\n\nResult: ");
+		if(info.res==EnumClass.LoopResult.SAT)
+			s.append("SATISFIABLE");
+		else if(info.res==EnumClass.LoopResult.UNSAT){
+			s.append("UNSATISFIABLE");
+			switch(info.rule){
+				case BINARY_RESOLUTION:
+					System.out.println("Binary Resolution: ");
+					System.out.println("\t" + info.c1 + "\t\t" + info.c2);
+					break;
+				case SIMPLIFICATION:
+					System.out.println("Simplification:");
+					System.out.println("\t" + info.c1 + "  simplifies  " + info.c2);
+					break;
+			}
+		} else
+			s.append("TIME EXPIRED");
+		
+		s.append("\n\tClause generated: " + (info.nFactorisations+info.nResolutions));
+		s.append("\n\t\tFactors: " + info.nFactorisations);
+		s.append("\n\t\tBinary resolvents: " + info.nResolutions);
+		s.append("\n\tTautologies:\t\t" + info.nTautology);
+		s.append("\n\tSubsumptions:\t\t" + info.nSubsumptions);
+		s.append("\n\tSimplifications:\t" + info.nSimplifications);
+		
+		
+		s.append("\n\nElapsed clock time:\t" + 
+					(int) ((loopTime / 1000) / 60) + "m " + 
+					String.format("%.4f", (loopTime/1000d)%60) + "s\t" 
+							+ "(" + loopTime + "ms)");
+		System.out.println(s);
 	}
 }

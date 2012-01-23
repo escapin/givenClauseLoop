@@ -24,7 +24,6 @@ public class InfoLoop {
 	
 	public InfoLoop(){
 		clausesRead=0;
-		clausesGenerated=0;
 		nResolutions=0;
 		nFactorisations=0;
 		nSubsumptions=0;

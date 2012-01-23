@@ -9,12 +9,15 @@ public class CommandLineParser implements CommandLineParserConstants {
         private static CommandOptions opt;
 
         public static CommandOptions parsing(String[] args) throws Exception{
-                StringBuffer input = new StringBuffer();
-                opt = new CommandOptions();
-                for(String s: args)
-                        input.append(" {{" + s + "}}");
-
                 try{
+                        if(args.length==0)
+                                throw new ParseException("no file path found");
+
+                        StringBuffer input = new StringBuffer("\u005ct" + args[args.length-1] + "\u005ct");
+                        opt = new CommandOptions();
+                        for(int i=0;i<args.length-1;i++)
+                                input.append("\u005ct" + args[i] + "\u005ct");
+                        //System.out.println(input);
                         new CommandLineParser(new java.io.StringReader(input.toString())).start();
                         if(opt.filePath.equals(""))
                                 throw new ParseException("no file path found");
@@ -27,25 +30,28 @@ public class CommandLineParser implements CommandLineParserConstants {
         }
 
   static final public void start() throws ParseException {
+    jj_consume_token(13);
+    filePath();
+    jj_consume_token(13);
     label_1:
     while (true) {
-      jj_consume_token(14);
-      argument();
-      jj_consume_token(15);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 14:
+      case 13:
         ;
         break;
       default:
         jj_la1[0] = jj_gen;
         break label_1;
       }
+      jj_consume_token(13);
+      argument();
+      jj_consume_token(13);
     }
     jj_consume_token(0);
   }
 
   static final public void argument() throws ParseException {
-                  Token t1=null, t2=null;
+                  Token t1=null;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case FIFO_STRATEGY:
       t1 = jj_consume_token(FIFO_STRATEGY);
@@ -53,17 +59,9 @@ public class CommandLineParser implements CommandLineParserConstants {
       break;
     case BFS_STRATEGY:
       t1 = jj_consume_token(BFS_STRATEGY);
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case NUMERIC:
-        t2 = jj_consume_token(NUMERIC);
-        break;
-      default:
-        jj_la1[1] = jj_gen;
-        ;
-      }
     opt.clauseStrategy = EnumClass.clauseStrategy.MIN_QUEUE;
-    if(t2!=null)
-        opt.peakGivenRatio=  (new Integer(t2.image)).intValue();
+    if(t1.image.length()>5)
+        opt.peakGivenRatio= (new Integer(t1.image.substring(5, t1.image.length()))).intValue();
       break;
     case LOOP_TYPE:
       t1 = jj_consume_token(LOOP_TYPE);
@@ -74,19 +72,7 @@ public class CommandLineParser implements CommandLineParserConstants {
       break;
     case TIME:
       t1 = jj_consume_token(TIME);
-      label_2:
-      while (true) {
-        t2 = jj_consume_token(NUMERIC);
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case NUMERIC:
-          ;
-          break;
-        default:
-          jj_la1[2] = jj_gen;
-          break label_2;
-        }
-      }
-    opt.timeOut = (new Integer(t2.image)).intValue();
+    opt.timeOut = (new Integer(t1.image.substring(5, t1.image.length()))).intValue();
       break;
     case RESEARCH_STRATEGY:
       t1 = jj_consume_token(RESEARCH_STRATEGY);
@@ -95,15 +81,17 @@ public class CommandLineParser implements CommandLineParserConstants {
     else
         opt.researchStrategy = EnumClass.researchStrategy.CONTR_BEFORE;
       break;
-    case FILEPATH:
-      t1 = jj_consume_token(FILEPATH);
-    opt.filePath=t1.image;
-      break;
     default:
-      jj_la1[3] = jj_gen;
+      jj_la1[1] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
+  }
+
+  static final public void filePath() throws ParseException {
+                  Token t;
+    t = jj_consume_token(FILEPATH);
+    opt.filePath=t.image;
   }
 
   static private boolean jj_initialized_once = false;
@@ -116,13 +104,13 @@ public class CommandLineParser implements CommandLineParserConstants {
   static public Token jj_nt;
   static private int jj_ntk;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[4];
+  static final private int[] jj_la1 = new int[2];
   static private int[] jj_la1_0;
   static {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x4000,0x800,0x800,0x7e0,};
+      jj_la1_0 = new int[] {0x2000,0x1f0,};
    }
 
   /** Constructor with InputStream. */
@@ -143,7 +131,7 @@ public class CommandLineParser implements CommandLineParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 2; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -157,7 +145,7 @@ public class CommandLineParser implements CommandLineParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 2; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -174,7 +162,7 @@ public class CommandLineParser implements CommandLineParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 2; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -184,7 +172,7 @@ public class CommandLineParser implements CommandLineParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 2; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -200,7 +188,7 @@ public class CommandLineParser implements CommandLineParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 2; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -209,7 +197,7 @@ public class CommandLineParser implements CommandLineParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 2; i++) jj_la1[i] = -1;
   }
 
   static private Token jj_consume_token(int kind) throws ParseException {
@@ -260,12 +248,12 @@ public class CommandLineParser implements CommandLineParserConstants {
   /** Generate ParseException. */
   static public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[16];
+    boolean[] la1tokens = new boolean[14];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 2; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -274,7 +262,7 @@ public class CommandLineParser implements CommandLineParserConstants {
         }
       }
     }
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 14; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

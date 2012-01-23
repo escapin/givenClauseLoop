@@ -11,23 +11,23 @@ public interface CommandLineParserConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int FIFO_STRATEGY = 5;
+  int FIFO_STRATEGY = 4;
   /** RegularExpression Id. */
-  int BFS_STRATEGY = 6;
+  int BFS_STRATEGY = 5;
   /** RegularExpression Id. */
-  int LOOP_TYPE = 7;
+  int LOOP_TYPE = 6;
   /** RegularExpression Id. */
-  int TIME = 8;
+  int TIME = 7;
   /** RegularExpression Id. */
-  int RESEARCH_STRATEGY = 9;
+  int RESEARCH_STRATEGY = 8;
   /** RegularExpression Id. */
-  int FILEPATH = 10;
+  int FILEPATH = 9;
   /** RegularExpression Id. */
-  int NUMERIC = 11;
+  int NUMERIC = 10;
   /** RegularExpression Id. */
-  int CHAR1 = 12;
+  int CHAR1 = 11;
   /** RegularExpression Id. */
-  int CHAR2 = 13;
+  int CHAR2 = 12;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -36,20 +36,18 @@ public interface CommandLineParserConstants {
   String[] tokenImage = {
     "<EOF>",
     "\" \"",
-    "\"\\t\"",
     "\"\\n\"",
     "\"\\r\"",
     "\"-fifo\"",
-    "\"-queue\"",
+    "<BFS_STRATEGY>",
     "<LOOP_TYPE>",
-    "\"-time\"",
+    "<TIME>",
     "<RESEARCH_STRATEGY>",
     "<FILEPATH>",
     "<NUMERIC>",
     "<CHAR1>",
     "<CHAR2>",
-    "\"{{\"",
-    "\"}}\"",
+    "\"\\t\"",
   };
 
 }

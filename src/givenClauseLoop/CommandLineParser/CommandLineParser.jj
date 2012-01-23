@@ -10,12 +10,15 @@ public class CommandLineParser{
 	private static CommandOptions opt;
 	
 	public static CommandOptions parsing(String[] args) throws Exception{
-		StringBuffer input = new StringBuffer();
-		opt = new CommandOptions();
-		for(String s: args)
-			input.append(" {{" + s + "}}");
-			
-		try{	
+		try{
+		  	if(args.length==0)
+		  		throw new ParseException("no file path found");
+
+		  	StringBuffer input = new StringBuffer("\t" + args[args.length-1] + "\t");
+			opt = new CommandOptions();
+			for(int i=0;i<args.length-1;i++)
+				input.append("\t" + args[i] + "\t");	
+			//System.out.println(input);
 			new CommandLineParser(new java.io.StringReader(input.toString())).start();
 			if(opt.filePath.equals(""))
 				throw new ParseException("no file path found");
@@ -30,34 +33,34 @@ public class CommandLineParser{
 
 PARSER_END(CommandLineParser)
 
-SKIP:  { " " | "\t" | "\n" | "\r" }	// "\r" is the backspace escape symbol
+SKIP:  { " " | "\n" | "\r" }	// "\r" is the backspace escape symbol
 
 TOKEN:	{	<FIFO_STRATEGY: 	"-fifo">
-		|	<BFS_STRATEGY:		"-queue">
+		|	<BFS_STRATEGY:		"-best"(<NUMERIC>)? >   
 		|	<LOOP_TYPE:			"-o" | "-e">
-		|	<TIME:				"-time">
+		|	<TIME:				"-time"<NUMERIC> >
 		| 	<RESEARCH_STRATEGY:	"-exp" | "-contr">
-		|   <FILEPATH:			<CHAR2>(<CHAR1>)*>
+		|   <FILEPATH:			<CHAR1>(<CHAR2>)*>
 		|	<NUMERIC:			(["0"-"9"])+> 
-		|	<#CHAR1:			~["{" , "}"] >
-		| 	<#CHAR2:			~["-", "{" , "}"] > 	//["\33"-"\172"] | ["\174"] | ["\176"]> 	
+		| 	<#CHAR1:			~["-", "\t"] > 	//["\33"-"\172"] | ["\174"] | ["\176"]> 	
+		|	<#CHAR2:			~["\t"] >
 		}
 void start(): { }
 {
-  ( "{{" argument() "}}" )+ <EOF>
+  ( "\t" filePath() "\t" ) ( "\t" argument() "\t" )*  <EOF>
 }
 
-void argument(): {Token t1=null, t2=null;}
+void argument(): {Token t1=null;}
 {
-  	t1=<FIFO_STRATEGY>
-  	{
+  t1=<FIFO_STRATEGY>
+  {
     opt.clauseStrategy = EnumClass.clauseStrategy.FIFO;
-	}
-  | t1=<BFS_STRATEGY> (t2=<NUMERIC>)?
+  }
+  | t1=<BFS_STRATEGY>
   {
     opt.clauseStrategy = EnumClass.clauseStrategy.MIN_QUEUE;
-    if(t2!=null)
-    	opt.peakGivenRatio=  (new Integer(t2.image)).intValue();
+    if(t1.image.length()>5)
+    	opt.peakGivenRatio= (new Integer(t1.image.substring(5, t1.image.length()))).intValue();
    	
   }
   | t1=<LOOP_TYPE>
@@ -67,9 +70,9 @@ void argument(): {Token t1=null, t2=null;}
     else
     	opt.loopType = EnumClass.LoopType.E_LOOP;
   }
-  | t1=<TIME> (t2=<NUMERIC>)+
+  | t1=<TIME>
   {
-    opt.timeOut = (new Integer(t2.image)).intValue();
+    opt.timeOut = (new Integer(t1.image.substring(5, t1.image.length()))).intValue();
   }
   | t1=<RESEARCH_STRATEGY>
   {
@@ -77,9 +80,13 @@ void argument(): {Token t1=null, t2=null;}
     	opt.researchStrategy = EnumClass.researchStrategy.EXP_BEFORE;
     else
     	opt.researchStrategy = EnumClass.researchStrategy.CONTR_BEFORE;
-  }
-  | t1=<FILEPATH>
-  {
-    opt.filePath=t1.image;
-  }
+  } 
 }
+
+void filePath(): {Token t;}
+{
+  t=<FILEPATH>
+  {
+    opt.filePath=t.image;
+  }
+  }

@@ -7,38 +7,50 @@ import java.util.*;
 public class ResearchPlan {
 	
 	private static InfoLoop info;
+	private static CommandOptions opt;
 	private static Collection<Clause> toBeSelected;
 	private static Collection<Clause> selected;
+	private static Collection<Clause>  oldest;
 	
-	public static InfoLoop givenClauseLoop(Queue<Clause> toBeSel, CommandOptions opt){
-		info = new InfoLoop();
+	public static InfoLoop givenClauseLoop(Queue<Clause> toBeSel, CommandOptions option, InfoLoop infoLoop){
 		toBeSelected = toBeSel;
+		opt=option;
+		info = infoLoop;
 		selected = new LinkedList<Clause>();
 		//selected = new HashSet<Clause>();
 		//selected = new LinkedHashSet<Clause>();
-		
 		info.clausesGenerated=toBeSelected.size();
 		info.loopType=opt.loopType;
 		
-		Clause givenClause;
+		if(opt.peakGivenRatio>0)
+			oldest = new LinkedHashSet<Clause>(); 
 		
+		Clause givenClause;
 		for(Iterator<Clause> iter = toBeSelected.iterator(); iter.hasNext(); ){
 			givenClause = iter.next();
 			if(givenClause.isTautology()){
 				info.nTautology++;
 				iter.remove();
-			}
-		}		
+			} else if (opt.peakGivenRatio>0)
+				oldest.add(givenClause);
+		}
 		
-		System.out.println("ITERS\t\tTO BE SELECTED" + "\t\t" + "SELECTED");
 		int i=0;
-		
+		System.out.println("ITERS\t\tTO BE SELECTED" + "\t\t" + "SELECTED");
 		while(!toBeSelected.isEmpty()){ // GIVEN CLAUSE LOOP
 			i++;
 			System.out.print("\r" + i + ")      \t" + toBeSelected.size() + "......................" + selected.size() + "      ");			
 			
-			givenClause=((Queue<Clause>) toBeSelected).poll();
-			
+			if(opt.peakGivenRatio>0 && i%opt.peakGivenRatio==0){
+				givenClause= oldest.iterator().next(); // the oldest one 
+				oldest.remove(givenClause);
+				toBeSelected.remove(givenClause);
+			} else {
+				givenClause=((Queue<Clause>) toBeSelected).poll();
+				if(opt.peakGivenRatio>0)
+					oldest.remove(givenClause);
+			}
+				
 			// FIND FACTORS
 			if(findFactors(givenClause))
 				return info;
@@ -50,7 +62,7 @@ public class ResearchPlan {
 			
 		} // END OF GIVEN CLAUSE LOOP
 		
-		info.res = (toBeSelected.isEmpty())? EnumClass.LoopResult.SAT : EnumClass.LoopResult.TIME_EXPIRED;
+		info.res = EnumClass.LoopResult.SAT;
 		return info;
 	}
 	
@@ -65,7 +77,6 @@ public class ResearchPlan {
 					cNew=ExpansionRules.factorisation(givenClause, l1, l2, alreadyFactorised);
 					if(cNew!=null){ // a factor has been found
 						info.nFactorisations++;
-						info.clausesGenerated++;
 						if(!cNew.isTautology()){	
 							
 							cNew=contractionRules(cNew, selected, null, null, null); // CONTRACTION RULES with selected
@@ -76,11 +87,12 @@ public class ResearchPlan {
 								if(info.res==EnumClass.LoopResult.UNSAT)
 									return true;
 							}
-							if(cNew!=null)
-								toBeSelected.add(cNew);		
-								
-						}
-						else
+							if(cNew!=null){
+								toBeSelected.add(cNew);
+								if(opt.peakGivenRatio>0)
+									oldest.add(cNew);
+							}	
+						} else
 							info.nTautology++;
 					}
 				}
@@ -117,7 +129,6 @@ public class ResearchPlan {
 							cNew=ExpansionRules.binaryResolution(givenClause, l1, cSel, l2);
 							if(cNew!=null){ // a binary resolvent has been found
 								info.nResolutions++;
-								info.clausesGenerated++;
 								//System.out.println("\t" + cNew);
 								if(cNew.isEmpty()){
 									info.c1=givenClause;
@@ -137,9 +148,11 @@ public class ResearchPlan {
 										if(info.res==EnumClass.LoopResult.UNSAT)
 											return true;
 									}
-									
-									if(cNew!=null)
+									if(cNew!=null){
 										toBeSelected.add(cNew);
+										if(opt.peakGivenRatio>0)
+											oldest.add(cNew);
+									}
 								} else
 									info.nTautology++;
 							}
@@ -230,14 +243,14 @@ public class ResearchPlan {
 				} else if(cNew.subsumes(cSel)){
 					info.nSubsumptions++;
 					//System.out.println("\n" + cSel + " subsumes " + cNew);
-					if(toBeRemoved!=null){
+					if(toBeRemoved!=null)
 						toBeRemoved.add(cSel);
-						/*System.out.println("\nTO BE REMOVED INSIDE: ");
-						for(Clause c: toBeRemoved)
-							System.out.println("\t" + c);*/
-					}else
+					else {
 						iter.remove(); 	// Removes from the clauseSet Queue the last element returned by the iterator
-										// is like clauseSet.remove(cSel);	
+										// is like clauseSet.remove(cSel);
+						if(clauseSet==toBeSelected && opt.peakGivenRatio>0)
+							oldest.remove(cSel);
+					}
 				} 
 			}		
 		}
