@@ -114,20 +114,20 @@ public class Clause implements Comparable<Clause>{
 			}
 			// STEP 2-3-4
 			*/
-			NavigableSet<Clause> Uset = new TreeSet<Clause>();
+			Set<Clause> Uset = new HashSet<Clause>();
 			Uset.add(this);
 			return checkSubsumption(Uset, c);
 		}
 		return false;
 	}	
 	
-	private boolean checkSubsumption(NavigableSet<Clause> Uset, Clause c){
+	private boolean checkSubsumption(Set<Clause> Uset, Clause c){
 		if(Uset==null || Uset.size()==0)
 			return false;
 		else if(emptyClause(Uset))
 			return true;
 		else {
-			NavigableSet<Clause> Uset1 = new TreeSet<Clause>();
+			Set<Clause> Uset1 = new HashSet<Clause>();
 			Set<Literal> lMap;
 			Map<Variable, Term> sigma;
 			Clause cNew;
@@ -136,14 +136,8 @@ public class Clause implements Comparable<Clause>{
 					if( (lMap=c.getLitMap().get( (lUset.sign()? "": "~") + lUset.getSymbol()) ) != null )
 						for(Literal lOth: lMap)
 							if( (sigma=Unifier.findLeftSubst(lUset.getArgs(), lOth.getArgs())) != null){
-							/*	System.out.println(cUset);
-								System.out.println(lUset + " --> " + lOth);
-								for(Variable v: sigma.keySet())
-									System.out.println("\t" + v + "<--" + sigma.get(v));
-							*/
-								if( (cNew=ExpansionRules.createFactor(cUset, lUset, sigma)).nLiterals() == 0 )
+								if( (cNew=ExpansionRules.createFactor(cUset, lUset, sigma)).isEmpty() )
 									return true;
-								//System.out.println(cNew + "\n");
 								Uset1.add(cNew);
 							}
 			}
@@ -160,15 +154,15 @@ public class Clause implements Comparable<Clause>{
 		*/
 	}
 	
-	private boolean emptyClause(NavigableSet<Clause> clSet){
+	private boolean emptyClause(Set<Clause> clSet){
 		for(Clause c: clSet)
-			if(c.nLiterals()==0)
+			if(c.isEmpty())
 				return true;
 		return false;
 	}
 	
 	/**
-	 * Application ofinference rule:
+	 * Application of inference rule:
 	 * 
 	 * 		L' | C , L
 	 * 	   ----------------

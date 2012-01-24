@@ -70,7 +70,7 @@ public class ResearchPlan {
 					return info;
 			}
 			
-			if(opt.researchStrategy!=EnumClass.researchStrategy.EXP_BEFORE)
+			if(opt.researchStrategy==EnumClass.researchStrategy.CONTR_BEFORE)
 				alreadySelected.add(givenClause);
 			
 		} // END OF GIVEN CLAUSE LOOP
@@ -78,13 +78,6 @@ public class ResearchPlan {
 		info.res = EnumClass.LoopResult.SAT;
 		return info;
 	}
-	
-	
-	
-	
-	
-	
-	
 	
 	private static boolean findFactors(Clause givenClause){
 		Clause cNew;

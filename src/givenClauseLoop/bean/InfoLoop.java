@@ -1,6 +1,5 @@
 package givenClauseLoop.bean;
 
-import givenClauseLoop.bean.*;
 import givenClauseLoop.core.Clause;
 
 public class InfoLoop {

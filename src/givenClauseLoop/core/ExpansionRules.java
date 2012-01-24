@@ -116,7 +116,7 @@ public class ExpansionRules {
 	public static Clause factorisation(Clause c, Literal l1, Literal l2, Map<Literal, Literal> alreadyFactorised){
 		Map<Variable, Term> sigma;
 		// iter on all the predicates with than name in this clause
-		if( l1!=l2 && alreadyFactorised.get(l2)!=l1 && 
+		if( l1!=l2 && alreadyFactorised.get(l2)!=l1 && alreadyFactorised.get(l1)!=l2 &&
 			(sigma=Unifier.findMGU(l1.getArgs(), l2.getArgs())) != null){
 			/*
 			System.out.println(c);
