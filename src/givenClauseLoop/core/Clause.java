@@ -102,13 +102,36 @@ public class Clause implements Comparable<Clause>{
 		if(this!=c && this.nLiterals()>0 && this.nLiterals()<=c.nLiterals()){
 			Collection<Clause> Uset = new PriorityQueue<Clause>();
 			Uset.add(this);
-			return checkSubsumption(Uset, c);
+			return checkSubsumptionQueue(Uset, c);
 		}
 		return false;
 	}	
 	
-	private boolean checkSubsumption(Collection<Clause> Uset, Clause c){
-		Collection<Clause> Uset1 = new PriorityQueue<Clause>();
+	private boolean checkSubsumptionSort(Collection<Clause> Uset, Clause c){
+		//List<Clause> Uset1 = new ArrayList<Clause>();
+		Set<Literal> lMap;
+		Map<Variable, Term> sigma;
+		Clause cNew;
+		for(List<Clause> Uset1 = new ArrayList<Clause>(); !Uset.isEmpty(); Uset1.clear()){
+			Collections.sort((List<Clause>) Uset);
+			for(Clause cUset: Uset){	
+				for(Literal lUset: cUset.getLiterals())
+					if( (lMap=c.getLitMap().get( (lUset.sign()? "": "~") + lUset.getSymbol()) ) != null )
+						for(Literal lOth: lMap)
+							if( (sigma=Unifier.findLeftSubst(lUset.getArgs(), lOth.getArgs())) != null){
+								if( (cNew=ExpansionRules.createFactor(cUset, lUset, sigma)).isEmpty() )
+									return true;
+								Uset1.add(cNew);
+							}
+			}
+			Uset.clear();
+			Uset.addAll(Uset1);
+		}
+		return false;
+	}
+	
+	private boolean checkSubsumptionQueue(Collection<Clause> Uset, Clause c){
+		Collection<Clause> Uset1 = new LinkedList<Clause>();
 		Set<Literal> lMap;
 		Map<Variable, Term> sigma;
 		Clause cUset, cNew;
@@ -131,45 +154,6 @@ public class Clause implements Comparable<Clause>{
 		return false;
 	}
 	
-	private boolean checkSubsumptionOLD(Collection<Clause> Uset, Clause c){
-		if(Uset==null || Uset.size()==0)
-			return false;
-		else if(emptyClause(Uset))
-			return true;
-		else {
-			Collection<Clause> Uset1 = new HashSet<Clause>();
-			Set<Literal> lMap;
-			Map<Variable, Term> sigma;
-			Clause cNew;
-			for(Clause cUset: Uset){
-				for(Literal lUset: cUset.getLiterals())
-					if( (lMap=c.getLitMap().get( (lUset.sign()? "": "~") + lUset.getSymbol()) ) != null )
-						for(Literal lOth: lMap)
-							if( (sigma=Unifier.findLeftSubst(lUset.getArgs(), lOth.getArgs())) != null){
-								if( (cNew=ExpansionRules.createFactor(cUset, lUset, sigma)).isEmpty() )
-									return true;
-								Uset1.add(cNew);
-							}
-			}
-			return checkSubsumption(Uset1, c);
-		}
-		/*
-		else {
-			Set<Clause> U1 = new HashSet<Clause>();
-			for(Clause c1: U)
-				for(Clause c2: W)
-					U1.addAll(InferenceRules.binaryResolution(c1, c2));
-			return checkSubsumption(U1, W);
-		}
-		*/
-	}
-	
-	private boolean emptyClause(Collection<Clause> clSet){
-		for(Clause c: clSet)
-			if(c.isEmpty())
-				return true;
-		return false;
-	}
 	
 	/**
 	 * Application of inference rule:
@@ -245,3 +229,37 @@ public class Clause implements Comparable<Clause>{
 		return literals.toString();
 	}
 }
+
+/*
+private boolean checkSubsumptionOLD(Collection<Clause> Uset, Clause c){
+	if(Uset==null || Uset.size()==0)
+		return false;
+	else if(emptyClause(Uset))
+		return true;
+	else {
+		Collection<Clause> Uset1 = new HashSet<Clause>();
+		Set<Literal> lMap;
+		Map<Variable, Term> sigma;
+		Clause cNew;
+		for(Clause cUset: Uset){
+			for(Literal lUset: cUset.getLiterals())
+				if( (lMap=c.getLitMap().get( (lUset.sign()? "": "~") + lUset.getSymbol()) ) != null )
+					for(Literal lOth: lMap)
+						if( (sigma=Unifier.findLeftSubst(lUset.getArgs(), lOth.getArgs())) != null){
+							if( (cNew=ExpansionRules.createFactor(cUset, lUset, sigma)).isEmpty() )
+								return true;
+							Uset1.add(cNew);
+						}
+		}
+		return checkSubsumption(Uset1, c);
+	}
+	
+}
+
+private boolean emptyClause(Collection<Clause> clSet){
+	for(Clause c: clSet)
+		if(c.isEmpty())
+			return true;
+	return false;
+}
+*/
