@@ -100,34 +100,44 @@ public class Clause implements Comparable<Clause>{
 	
 	public boolean subsumes(Clause c){
 		if(this!=c && this.nLiterals()>0 && this.nLiterals()<=c.nLiterals()){
-			// STEP 1 Subsumption Algorithm in Chang Lee books page 95
-			/*
-			Map<Variable, Term> sigma = new HashMap<Variable, Term>();
-			for(Variable var : c.getVariables())
-				sigma.put(var, new Constant("##"));
-			Set<Clause> W = new HashSet<Clause>();
-			Clause cTemp;
-			for(Literal lit : c.getLiterals()){
-				cTemp = new Clause(); 
-				cTemp.addLiteral(new Literal(lit.getSymbol(), !lit.sign(), Substitution.substitute(lit.getArgs(), sigma)));
-				W.add(cTemp);
-			}
-			// STEP 2-3-4
-			*/
-			Set<Clause> Uset = new HashSet<Clause>();
+			Collection<Clause> Uset = new PriorityQueue<Clause>();
 			Uset.add(this);
 			return checkSubsumption(Uset, c);
 		}
 		return false;
 	}	
 	
-	private boolean checkSubsumption(Set<Clause> Uset, Clause c){
+	private boolean checkSubsumption(Collection<Clause> Uset, Clause c){
+		Collection<Clause> Uset1 = new PriorityQueue<Clause>();
+		Set<Literal> lMap;
+		Map<Variable, Term> sigma;
+		Clause cUset, cNew;
+		while(!Uset.isEmpty()){
+			while(!Uset.isEmpty()){
+				cUset= ((Queue<Clause>) Uset).poll();
+			//for(Clause cUset: Uset){	
+				for(Literal lUset: cUset.getLiterals())
+					if( (lMap=c.getLitMap().get( (lUset.sign()? "": "~") + lUset.getSymbol()) ) != null )
+						for(Literal lOth: lMap)
+							if( (sigma=Unifier.findLeftSubst(lUset.getArgs(), lOth.getArgs())) != null){
+								if( (cNew=ExpansionRules.createFactor(cUset, lUset, sigma)).isEmpty() )
+									return true;
+								Uset1.add(cNew);
+							}
+			}
+			Uset.addAll(Uset1);
+			Uset1.clear();
+		}
+		return false;
+	}
+	
+	private boolean checkSubsumptionOLD(Collection<Clause> Uset, Clause c){
 		if(Uset==null || Uset.size()==0)
 			return false;
 		else if(emptyClause(Uset))
 			return true;
 		else {
-			Set<Clause> Uset1 = new HashSet<Clause>();
+			Collection<Clause> Uset1 = new HashSet<Clause>();
 			Set<Literal> lMap;
 			Map<Variable, Term> sigma;
 			Clause cNew;
@@ -154,7 +164,7 @@ public class Clause implements Comparable<Clause>{
 		*/
 	}
 	
-	private boolean emptyClause(Set<Clause> clSet){
+	private boolean emptyClause(Collection<Clause> clSet){
 		for(Clause c: clSet)
 			if(c.isEmpty())
 				return true;
@@ -197,10 +207,21 @@ public class Clause implements Comparable<Clause>{
 	 *@see java.lang.Comparable#compareTo ( )
 	 *
 	 */
+	
 	public int compareTo(Clause f){
 		return this.nSymbols()-f.nSymbols();
 	}
-	
+	/*
+	public int compareTo(Clause f){
+		if(this.equals(f))
+			return 0;
+		int rank=this.nSymbols()-f.nSymbols();
+		if(rank==0){
+			return -1;
+		}
+		return rank;
+	}
+	*/
 	public boolean equals(Object o){
 		return this==o;
 	}

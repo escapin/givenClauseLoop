@@ -321,7 +321,7 @@ public class ResearchPlan {
 		}
 		return cNew;
 	}
-	
+}	
 	
 	
 	
@@ -489,4 +489,4 @@ public class ResearchPlan {
 		return false;
 	}
 	*/
-}
+

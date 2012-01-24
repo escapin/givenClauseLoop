@@ -20,7 +20,7 @@
 %            Maximal term depth    :    2 (   1 average)
 % SPC      : CNF_SAT_RFO_NEQ
 
-% Comments : java givenClauseLoop.Main -best -o -time120 -exp KRS006-1.p
+% Comments : java givenClauseLoop.Main -best -o -exp ../examples/KRS006-1.p
 %--------------------------------------------------------------------------
 cnf(clause_1,negated_conjecture,
     ( e(exist) )).
