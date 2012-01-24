@@ -99,12 +99,23 @@ public class Main {
 			}catch (FileNotFoundException e){
 				System.out.println("Can not open file. Maybe path is wrong or file does not exist."); 
 			}catch (IOException e){
-				throw new IOException("Failed to open the file.");
+				System.out.println("Failed to open the file.");
+			}catch(Throwable e){
+				//System.out.println(e.getMessage());
+				throw new Exception(e);
 			}
+		}catch (FileNotFoundException e){
+			System.out.println("Can not open file. Maybe path is wrong or file does not exist.");
+			System.out.println(opt.help);
+		}catch (IOException e){
+			System.out.println("Failed to open the file: " + opt.filePath);
+			System.out.println(opt.help);
 		}catch(Throwable e){
-			//System.out.println(e.getMessage());
-			throw new Exception(e);
+			System.out.println("ERROR in command line\nUsage:\n\t" + 
+					"java -jar givenClauseLoop.jar [-fifo | -best | -bestN] [-o | -e] [-timeN] [-contr | -exp] filePath\n\t" +
+					"java -jar givenClauseLoop.jar -help");
 		}
+			
 	}
 
 

@@ -89,7 +89,7 @@ public class ExpansionRules {
 	 * @return set of all the factors
 	 */
 	public static Queue<Clause> factorisation(Clause c){
-		Queue<Clause> factors= new PriorityQueue<Clause>();
+		Queue<Clause> factors= new LinkedList<Clause>();
 		Clause cNew;
 		Set<Literal> lMap; 
 		Map<Literal, Literal> alreadyFactorised = new HashMap<Literal, Literal>(); // in order to avoid double factorisations

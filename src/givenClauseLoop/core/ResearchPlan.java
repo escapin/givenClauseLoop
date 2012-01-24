@@ -57,16 +57,15 @@ public class ResearchPlan {
 			
 			System.out.print("\r" + i + ")      \t" + toBeSelected.size() + "......................." + alreadySelected.size() + "      ");
 			
-			// FIND FACTORS
-			if(findFactors(givenClause))
-				return info;
 			
-			// FIND BINARY RESOLVENTS
 			if(opt.researchStrategy==EnumClass.researchStrategy.EXP_BEFORE){
-				if(findExpResolvents(givenClause))
+				if(findExpansionBefore(givenClause))
 					return info;
-			} else {
-				if(findContrResolvents(givenClause))
+			} else{
+			// FIND FACTORS
+				if(findFactors(givenClause))
+					return info;
+				if(findResolvents(givenClause))
 					return info;
 			}
 			
@@ -79,41 +78,11 @@ public class ResearchPlan {
 		return info;
 	}
 	
-	private static boolean findFactors(Clause givenClause){
-		Clause cNew;
-		Set<Literal> lMap;
-		Map<Literal, Literal> alreadyFactorised = new HashMap<Literal, Literal>(); // in order to avoid double factorisations
-		for(Literal l1: givenClause.getLiterals())
-			if( (lMap=givenClause.getLitMap().get( (l1.sign()? "": "~") + l1.getSymbol()) ) != null)
-				for(Literal l2: lMap){
-					cNew=ExpansionRules.factorisation(givenClause, l1, l2, alreadyFactorised);
-					if(cNew!=null){ // a factor has been found
-						info.nFactorisations++;
-						if(!cNew.isTautology()){	
-							
-							cNew=contractionRules(cNew, alreadySelected, null, null, null); // CONTRACTION RULES with alreadySelected
-							if(info.res==EnumClass.LoopResult.UNSAT)
-								return true;
-							if(cNew!=null && info.loopType==EnumClass.LoopType.OTTER_LOOP){
-								cNew=contractionRules(cNew, toBeSelected, null, null, null); // CONTRACTION RULES with toBeSelected									
-								if(info.res==EnumClass.LoopResult.UNSAT)
-									return true;
-							}
-							if(cNew!=null){
-								toBeSelected.add(cNew);
-								if(opt.peakGivenRatio>0)
-									oldest.add(cNew);
-							}	
-						} else
-							info.nTautology++;
-					}
-				}
-		return false;
-	}
 	
-	
-	private static boolean findExpResolvents(Clause givenClause){
+	private static boolean findExpansionBefore(Clause givenClause){
 		Queue<Clause> resolvents= new LinkedList<Clause>();
+		
+		resolvents=ExpansionRules.factorisation(givenClause);
 		Clause cNew;
 		for(Clause cSel: alreadySelected)
 			if(givenClause!=cSel){
@@ -181,8 +150,40 @@ public class ResearchPlan {
 	}
 	
 	
+	private static boolean findFactors(Clause givenClause){
+		Clause cNew;
+		Set<Literal> lMap;
+		Map<Literal, Literal> alreadyFactorised = new HashMap<Literal, Literal>(); // in order to avoid double factorisations
+		for(Literal l1: givenClause.getLiterals())
+			if( (lMap=givenClause.getLitMap().get( (l1.sign()? "": "~") + l1.getSymbol()) ) != null)
+				for(Literal l2: lMap){
+					cNew=ExpansionRules.factorisation(givenClause, l1, l2, alreadyFactorised);
+					if(cNew!=null){ // a factor has been found
+						info.nFactorisations++;
+						if(!cNew.isTautology()){	
+							
+							cNew=contractionRules(cNew, alreadySelected, null, null, null); // CONTRACTION RULES with alreadySelected
+							if(info.res==EnumClass.LoopResult.UNSAT)
+								return true;
+							if(cNew!=null && info.loopType==EnumClass.LoopType.OTTER_LOOP){
+								cNew=contractionRules(cNew, toBeSelected, null, null, null); // CONTRACTION RULES with toBeSelected									
+								if(info.res==EnumClass.LoopResult.UNSAT)
+									return true;
+							}
+							if(cNew!=null){
+								toBeSelected.add(cNew);
+								if(opt.peakGivenRatio>0)
+									oldest.add(cNew);
+							}	
+						} else
+							info.nTautology++;
+					}
+				}
+		return false;
+	}
 	
-	private static boolean findContrResolvents(Clause givenClause){
+	
+	private static boolean findResolvents(Clause givenClause){
 		Clause cNew;
 		Set<Clause> toBeRemoved = new HashSet<Clause>();
 		Set<Literal>	lSet, 

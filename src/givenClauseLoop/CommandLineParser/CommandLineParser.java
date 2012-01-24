@@ -27,6 +27,9 @@ public class CommandLineParser implements CommandLineParserConstants {
                 }catch(Throwable e){
                         // Catching Throwable is ugly but JavaCC throws Error objects!
                         //e.printStackTrace();
+                        opt.help.append("Usage:\u005cn\u005ct" +
+                                "java -jar givenClauseLoop.jar [-fifo | -best | -bestN] [-o | -e] [-timeN] [-contr | -exp] filePath\u005cn\u005ct" +
+                                "java -jar givenClauseLoop.jar -help");
                         throw new ParseException("Syntax check failed: " + e.getMessage());
                 }
                 return opt;
