@@ -79,6 +79,13 @@ public class ResearchPlan {
 		return info;
 	}
 	
+	
+	
+	
+	
+	
+	
+	
 	private static boolean findFactors(Clause givenClause){
 		Clause cNew;
 		Set<Literal> lMap;
@@ -321,4 +328,172 @@ public class ResearchPlan {
 		}
 		return cNew;
 	}
+	
+	
+	
+	
+	
+	/*
+	private static boolean findExpFactRes(Clause givenClause){
+		Queue<Clause> results=ExpansionRules.factorisation(givenClause);
+		Clause cNew;
+		for(Clause cSel: alreadySelected)
+			if(givenClause!=cSel){
+				Set<Literal> lMap;
+				for(Literal l1: givenClause.getLiterals())
+					if( (lMap=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null )
+						for(Literal l2: lMap){
+							cNew=ExpansionRules.binaryResolution(givenClause, l1, cSel, l2);
+							if(cNew!=null){
+								info.nResolutions++;
+								if(cNew.isEmpty()){
+									info.c1=givenClause;
+									info.c2=cSel;
+									info.rule=EnumClass.Rule.BINARY_RESOLUTION;
+									info.res = EnumClass.LoopResult.UNSAT;
+									return true;
+								}
+								results.add(cNew);
+							}	
+						}
+			}
+		for(Iterator<Clause> iter=results.iterator(); iter.hasNext();){
+			cNew=iter.next();
+			if(cNew.isTautology()){
+				info.nTautology++;
+				iter.remove();
+			}
+		}
+		
+		Literal l;
+		for(Clause c1: results)
+			for(Clause c2: results)
+				if(c1!=c2){ 
+					if((l=c1.simplify(c2, false))!=null){
+						info.nSimplifications++;
+						if(c1.isEmpty()){ // empty clause generated
+							info.c1=c2;
+							Clause cTemp=new Clause();
+							cTemp.addLiteral(l);
+							info.c2=cTemp;
+							info.rule=EnumClass.Rule.SIMPLIFICATION;
+							info.res = EnumClass.LoopResult.UNSAT;
+							return true;
+						}
+					}
+				}
+		
+		for(Clause c1: results)
+			for(Clause c2: toBeSelected)
+				if(c1!=c2){ 
+					if((l=c1.simplify(c2, false))!=null){
+						info.nSimplifications++;
+						if(c1.isEmpty()){ // empty clause generated
+							info.c1=c2;
+							Clause cTemp=new Clause();
+							cTemp.addLiteral(l);
+							info.c2=cTemp;
+							info.rule=EnumClass.Rule.SIMPLIFICATION;
+							info.res = EnumClass.LoopResult.UNSAT;
+							return true;
+						}
+					} else if((l=c2.simplify(c1, false))!=null){
+						info.nSimplifications++;
+						if(c2.isEmpty()){ // empty clause generated
+							info.c1=c1;
+							Clause cTemp=new Clause();
+							cTemp.addLiteral(l);
+							info.c2=cTemp;
+							info.rule=EnumClass.Rule.SIMPLIFICATION;
+							info.res = EnumClass.LoopResult.UNSAT;
+							return true;
+						}
+					}	
+				}
+		for(Clause c1: results)
+			for(Clause c2: alreadySelected)
+				if(c1!=c2){ 
+					if((l=c1.simplify(c2, false))!=null){
+						info.nSimplifications++;
+						if(c1.isEmpty()){ // empty clause generated
+							info.c1=c2;
+							Clause cTemp=new Clause();
+							cTemp.addLiteral(l);
+							info.c2=cTemp;
+							info.rule=EnumClass.Rule.SIMPLIFICATION;
+							info.res = EnumClass.LoopResult.UNSAT;
+							return true;
+						}
+					} else if((l=c2.simplify(c1, false))!=null){
+						info.nSimplifications++;
+						if(c2.isEmpty()){ // empty clause generated
+							info.c1=c1;
+							Clause cTemp=new Clause();
+							cTemp.addLiteral(l);
+							info.c2=cTemp;
+							info.rule=EnumClass.Rule.SIMPLIFICATION;
+							info.res = EnumClass.LoopResult.UNSAT;
+							return true;
+						}
+					}	
+				}
+		
+		Queue<Clause> tmp1 = new PriorityQueue<Clause>();
+		Set<Clause> tmpSubsumed = new HashSet<Clause>();
+		
+		for(Clause c1: results){
+			for(Clause c2: results){
+				if(c1!=c2){ 
+					if(!tmpSubsumed.contains(c1) && !tmpSubsumed.contains(c1) && c2.subsumes(c1)){
+						info.nSubsumptions++;
+						tmpSubsumed.add(c1);
+					}
+				}
+			}
+			if(!tmpSubsumed.contains(c1))
+				tmp1.add(c1);
+		}
+		results.clear();
+		results.addAll(tmp1);
+		tmp1.clear();
+		
+		for(Clause c1: results){
+			for(Clause c2: toBeSelected){
+				if(c1!=c2){ 
+					if(!tmpSubsumed.contains(c1) && !tmpSubsumed.contains(c1) && c2.subsumes(c1)){
+						info.nSubsumptions++;
+						tmpSubsumed.add(c1);
+					}
+				}
+			}
+			if(!tmpSubsumed.contains(c1))
+				tmp1.add(c1);
+		}
+		results.clear();
+		results.addAll(tmp1);
+		tmp1.clear();
+		
+		
+		for(Clause c1: results){
+			for(Clause c2: alreadySelected){
+				if(c1!=c2){ 
+					if(!tmpSubsumed.contains(c1) && !tmpSubsumed.contains(c1) && c2.subsumes(c1)){
+						info.nSubsumptions++;
+						tmpSubsumed.add(c1);
+					}
+				}
+			}
+			if(!tmpSubsumed.contains(c1))
+				tmp1.add(c1);
+		}
+		results.clear();
+		results.addAll(tmp1);
+		tmp1.clear();
+		
+		
+		
+		
+		return false;
+	}
+	*/
 }
