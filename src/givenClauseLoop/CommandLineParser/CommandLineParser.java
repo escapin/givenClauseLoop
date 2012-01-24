@@ -12,7 +12,9 @@ public class CommandLineParser implements CommandLineParserConstants {
         public static CommandOptions parsing(String[] args) throws FileNotFoundException, IOException, Exception{
                 try{
                         if(args.length==0)
-                                throw new ParseException("no file path found");
+                                opt.help.append("Usage:\u005cn\u005ct" +
+                                "java -jar givenClauseLoop.jar [-fifo | -best | -bestN] [-o | -e] [-timeN] [-contr | -exp] filePath\u005cn\u005ct" +
+                                "java -jar givenClauseLoop.jar -help");
 
                         StringBuffer input = new StringBuffer("\u005ct" + args[args.length-1] + "\u005ct");
                         opt = new CommandOptions();

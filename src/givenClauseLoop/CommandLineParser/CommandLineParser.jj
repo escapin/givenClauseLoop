@@ -13,7 +13,9 @@ public class CommandLineParser {
 	public static CommandOptions parsing(String[] args) throws FileNotFoundException, IOException, Exception{
 		try{
 		  	if(args.length==0)
-		  		throw new ParseException("no file path found");
+		  		opt.help.append("Usage:\n\t" + 
+				"java -jar givenClauseLoop.jar [-fifo | -best | -bestN] [-o | -e] [-timeN] [-contr | -exp] filePath\n\t" +
+				"java -jar givenClauseLoop.jar -help");
 
 		  	StringBuffer input = new StringBuffer("\t" + args[args.length-1] + "\t");
 			opt = new CommandOptions();
