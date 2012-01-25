@@ -8,6 +8,9 @@ public class ResearchPlan {
 	
 	private static InfoLoop info;
 	private static CommandOptions opt;
+	private static Clause givenClause;
+	private static Set<Literal> litGivenClause;
+	
 	private static Collection<Clause> toBeSelected;
 	private static Collection<Clause> alreadySelected;
 	private static Collection<Clause>  oldest;
@@ -25,7 +28,6 @@ public class ResearchPlan {
 		if(opt.peakGivenRatio>0)
 			oldest = new LinkedHashSet<Clause>(); 
 		
-		Clause givenClause;
 		for(Iterator<Clause> iter = toBeSelected.iterator(); iter.hasNext(); ){
 			givenClause = iter.next();
 			if(givenClause.isTautology()){
@@ -53,6 +55,7 @@ public class ResearchPlan {
 			
 			//if(opt.researchStrategy==EnumClass.researchStrategy.EXP_BEFORE)
 			alreadySelected.add(givenClause);
+			litGivenClause = new HashSet<Literal>();
 			//else 
 			//	alreadySelected.add((Clause) givenClause.clone());
 			
@@ -190,11 +193,17 @@ public class ResearchPlan {
 		Set<Clause> toBeRemoved = new HashSet<Clause>();
 		Set<Literal>	lSet, 
 						lRm = new HashSet<Literal>();
-		Literal l2;
+		Literal l1, l2;
 		boolean notToBeConsidered=false;
 		for(Clause cSel: alreadySelected)
 			if(cSel!=givenClause && !toBeRemoved.contains(cSel))
-				for(Literal l1: givenClause.getLiterals())
+				for(Iterator<Literal> iterGiven = givenClause.getLiterals().iterator(); iterGiven.hasNext();){
+					do{
+						l1=iterGiven.next();
+					}while(litGivenClause.contains(l1) && iterGiven.hasNext());
+					if(litGivenClause.contains(l1) && !iterGiven.hasNext())
+						break;
+					
 					if(!toBeRemoved.contains(cSel) && (lSet=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null ){
 						lRm= new HashSet<Literal>();
 						
@@ -238,7 +247,9 @@ public class ResearchPlan {
 						for(Literal l: lRm)
 							lSet.remove(l);
 					}
-						
+				}
+		for(Literal l: litGivenClause)
+			givenClause.literals.remove(l);
 		for(Clause rmCl: toBeRemoved)
 			alreadySelected.remove(rmCl);
 		
@@ -290,6 +301,11 @@ public class ResearchPlan {
 					}
 				} else if( (l=cSel.simplify(cNew, false))!=null){
 					info.nSimplifications++;
+					if(cSel==givenClause)
+						litGivenClause.add(l);
+					else
+						cSel.getLiterals().remove(l);
+					
 					if(lSet!=null && lRm!=null && lSet.contains(l))
 						lRm.add(l);
 					else // this literal must be removed from support set too

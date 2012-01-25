@@ -150,10 +150,11 @@ public class Clause implements Comparable<Clause>{
 				if ( (setLit = litMap.get( (lOth.sign()? "~": "") + lOth.getSymbol()) ) != null) // the opposite
 					for(Literal lThis: setLit) // literal of this clause that have the same name of l1
 						if(Unifier.findLeftSubst(lOth.getArgs(), lThis.getArgs())!= null){ // lOth σ = ~lThis
-							literals.remove(lThis);
 							symNumber -= lThis.nSymbols();
-							if(rmFromLitMap)
+							if(rmFromLitMap){
+								literals.remove(lThis);
 								setLit.remove(lThis);
+							}
 							return lThis;
 						}
 		}
