@@ -16,8 +16,8 @@ public class ResearchPlan {
 		toBeSelected = toBeSel;
 		opt=option;
 		info = infoLoop;
-		//alreadySelected = new LinkedList<Clause>();
-		alreadySelected = new HashSet<Clause>();
+		alreadySelected = new LinkedList<Clause>();
+		//alreadySelected = new HashSet<Clause>();
 		//alreadySelected = new LinkedHashSet<Clause>();
 		info.clausesGenerated=toBeSelected.size();
 		info.loopType=opt.loopType;
@@ -51,9 +51,10 @@ public class ResearchPlan {
 					oldest.remove(givenClause);
 			}
 			
-			if(opt.researchStrategy==EnumClass.researchStrategy.EXP_BEFORE)
-				alreadySelected.add(givenClause);
-			//alreadySelected.add(Clause) givenClause.clone());
+			//if(opt.researchStrategy==EnumClass.researchStrategy.EXP_BEFORE)
+			alreadySelected.add(givenClause);
+			//else 
+			//	alreadySelected.add((Clause) givenClause.clone());
 			
 			System.out.print("\r" + i + ")      \t" + toBeSelected.size() + "......................." + alreadySelected.size() + "      ");
 			
@@ -69,11 +70,10 @@ public class ResearchPlan {
 					return info;
 			}
 			
-			if(opt.researchStrategy==EnumClass.researchStrategy.CONTR_BEFORE)
-				alreadySelected.add(givenClause);
+			//if(opt.researchStrategy==EnumClass.researchStrategy.CONTR_BEFORE)
+			//	alreadySelected.add(givenClause);
 			
 		} // END OF GIVEN CLAUSE LOOP
-		
 		info.res = EnumClass.LoopResult.SAT;
 		return info;
 	}
@@ -83,6 +83,8 @@ public class ResearchPlan {
 		Queue<Clause> resolvents= new LinkedList<Clause>();
 		
 		resolvents=ExpansionRules.factorisation(givenClause);
+		//System.out.println("\n" + resolvents);
+		info.nFactorisations += resolvents.size();
 		Clause cNew;
 		for(Clause cSel: alreadySelected)
 			if(givenClause!=cSel){
@@ -286,7 +288,7 @@ public class ResearchPlan {
 						info.res = EnumClass.LoopResult.UNSAT;
 						return cNew;
 					}
-				} else if((l=cSel.simplify(cNew, false))!=null){
+				} else if( (l=cSel.simplify(cNew, false))!=null){
 					info.nSimplifications++;
 					if(lSet!=null && lRm!=null && lSet.contains(l))
 						lRm.add(l);
@@ -311,9 +313,9 @@ public class ResearchPlan {
 					//System.out.println("\n" + cSel + " subsumes " + cNew);
 					if(toBeRemoved!=null)
 						toBeRemoved.add(cSel);
-					else {
+					else{
 						iter.remove(); 	// Removes from the clauseCollection Queue the last element returned by the iterator
-										// is like clauseCollection.remove(cSel);
+														// is like clauseCollection.remove(cSel);
 						if(clauseCollection==toBeSelected && opt.peakGivenRatio>0)
 							oldest.remove(cSel);
 					}

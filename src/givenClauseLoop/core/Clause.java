@@ -99,13 +99,6 @@ public class Clause implements Comparable<Clause>{
 	}
 	
 	
-	public boolean subsumesOLD(Clause c){
-		if(this!=c && this.nLiterals()<=c.nLiterals()){
-			
-		}
-		return false;
-	}
-	
 	public boolean subsumes(Clause c){
 		if(this!=c && this.nLiterals()<=c.nLiterals()){
 			List<Clause> Uset = new ArrayList<Clause>();
@@ -158,6 +151,7 @@ public class Clause implements Comparable<Clause>{
 					for(Literal lThis: setLit) // literal of this clause that have the same name of l1
 						if(Unifier.findLeftSubst(lOth.getArgs(), lThis.getArgs())!= null){ // lOth σ = ~lThis
 							literals.remove(lThis);
+							symNumber -= lThis.nSymbols();
 							if(rmFromLitMap)
 								setLit.remove(lThis);
 							return lThis;

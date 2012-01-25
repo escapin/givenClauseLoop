@@ -7,3 +7,5 @@ cnf(test, test, ( p(Y, Q)  | quad(H, K, A) )).
 cnf(test, test, ( ~p(Z, H) )).
 
 cnf(test, test, ( p(Z, H) )).
+
+cnf(test, test, ( p(Z, H) )).

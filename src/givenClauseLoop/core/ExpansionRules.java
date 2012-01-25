@@ -127,7 +127,10 @@ public class ExpansionRules {
 			System.out.println("\t" + createFactor(c, l2, sigma) + "\n");
 			*/
 			alreadyFactorised.put(l1, l2);
-			return createFactor(c, l2, sigma);
+			alreadyFactorised.put(l2, l1);
+			Clause newFactor = createFactor(c, l2, sigma);
+			//System.out.println(newFactor);
+			return newFactor;
 		}
 		return null;
 	}
