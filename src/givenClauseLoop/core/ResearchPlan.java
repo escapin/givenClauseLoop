@@ -9,7 +9,8 @@ public class ResearchPlan {
 	private static InfoLoop info;
 	private static CommandOptions opt;
 	private static Clause givenClause;
-	private static Set<Literal> litGivenClause;
+	
+	private static Collection<Literal> litGCrm;
 	
 	private static Collection<Clause> toBeSelected;
 	private static Collection<Clause> alreadySelected;
@@ -19,6 +20,7 @@ public class ResearchPlan {
 		toBeSelected = toBeSel;
 		opt=option;
 		info = infoLoop;
+		litGCrm = new HashSet<Literal>();
 		alreadySelected = new LinkedList<Clause>();
 		//alreadySelected = new HashSet<Clause>();
 		//alreadySelected = new LinkedHashSet<Clause>();
@@ -53,11 +55,8 @@ public class ResearchPlan {
 					oldest.remove(givenClause);
 			}
 			
-			//if(opt.researchStrategy==EnumClass.researchStrategy.EXP_BEFORE)
 			alreadySelected.add(givenClause);
-			litGivenClause = new HashSet<Literal>();
-			//else 
-			//	alreadySelected.add((Clause) givenClause.clone());
+			litGCrm.clear();
 			
 			System.out.print("\r" + i + ")      \t" + toBeSelected.size() + "......................." + alreadySelected.size() + "      ");
 			
@@ -72,9 +71,6 @@ public class ResearchPlan {
 				if(findResolvents(givenClause))
 					return info;
 			}
-			
-			//if(opt.researchStrategy==EnumClass.researchStrategy.CONTR_BEFORE)
-			//	alreadySelected.add(givenClause);
 			
 		} // END OF GIVEN CLAUSE LOOP
 		info.res = EnumClass.LoopResult.SAT;
@@ -112,11 +108,13 @@ public class ResearchPlan {
 		
 		Set<Clause> toBeRemoved = new HashSet<Clause>();
 		Clause c1;
+		boolean toBeRem=false,
+						next=false;
 		for(Iterator<Clause> iter1=resolvents.iterator(); iter1.hasNext(); ){
 			do{
 				c1=iter1.next();
-			}while(toBeRemoved.contains(c1) && iter1.hasNext());
-			if(toBeRemoved.contains(c1) && !iter1.hasNext())
+			}while((toBeRem=toBeRemoved.contains(c1)) && (next=iter1.hasNext()));
+			if(toBeRem && !next)
 				break;
 			if(c1.isTautology()){
 				info.nTautology++;
@@ -131,6 +129,7 @@ public class ResearchPlan {
 		for(Clause c: toBeRemoved)
 			resolvents.remove(c);
 				
+		info.c1=null;
 				
 		for(Clause c: resolvents)
 			if(!c.isTautology()){
@@ -139,7 +138,6 @@ public class ResearchPlan {
 					return true;
 				if(c!=null && info.loopType==EnumClass.LoopType.OTTER_LOOP){
 					c=contractionRules(c, toBeSelected, null, null, null); 
-					// CONTRACTION RULES with toBeSelected									
 					if(info.res==EnumClass.LoopResult.UNSAT)
 						return true;
 				}
@@ -200,8 +198,8 @@ public class ResearchPlan {
 				for(Iterator<Literal> iterGiven = givenClause.getLiterals().iterator(); iterGiven.hasNext();){
 					do{
 						l1=iterGiven.next();
-					}while(litGivenClause.contains(l1) && iterGiven.hasNext());
-					if(litGivenClause.contains(l1) && !iterGiven.hasNext())
+					}while(litGCrm.contains(l1) && iterGiven.hasNext());
+					if(litGCrm.contains(l1) && !iterGiven.hasNext())
 						break;
 					
 					if(!toBeRemoved.contains(cSel) && (lSet=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null ){
@@ -248,7 +246,7 @@ public class ResearchPlan {
 							lSet.remove(l);
 					}
 				}
-		for(Literal l: litGivenClause)
+		for(Literal l: litGCrm)
 			givenClause.literals.remove(l);
 		for(Clause rmCl: toBeRemoved)
 			alreadySelected.remove(rmCl);
@@ -277,13 +275,14 @@ public class ResearchPlan {
 			Clause 	cSel=new Clause(),
 					cTemp;
 			Literal l;
-			boolean notToBeConsidered=false;
+			boolean notToBeConsidered=false,
+							next=false;
 			
 			for(Iterator<Clause> iter = clauseCollection.iterator(); iter.hasNext(); ){
 				do{
 					cSel=iter.next();
-				}while(toBeRemoved!=null && (notToBeConsidered=toBeRemoved.contains(cSel)) && iter.hasNext());
-				if(toBeRemoved!=null && notToBeConsidered && !iter.hasNext()) 
+				}while(toBeRemoved!=null && (notToBeConsidered=toBeRemoved.contains(cSel)) && (next=iter.hasNext()));
+				if(toBeRemoved!=null && notToBeConsidered && !next) 
 					// if this element have not to be considered but there isn't other after
 					return cNew;
 				
@@ -302,7 +301,7 @@ public class ResearchPlan {
 				} else if( (l=cSel.simplify(cNew, false))!=null){
 					info.nSimplifications++;
 					if(cSel==givenClause)
-						litGivenClause.add(l);
+						litGCrm.add(l);
 					else
 						cSel.getLiterals().remove(l);
 					
@@ -340,6 +339,7 @@ public class ResearchPlan {
 		}
 		return cNew;
 	}
+
 }	
 	
 	
