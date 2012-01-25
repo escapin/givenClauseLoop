@@ -14,7 +14,7 @@ public class ExpansionRules {
 	 * @return set of all the binary resolvents
 	 */
 	public static Queue<Clause> binaryResolution(Clause c1, Clause c2){
-		Queue<Clause> resolvents= new PriorityQueue<Clause>();
+		Queue<Clause> resolvents= new LinkedList<Clause>();
 		Clause cNew;
 		if(c1!=c2){
 			Set<Literal> lMap;

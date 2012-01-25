@@ -79,11 +79,10 @@ public class ResearchPlan {
 	
 	
 	private static boolean findExpansionBefore(Clause givenClause){
-		Queue<Clause> resolvents= new LinkedList<Clause>();
+		Queue<Clause> results= new LinkedList<Clause>();
 		
-		resolvents=ExpansionRules.factorisation(givenClause);
-		//System.out.println("\n" + resolvents);
-		info.nFactorisations += resolvents.size();
+		results=ExpansionRules.factorisation(givenClause);
+		info.nFactorisations += results.size();
 		Clause cNew;
 		for(Clause cSel: alreadySelected)
 			if(givenClause!=cSel){
@@ -101,7 +100,7 @@ public class ResearchPlan {
 									info.res = EnumClass.LoopResult.UNSAT;
 									return true;
 								}
-								resolvents.add(cNew);
+								results.add(cNew);
 							}	
 						}
 			}
@@ -110,7 +109,7 @@ public class ResearchPlan {
 		Clause c1;
 		boolean toBeRem=false,
 						next=false;
-		for(Iterator<Clause> iter1=resolvents.iterator(); iter1.hasNext(); ){
+		for(Iterator<Clause> iter1=results.iterator(); iter1.hasNext(); ){
 			do{
 				c1=iter1.next();
 			}while((toBeRem=toBeRemoved.contains(c1)) && (next=iter1.hasNext()));
@@ -121,17 +120,15 @@ public class ResearchPlan {
 				iter1.remove();
 			} 
 			else {
-				c1=contractionRules(c1, resolvents, toBeRemoved, null, null);
+				c1=contractionRules(c1, results, toBeRemoved, null, null);
 				if(info.res==EnumClass.LoopResult.UNSAT)
 					return true;
 			}
 		}
 		for(Clause c: toBeRemoved)
-			resolvents.remove(c);
+			results.remove(c);
 				
-		info.c1=null;
-				
-		for(Clause c: resolvents)
+		for(Clause c: results)
 			if(!c.isTautology()){
 				c=contractionRules(c, alreadySelected, null, null, null); // CONTRACTION RULES with alreadySelected
 				if(info.res==EnumClass.LoopResult.UNSAT)

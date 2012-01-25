@@ -98,8 +98,9 @@ public class Unifier {
 		} else if (x.equals(y)) {
 			// if the two term are equals return the substitution without any modification
 			return sigma;
-		} else if (x instanceof Variable) {
-			return unifyVar((Variable) x, y, sigma);
+		} else if (x instanceof Variable && !occurCheck((Variable) x,y,sigma)) {
+			sigma.put((Variable) x, y);
+			return sigma;
 		} else if (x instanceof Function && y instanceof Function) {
 			if(x.getSymbol().equals(y.getSymbol())){		// the function's name must be the same
 				for(int i=0;i<((Function)x).nArgs();i++)
@@ -267,66 +268,5 @@ public class Unifier {
 			return newFun? new Function(toSubstitute.getSymbol(), newArgs) : toSubstitute;
 		}
 	}
-	
-	
-	
-	/*
-	private Map<Variable, Term> cascadeSubstitution(Map<Variable, Term> sigma){
-		if(sigma==null)
-			return null;
-		Term t1,t2;
-		for(Variable v1: sigma.keySet())
-			for(Variable v2: sigma.keySet())
-				if(!v1.equals(v2)){
-					t1=sigma.get(v1);
-					t2=sigma.get(v2);
-					if(t2 instanceof Variable && t2.equals(v1)){ 
-						if(occurCheck(v2, t1, sigma))
-							return null;
-						else	// subscribe the term of v2 with t1
-							sigma.put(v2, t1);					
-					} else if(t2 instanceof Function){
-						// substitute with t1 all the occurrence of v1 in t2
-						sigma.put(v2, Substitution.substitute(v1, t1, t2));
-						if(occurCheck(v2, t2, sigma))
-							return null;
-					}
-				}
-		return sigma;		
-	}
-	*/
-	/*
-	/**
-	 * Sometimes you get a substitution of the form σ = {z ← x, x ← a}
-	 * Suppose you were to apply this substitution to p(z,x): the correct result is p(a,a).
-	 * The reason is that you need to "cascade" the substitutions; if z takes the value x, 
-	 * you need to make sure that you haven't constrained x to be some other value. 
-	 * It would be incorrect to write p(x,a).
-	 * This has particularly important consequences anytime you are trying to unify two expressions.
-	 *
-	 * σ = {z ← x, x ← a} must become σ = {z ← a, x ← a}
-	 *
-	 * @param sigma	the substitution
-	 * @return the substitution cascaded, null if there are occur checks
- 	 
-	 Map<Variable, Variable> inverseSigma=new HashMap<Variable, Variable>();
-	 private void cascadeSubstitution(Variable var, Term x, Map<Variable, Term> sigma) {
-		Variable v;
-		if((v=inverseSigma.get(var)) !=null)
-			sigma.put(v, x);
-		
-		if(x instanceof Variable){
-			Term t=sigma.get(x);
-			if(t!=null) // instead of x, var must get the x's image
-				sigma.put(var, t);
-			else // there is not 'x' variable in substitution's domain
-				sigma.put(var, x);
-			inverseSigma.put((Variable) x, var);
-		}
-		else
-			sigma.put(var, x);
-	}
-		*/
-
 	
 }

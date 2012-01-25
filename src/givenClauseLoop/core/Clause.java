@@ -112,9 +112,8 @@ public class Clause implements Comparable<Clause>{
 		Set<Literal> lMap;
 		Map<Variable, Term> sigma;
 		Clause cNew;
-		List<Clause> Uset1;// = new ArrayList<Clause>();
+		List<Clause> Uset1 = new ArrayList<Clause>();
 		while(!Uset.isEmpty()){
-			Uset1 = new ArrayList<Clause>();
 			for(Clause cSel: Uset){	
 				for(Literal lSel: cSel.getLiterals())
 					if( (lMap=c.getLitMap().get( (lSel.sign()? "": "~") + lSel.getSymbol()) ) != null )
@@ -125,7 +124,9 @@ public class Clause implements Comparable<Clause>{
 								Uset1.add(cNew);
 							}
 			}
-			Uset=Uset1;
+			Uset.clear();
+			Uset.addAll(Uset1);
+			Uset1.clear();
 		}
 		return false;
 	}
