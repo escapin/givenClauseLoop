@@ -118,19 +118,10 @@ public class ExpansionRules {
 		// iter on all the predicates with than name in this clause
 		if( l1!=l2 && alreadyFactorised.get(l2)!=l1 && alreadyFactorised.get(l1)!=l2 &&
 			(sigma=Unifier.findMGU(l1.getArgs(), l2.getArgs())) != null){
-			/*
-			System.out.println(c);
-			StringBuffer s = new StringBuffer();
-			for(Variable v : sigma.keySet())
-				s.append( v + "<--" + sigma.get(v) + " , ");
-			System.out.println(s);
-			System.out.println("\t" + createFactor(c, l2, sigma) + "\n");
-			*/
 			alreadyFactorised.put(l1, l2);
 			alreadyFactorised.put(l2, l1);
-			Clause newFactor = createFactor(c, l2, sigma);
 			//System.out.println(newFactor);
-			return newFactor;
+			return createFactor(c, l2, sigma);
 		}
 		return null;
 	}
