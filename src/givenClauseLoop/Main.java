@@ -85,6 +85,15 @@ public class Main {
 						info.res = EnumClass.LoopResult.TIME_EXPIRED;
 						printResult();
 						System.exit(-1);
+					} catch (ExecutionException e){
+						loopTime=System.currentTimeMillis()-start;
+						executor.shutdownNow();
+						future.cancel(true);
+						if(e.toString().contains("OutOfMemory")){
+							info.res = EnumClass.LoopResult.OUT_OF_MEMORY;
+							printResult();
+						}
+						System.exit(-1);
 					} finally {
 						loopTime=System.currentTimeMillis()-start;
 						executor.shutdownNow();
@@ -92,24 +101,17 @@ public class Main {
 						printResult();
 						System.exit(-1);
 					}
-			    }catch(Throwable e){
-					System.out.println(e.getMessage());
+				}catch(Throwable e){
+			  	System.out.println(e.getMessage());
 				}
-				
 			}catch (FileNotFoundException e){
 				System.out.println("Can not open file. Maybe path is wrong or file does not exist."); 
 			}catch (IOException e){
-				System.out.println("Failed to open the file.");
+				System.out.println("Failed to open the file: " + opt.filePath);
 			}catch(Throwable e){
 				//System.out.println(e.getMessage());
 				throw new Exception(e);
 			}
-		}catch (FileNotFoundException e){
-			System.out.println("Can not open file. Maybe path is wrong or file does not exist.");
-			System.out.println(opt.help);
-		}catch (IOException e){
-			System.out.println("Failed to open the file: " + opt.filePath);
-			System.out.println(opt.help);
 		}catch(Throwable e){
 			System.out.println("ERROR in command line\nUsage:\n\t" + 
 					"java -jar givenClauseLoop.jar [-fifo | -best | -bestN] [-o | -e] [-timeN] [-contr | -exp] filePath\n\t" +
@@ -121,22 +123,30 @@ public class Main {
 
 	private static void printResult(){
 		StringBuffer s = new StringBuffer("\n\nResult: ");
-		if(info.res==EnumClass.LoopResult.SAT)
-			s.append("SATISFIABLE\n");
-		else if(info.res==EnumClass.LoopResult.UNSAT){
-			s.append("UNSATISFIABLE\n");
-			switch(info.rule){
-				case BINARY_RESOLUTION:
-					s.append("Binary Resolution: \n" +
-							"\t" + info.c1 + "\t\t" + info.c2 + "\n");
-					break;
-				case SIMPLIFICATION:
-					s.append("Simplification: \n" +	
-							"\t" + info.c1 + "  simplifies  " + info.c2 + "\n");
-					break;
-			}
-		} else
-			s.append("TIME EXPIRED\n");
+		switch(info.res){
+			case SAT:
+				s.append("SATISFIABLE\n");
+				break;
+			case UNSAT:
+				s.append("UNSATISFIABLE\n");
+				switch(info.rule){
+					case BINARY_RESOLUTION:
+						s.append("Binary Resolution: \n" +
+								"\t" + info.c1 + "\t\t" + info.c2 + "\n");
+						break;
+					case SIMPLIFICATION:
+						s.append("Simplification: \n" +	
+								"\t" + info.c1 + "  simplifies  " + info.c2 + "\n");
+						break;
+				}
+				break;
+			case TIME_EXPIRED:
+				s.append("TIME EXPIRED\n");
+				break;
+			case OUT_OF_MEMORY:
+				s.append("OUT OF MEMORY\n");
+				break;
+		}
 		
 		s.append("\nClause generated: " + (info.nFactorisations+info.nResolutions));
 		s.append("\n\tFactors: " + info.nFactorisations);

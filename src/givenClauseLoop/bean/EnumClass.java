@@ -9,7 +9,8 @@ public class EnumClass{
 	public static enum LoopResult{
 		SAT,
 		UNSAT,
-		TIME_EXPIRED
+		TIME_EXPIRED,
+		OUT_OF_MEMORY
 	}
 	
 	public static enum Rule {

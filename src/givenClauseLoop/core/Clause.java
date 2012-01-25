@@ -98,8 +98,16 @@ public class Clause implements Comparable<Clause>{
 		return false;
 	}
 	
+	
+	public boolean subsumesOLD(Clause c){
+		if(this!=c && this.nLiterals()<=c.nLiterals()){
+			
+		}
+		return false;
+	}
+	
 	public boolean subsumes(Clause c){
-		if(this!=c && this.nLiterals()>0 && this.nLiterals()<=c.nLiterals()){
+		if(this!=c && this.nLiterals()<=c.nLiterals()){
 			List<Clause> Uset = new ArrayList<Clause>();
 			Uset.add(this);
 			return checkSubsumption(Uset, c);
@@ -113,7 +121,7 @@ public class Clause implements Comparable<Clause>{
 		Clause cNew;
 		List<Clause> Uset1;// = new ArrayList<Clause>();
 		while(!Uset.isEmpty()){
-			Uset1 = new ArrayList<Clause>(Uset.size());
+			Uset1 = new ArrayList<Clause>();
 			for(Clause cSel: Uset){	
 				for(Literal lSel: cSel.getLiterals())
 					if( (lMap=c.getLitMap().get( (lSel.sign()? "": "~") + lSel.getSymbol()) ) != null )
