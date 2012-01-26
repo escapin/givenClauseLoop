@@ -98,14 +98,18 @@ public class Unifier {
 		} else if (x.equals(y)) {
 			// if the two term are equals return the substitution without any modification
 			return sigma;
-		} else if (x instanceof Variable) {
-			if(!sigma.containsKey((Variable) x))
+		} else if (x instanceof Variable){
+			// && !occurCheck((Variable)x, y, sigma) ) {
+			//sigma.put((Variable) x, y);
+			//return sigma;
+			Term t;
+			if((t=sigma.get((Variable) x))==null)
 				sigma.put((Variable) x, y);
-			else if(!sigma.get((Variable) x).equals(y))
-				/* you should unify these two term, but the same variable is already used 
-				 * to unify another term different from y */
+			else if(!t.equals(y))	// you should unify these two term, but the same variable is already used 
+				// to unify another term different from y
 				return null;
 			return sigma;
+			
 		} else if (x instanceof Function && y instanceof Function) {
 			if(x.getSymbol().equals(y.getSymbol())){		// the function's name must be the same
 				for(int i=0;i<((Function)x).nArgs();i++)
