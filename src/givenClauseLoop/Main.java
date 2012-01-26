@@ -90,13 +90,18 @@ public class Main {
 				System.exit(-1);
 			} catch (ExecutionException e){
 				loopTime=System.currentTimeMillis()-start;
-				if(e.toString().contains("OutOfMemory")){
+				executor.shutdownNow();
+				future.cancel(true);
+				if(e.toString().contains("OutOfMemory"))
 					info.res = EnumClass.LoopResult.OUT_OF_MEMORY;
-					printResult();
-				}
+				else 
+					e.printStackTrace();
+				printResult();
 				System.exit(-1);
 			} finally {
 				loopTime=System.currentTimeMillis()-start;
+				executor.shutdownNow();
+				future.cancel(true);
 				printResult();
 				System.exit(-1);
 			}

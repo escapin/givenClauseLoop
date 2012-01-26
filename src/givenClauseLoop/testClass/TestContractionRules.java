@@ -56,10 +56,10 @@ public class TestContractionRules {
 					System.out.println(c1 + "  subsumes  " + c2);
 		
 		System.out.println("\nSEMPLIFICATION:");
-		Literal lit;
+		Literal lit=null;
 		for(Clause c1: clauses)
 			for(Clause c2: clauses){
-				if( (lit=c1.simplify(c2, false)) != null){
+				if( !(c1.simplify(c2, false)).isEmpty()){
 					System.out.println(c2 + "  simplifies  " + c1 + (c1.nLiterals()>0? " | " : "") + lit);
 					c1.addLiteral(lit);
 				}

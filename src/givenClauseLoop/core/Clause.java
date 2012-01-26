@@ -144,22 +144,27 @@ public class Clause implements Comparable<Clause>{
 	 * @param rmFromLitMap it should be true iff this literal has to be removed also from litMap
 	 * @return the literal deleted if a simplification was made, null otherwise.
 	 */
-	public Literal simplify(Clause c, boolean rmFromLitMap){
+	public Set<Literal> simplify(Clause c, boolean rmFromLitMap){
+		Set<Literal> litToRm=new HashSet<Literal>();
+		Literal lThis;
 		if(this!=c && c.nLiterals()==1){
 			Set<Literal> setLit;
-			for(Literal lOth: c.getLiterals()) // only one literal
-				if ( (setLit = litMap.get( (lOth.sign()? "~": "") + lOth.getSymbol()) ) != null) // the opposite
-					for(Literal lThis: setLit) // literal of this clause that have the same name of l1
-						if(Unifier.findLeftSubst(lOth.getArgs(), lThis.getArgs())!= null){ // lOth σ = ~lThis
-							symNumber -= lThis.nSymbols();
-							if(rmFromLitMap){
-								literals.remove(lThis);
-								setLit.remove(lThis);
-							}
-							return lThis;
+			Literal lOth=c.getLiterals().iterator().next(); // only one literal
+			if ( (setLit = litMap.get( (lOth.sign()? "~": "") + lOth.getSymbol()) ) != null) // the opposite
+				for(Iterator<Literal> iter1=setLit.iterator(); iter1.hasNext();){
+					// literal of this clause that have the same name of l1
+					lThis=iter1.next();
+					if(Unifier.findLeftSubst(lOth.getArgs(), lThis.getArgs())!= null){ // lOth σ = ~lThis
+						symNumber -= lThis.nSymbols();
+						if(rmFromLitMap){
+							literals.remove(lThis);
+							iter1.remove();
 						}
+						litToRm.add(lThis);
+					}
+				}
 		}
-		return null;
+		return litToRm;
 	}
 	
 	/**

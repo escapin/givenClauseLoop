@@ -55,8 +55,8 @@ public class ResearchPlan {
 					oldest.remove(givenClause);
 			}
 			
-			alreadySelected.add(givenClause);
 			litGCrm.clear();
+			alreadySelected.add(givenClause);
 			
 			System.out.print("\r" + i + ")      \t" + toBeSelected.size() + "......................." + alreadySelected.size() + "      ");
 			
@@ -219,7 +219,6 @@ public class ResearchPlan {
 									info.res = EnumClass.LoopResult.UNSAT;
 									return true;
 								}
-								
 								if(!cNew.isTautology()){
 									cNew=contractionRules(cNew, alreadySelected, toBeRemoved, lSet, lRm); // CONTRACTION RULES with alreadySelected
 									if(info.res==EnumClass.LoopResult.UNSAT)
@@ -271,7 +270,7 @@ public class ResearchPlan {
 		if(cNew!=null){
 			Clause 	cSel=new Clause(),
 					cTemp;
-			Literal l;
+			Set<Literal> litSim;
 			boolean notToBeConsidered=false,
 							next=false;
 			
@@ -284,36 +283,40 @@ public class ResearchPlan {
 					return cNew;
 				
 				// SIMPLIFICATIONS
-				if((l=cNew.simplify(cSel, true))!=null){
+				if(!(litSim=cNew.simplify(cSel, true)).isEmpty()){
 					info.nSimplifications++;
 					if(cNew.isEmpty()){ // empty clause generated
 						info.c1=cSel;
 						cTemp=new Clause();
-						cTemp.addLiteral(l);
+						for(Literal l: litSim)
+							cTemp.addLiteral(l);
 						info.c2=cTemp;
 						info.rule=EnumClass.Rule.SIMPLIFICATION;
 						info.res = EnumClass.LoopResult.UNSAT;
 						return cNew;
 					}
-				} else if( (l=cSel.simplify(cNew, false))!=null){
+				} else if( !(litSim=cSel.simplify(cNew, false)).isEmpty()){
 					info.nSimplifications++;
-					if(cSel==givenClause)
-						litGCrm.add(l);
-					else
-						cSel.getLiterals().remove(l);
-					
-					if(lSet!=null && lRm!=null && lSet.contains(l))
-						lRm.add(l);
-					else // this literal must be removed from support set too
-						cSel.getLitMap().get(( (l.sign()? "": "~") + l.getSymbol())).remove(l); 
 					if(cSel.isEmpty()){	// empty clause generated
 						info.c1=cNew;
 						cTemp=new Clause();
-						cTemp.addLiteral(l);
+						for(Literal l: litSim)
+							cTemp.addLiteral(l);
 						info.c2=cTemp;
 						info.res = EnumClass.LoopResult.UNSAT;
 						info.rule=EnumClass.Rule.SIMPLIFICATION;
 						return cNew;
+					}
+					for(Literal l: litSim){
+						if(cSel==givenClause)
+							litGCrm.add(l);
+						else
+							cSel.getLiterals().remove(l);
+					
+						if(lSet!=null && lRm!=null && lSet.contains(l))
+							lRm.add(l);
+						else // this literal must be removed from support set too
+							cSel.getLitMap().get(( (l.sign()? "": "~") + l.getSymbol())).remove(l);
 					}
 				}
 				// SUBSUMPTIONS
