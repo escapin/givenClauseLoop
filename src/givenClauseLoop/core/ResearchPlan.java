@@ -40,7 +40,7 @@ public class ResearchPlan {
 		}
 		
 		int i=0;
-		System.out.println("ITERS\t\tTO BE SELECTED" + "\t\t" + "ALREADY SELECTED");
+		System.out.println("ITERATION\tTO BE SELECTED" + "\t\t" + "ALREADY SELECTED");
 		info.res=EnumClass.LoopResult.TIME_EXPIRED;
 		while(!toBeSelected.isEmpty()){ // GIVEN CLAUSE LOOP
 			i++;
