@@ -8,7 +8,7 @@ public class CommandOptions {
 	public long timeOut;
 	public EnumClass.researchStrategy researchStrategy;
 	public String filePath;
-	public StringBuffer help;
+	public boolean help;
 	
 	public CommandOptions(){
 		clauseStrategy = EnumClass.clauseStrategy.MIN_QUEUE;
@@ -16,7 +16,7 @@ public class CommandOptions {
 		loopType = EnumClass.LoopType.OTTER_LOOP;
 		timeOut=0; // infinite
 		researchStrategy=EnumClass.researchStrategy.CONTR_BEFORE;
-		help= new StringBuffer();
+		help= false;
 		filePath="";
 	}
 }

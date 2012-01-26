@@ -48,7 +48,7 @@ public interface CommandLineParserConstants {
     "<CHAR1>",
     "<CHAR2>",
     "\"\\t\"",
-    "\"-help\"",
+    "\"-man\"",
   };
 
 }

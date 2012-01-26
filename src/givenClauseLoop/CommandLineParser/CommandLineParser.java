@@ -11,26 +11,29 @@ public class CommandLineParser implements CommandLineParserConstants {
 
         public static CommandOptions parsing(String[] args) throws FileNotFoundException, IOException, Exception{
                 try{
-                        if(args.length==0)
-                                opt.help.append("Usage:\u005cn\u005ct" +
-                                "java -jar givenClauseLoop.jar [-fifo | -best | -bestN] [-o | -e] [-timeN] [-contr | -exp] filePath\u005cn\u005ct" +
-                                "java -jar givenClauseLoop.jar -help");
-
-                        StringBuffer input = new StringBuffer("\u005ct" + args[args.length-1] + "\u005ct");
+                        StringBuffer input = new StringBuffer();
                         opt = new CommandOptions();
-                        for(int i=0;i<args.length-1;i++)
-                                input.append("\u005ct" + args[i] + "\u005ct");
-                        //System.out.println(input);
+                        if(args.length==0)
+                                opt.help=true;
+                        else {
+                          input.append("\u005ct" + args[args.length-1] + "\u005ct");
+                          for(int i=0;i<args.length-1;i++)
+                                        input.append("\u005ct" + args[i] + "\u005ct");
+                        }
                         new CommandLineParser(new java.io.StringReader(input.toString())).start();
-                        if(opt.help.length()==0 && opt.filePath.equals(""))
+                        if(!opt.help && opt.filePath.equals(""))
                                 throw new ParseException("no file path found");
                 }catch(Throwable e){
                         // Catching Throwable is ugly but JavaCC throws Error objects!
                         //e.printStackTrace();
-                        opt.help.append("Usage:\u005cn\u005ct" +
-                                "java -jar givenClauseLoop.jar [-fifo | -best | -bestN] [-o | -e] [-timeN] [-contr | -exp] filePath\u005cn\u005ct" +
-                                "java -jar givenClauseLoop.jar -help");
-                        throw new ParseException("Syntax check failed: " + e.getMessage());
+                        opt.help=false;
+                        throw new ParseException("ERROR in command line\u005cnUsage:\u005cn\u005ct" +
+                                                "java -jar givenClauseLoop.jar [-fifo | -best | -bestN] [-o | -e] [-timeN] [-contr | -exp] filePath\u005cn\u005ct" +
+                                                "java -jar givenClauseLoop.jar -man");
+                        /* System.out.println("ERROR in command line\nUsage:\n\t" + 
+						"java -jar givenClauseLoop.jar [-fifo | -best | -bestN] [-o | -e] [-timeN] [-contr | -exp] filePath\n\t" +
+						"java -jar givenClauseLoop.jar -man");
+			*/
                 }
                 return opt;
         }
@@ -103,9 +106,7 @@ public class CommandLineParser implements CommandLineParserConstants {
       break;
     case 14:
       jj_consume_token(14);
-        opt.help.append("Usage:\u005cn\u005ct" +
-                        "java -jar givenClauseLoop.jar [-fifo | -best | -bestN] [-o | -e] [-timeN] [-contr | -exp] filePath\u005cn\u005ct" +
-                        "java -jar givenClauseLoop.jar -help");
+        opt.help=true;
       break;
     default:
       jj_la1[2] = jj_gen;
