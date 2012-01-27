@@ -14,8 +14,6 @@ public class Literal extends FOLNode implements FOLNodeArg {
 	public Literal(String symbol, boolean sign, List<Term> args){
 		super.symbol=symbol;
 		this.sign=sign;
-		if(!sign)	// because also the negation symbol "~" must be counted
-			symNumber++;
 		
 		if(args==null)
 			this.args=new ArrayList<Term>(0);

@@ -100,7 +100,11 @@ public class Clause implements Comparable<Clause>{
 	
 	
 	public boolean subsumes(Clause c){
-		if(this!=c && this.nLiterals()<=c.nLiterals()){
+		if(this!=c && this.nLiterals()<=c.nLiterals() && this.compareTo(c)<=0){
+			for(Literal l: literals)
+				if(c.getLitMap().get( (l.sign()? "": "~") + l.getSymbol()) == null)
+					return false;
+			
 			List<Clause> Uset = new ArrayList<Clause>();
 			Uset.add(this);
 			return checkSubsumption(Uset, c);

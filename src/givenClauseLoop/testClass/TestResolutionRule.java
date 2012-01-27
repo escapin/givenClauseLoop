@@ -3,6 +3,7 @@ package givenClauseLoop.testClass;
 import java.util.*;
 
 import givenClauseLoop.TPTPparser.*;
+import givenClauseLoop.bean.Literal;
 import givenClauseLoop.core.*;
 
 import java.io.BufferedReader;
@@ -54,17 +55,27 @@ public class TestResolutionRule {
 		*/
 		System.out.print("\n\n");
 		System.out.println("RESOLUTION:");
-		Queue<Clause> qNew=new PriorityQueue<Clause>();
+		Collection<Clause> qNew=new PriorityQueue<Clause>();
+		Clause cNew;
 		Map<Clause, Clause> alreadyConsidered = new HashMap<Clause, Clause>();
-		for(Clause c1: clauses)
-			for(Clause c2: clauses)
-				if(c1!=c2 && alreadyConsidered.get(c2)!=c1){
-					alreadyConsidered.put(c1, c2);
-					System.out.println("\n" + c1 + "\t\t" +  c2 + 
+		for(Clause givenClause: clauses)
+			for(Clause cSel: clauses)
+				if(givenClause!=cSel && alreadyConsidered.get(cSel)!=givenClause){
+					alreadyConsidered.put(givenClause, cSel);
+					System.out.println("\n" + givenClause + "\t\t" +  cSel + 
 		"\n---------------------------------------------------------------------------------------------------------------------------------");
-					qNew=ExpansionRules.binaryResolution(c1, c2);
-					for(Clause c3: qNew)
-						System.out.println("\t" + c3);
+					Set<Literal> lMap;
+					for(Literal l1: givenClause.getLiterals())
+						if( (lMap=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null )
+							for(Literal l2: lMap){
+								cNew=ExpansionRules.binaryResolution(givenClause, l1, cSel, l2);
+								System.out.print("\t" + cNew);
+								if(cNew.isEmpty())
+									System.out.println("\tEMPTY");
+								else
+									System.out.println();
+								qNew.add(cNew);
+							}
 						
 				}
 		
