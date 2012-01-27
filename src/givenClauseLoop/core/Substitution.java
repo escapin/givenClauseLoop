@@ -49,12 +49,12 @@ public class Substitution {
 	 * @param varMap map that matches each old variable with the corresponding new one  already created
 	 * @return a new List<Term> in which the substitution has been applied
 	 */
-	private static Term substitute(Term toSubstitute, Map<Variable, Term> sigma, Map<Variable, Variable> varMap){
+	public static Term substitute(Term toSubstitute, Map<Variable, Term> sigma, Map<Variable, Variable> varMap){
 		if (toSubstitute instanceof Constant)
 			return toSubstitute;
 		else if (toSubstitute instanceof Variable){
 			Term tNew;
-			return ((tNew=sigma.get((Variable) toSubstitute))==null)? toSubstitute.clone(varMap) : tNew; 
+			return ((tNew=sigma.get((Variable) toSubstitute))!=null)? tNew : toSubstitute.clone(varMap); 
 		}
 		else //if(toSubstitute instanceof Function){
 			return new Function(toSubstitute.getSymbol(), substitute(((Function) toSubstitute).getArgs(), sigma, varMap));

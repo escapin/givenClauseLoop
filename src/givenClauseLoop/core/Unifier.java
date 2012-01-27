@@ -24,33 +24,25 @@ public class Unifier {
 	public static Map<Variable, Term> findMGU(List<Term> arg1, List<Term> arg2){
 		Map<Variable, Term> sigma = new HashMap<Variable, Term>();
 		sigma = unify(arg1, arg2, sigma);
-		return cascadeSubstitution(sigma);
+		//return cascadeSubstitution(sigma);
+		return composition(sigma, sigma);
 	}
 	
 	
-	
-	/**
-	 * Returns a Map<Variable, Term> representing the left-substitution (i.e. a set
-	 * of variable/term pairs) or null which is used to indicate a failure to
-	 * unify.
-	 *  
-	 * @param arg1 the terms' list of the first predicate
-	 * @param arg2 the terms' list of the first predicate 
-	 * @return a Map<Variable, Term> representing the substitution (i.e. a set
-	 *         of variable/term pairs) or null which is used to indicate a
-	 *         failure to unify.
-	 */
-	public static Map<Variable, Term> findLeftSubst(List<Term> arg1, List<Term> arg2){
-		if(arg1==null || arg2==null || arg1.size()!=arg2.size())
-			return null;
-		else{
-			Map<Variable, Term> sigma = new HashMap<Variable, Term>();
-			for(int i=0;i<arg1.size();i++)
-				sigma=unifyLeft(arg1.get(i), arg2.get(i), sigma);
-			return sigma;
+	public static Map<Variable, Term> composition(Map<Variable, Term> sigma, Map<Variable, Term> theta){
+		Map<Variable, Term> composition=new HashMap<Variable, Term>();
+		Map<Variable, Variable> varMap = new HashMap<Variable, Variable>();
+		Term tNew;
+		for(Variable v: sigma.keySet()){
+			tNew=Substitution.substitute(sigma.get(v), theta, varMap);
+			if(!v.equals(tNew))
+				composition.put(v, tNew);
 		}
+		for(Variable v: theta.keySet())
+			if(!sigma.containsKey(v))
+				composition.put(v, theta.get(v));
+		return composition;
 	}
-	
 	
 	/**
 	 * Returns a Map<Variable, Term> representing the substitution (i.e. a set
@@ -76,53 +68,6 @@ public class Unifier {
 		} else {
 			return unify(arg1.subList(1, arg1.size()), arg2.subList(1, arg2.size()),
 					unify(arg1.get(0), arg2.get(0), sigma));
-		}
-	}
-	
-	/**
-	 * Returns a Map<Variable, Term> representing the left-substitution (i.e. a set
-	 * of variable/term pairs) or null which is used to indicate a failure to
-	 * unify.
-	 * 
-	 * @param x a term
-	 * @param y a term 
-	 * @param sigma the substitution built up so far
-	 * @return a Map<Variable, Term> representing the substitution (i.e. a set
-	 *         of variable/term pairs) or null which is used to indicate a
-	 *         failure to unify.
-	 */
-	private static Map<Variable, Term> unifyLeft(Term x, Term y,
-			Map<Variable, Term> sigma) {
-		if (sigma == null) {
-			return null;
-		} else if (x.equals(y)) {
-			// if the two term are equals return the substitution without any modification
-			return sigma;
-		} else if (x instanceof Variable){
-			// && !occurCheck((Variable)x, y, sigma) ) {
-			//sigma.put((Variable) x, y);
-			//return sigma;
-			Term t;
-			if((t=sigma.get((Variable) x))==null)
-				sigma.put((Variable) x, y);
-			else if(!t.equals(y))	// you should unify these two term, but the same variable is already used 
-				// to unify another term different from y
-				return null;
-			return sigma;
-			
-		} else if (x instanceof Function && y instanceof Function) {
-			if(x.getSymbol().equals(y.getSymbol())){		// the function's name must be the same
-				for(int i=0;i<((Function)x).nArgs();i++)
-					sigma=unifyLeft(((Function)x).getArgs().get(i), ((Function)y).getArgs().get(i), sigma);
-				return sigma;
-			} else // CLASH!!!
-				return null;
-		} else {
-			/* - two different constant
-			 * - left(constant) && ( right(variable) || right(function) ) 
-			 * - left(function) && ( right(constant) || right(variable) )
-			 */
-			return null;
 		}
 	}
 	
@@ -219,7 +164,6 @@ public class Unifier {
 	}
 	
 	
-	
 	/**
 	 * After you have been created the substitution sigma, you need to "cascade" 
 	 * this substitution because there should be instances of variables (that are members 
@@ -245,7 +189,80 @@ public class Unifier {
 							return null;
 					}		
 				}
-		return sigma;		
+		return sigma;
+	}
+	
+	
+	/**
+	 * Returns a Map<Variable, Term> representing the left-substitution (i.e. a set
+	 * of variable/term pairs) or null which is used to indicate a failure to
+	 * unify.
+	 *  
+	 * @param arg1 the terms' list of the first predicate
+	 * @param arg2 the terms' list of the first predicate 
+	 * @return a Map<Variable, Term> representing the substitution (i.e. a set
+	 *         of variable/term pairs) or null which is used to indicate a
+	 *         failure to unify.
+	 */
+	public static Map<Variable, Term> findLeftSubst(List<Term> arg1, List<Term> arg2){
+		if(arg1==null || arg2==null || arg1.size()!=arg2.size())
+			return null;
+		else{
+			Map<Variable, Term> sigma = new HashMap<Variable, Term>();
+			for(int i=0;i<arg1.size();i++)
+				sigma=unifyLeft(arg1.get(i), arg2.get(i), sigma);
+			return sigma;
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * Returns a Map<Variable, Term> representing the left-substitution (i.e. a set
+	 * of variable/term pairs) or null which is used to indicate a failure to
+	 * unify.
+	 * 
+	 * @param x a term
+	 * @param y a term 
+	 * @param sigma the substitution built up so far
+	 * @return a Map<Variable, Term> representing the substitution (i.e. a set
+	 *         of variable/term pairs) or null which is used to indicate a
+	 *         failure to unify.
+	 */
+	private static Map<Variable, Term> unifyLeft(Term x, Term y,
+			Map<Variable, Term> sigma) {
+		if (sigma == null) {
+			return null;
+		} else if (x.equals(y)) {
+			// if the two term are equals return the substitution without any modification
+			return sigma;
+		} else if (x instanceof Variable){
+			// && !occurCheck((Variable)x, y, sigma) ) {
+			//sigma.put((Variable) x, y);
+			//return sigma;
+			Term t;
+			if((t=sigma.get((Variable) x))==null)
+				sigma.put((Variable) x, y);
+			else if(!t.equals(y))	// you should unify these two term, but the same variable is already used 
+				// to unify another term different from y
+				return null;
+			return sigma;
+			
+		} else if (x instanceof Function && y instanceof Function) {
+			if(x.getSymbol().equals(y.getSymbol())){		// the function's name must be the same
+				for(int i=0;i<((Function)x).nArgs();i++)
+					sigma=unifyLeft(((Function)x).getArgs().get(i), ((Function)y).getArgs().get(i), sigma);
+				return sigma;
+			} else // CLASH!!!
+				return null;
+		} else {
+			/* - two different constant
+			 * - left(constant) && ( right(variable) || right(function) ) 
+			 * - left(function) && ( right(constant) || right(variable) )
+			 */
+			return null;
+		}
 	}
 	
 	
@@ -266,7 +283,7 @@ public class Unifier {
 			Term tNew;
 			boolean newFun=false; // true iff a new function must be created
 			for(Term tArg: ((Function)toSubstitute).getArgs()){
-				newFun = ((tNew=substitute(v, substitution, tArg)) != tArg) | newFun;
+				newFun = ((tNew=substitute(v, substitution, tArg)) != tArg) || newFun;
 				/*
 				 * t=substitute(v, substitution, tArg);
 				 * if (!newObj)	

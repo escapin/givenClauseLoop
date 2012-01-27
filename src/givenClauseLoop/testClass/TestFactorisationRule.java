@@ -48,7 +48,7 @@ public class TestFactorisationRule {
 		}
 		System.out.print("\n\n");
 		System.out.println("FACTORISATION:");
-		Queue<Clause> qNew;
+		Collection<Clause> qNew;
 		for(Clause c1: clauses){
 			qNew=ExpansionRules.factorisation(c1);
 		System.out.println("\n" + c1 + "  factors: ");
