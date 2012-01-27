@@ -24,25 +24,36 @@ public class Unifier {
 	public static Map<Variable, Term> findMGU(List<Term> arg1, List<Term> arg2){
 		Map<Variable, Term> sigma = new HashMap<Variable, Term>();
 		sigma = unify(arg1, arg2, sigma);
-		//return cascadeSubstitution(sigma);
-		return composition(sigma, sigma);
+		return cascadeSubstitution(sigma);
 	}
 	
 	
-	public static Map<Variable, Term> composition(Map<Variable, Term> sigma, Map<Variable, Term> theta){
-		Map<Variable, Term> composition=new HashMap<Variable, Term>();
-		Map<Variable, Variable> varMap = new HashMap<Variable, Variable>();
+	/**
+	 * After you have been created the substitution sigma, you need to "cascade" 
+	 * this substitution because there should be instances of variables (that are members 
+	 * of sigma's domain) that are also in the codomain's terms. In this case you have to
+	 * replace all the occurences of these variables with the corresponding term presents
+	 * in the substitution.  
+	 * 
+	 * @param sigma the substitution that must be "cascaded"
+	 * @return the cascaded substitution
+	 */
+	private static Map<Variable, Term> cascadeSubstitution(Map<Variable, Term> sigma){
+		if(sigma==null)
+			return null;
 		Term tNew;
-		for(Variable v: sigma.keySet()){
-			tNew=Substitution.substitute(sigma.get(v), theta, varMap);
-			if(!v.equals(tNew))
-				composition.put(v, tNew);
-		}
-		for(Variable v: theta.keySet())
-			if(!sigma.containsKey(v))
-				composition.put(v, theta.get(v));
-		return composition;
+		for(Variable v1: sigma.keySet())
+			for(Variable v2: sigma.keySet())
+				if(!v1.equals(v2) && v1.equals(sigma.get(v2))){
+						tNew=sigma.get(v1);
+						if(occurCheck(v2, tNew, sigma))
+							return null;
+						sigma.put(v2, tNew);
+				}
+		return sigma;
 	}
+	
+	
 	
 	/**
 	 * Returns a Map<Variable, Term> representing the substitution (i.e. a set
@@ -165,35 +176,6 @@ public class Unifier {
 	
 	
 	/**
-	 * After you have been created the substitution sigma, you need to "cascade" 
-	 * this substitution because there should be instances of variables (that are members 
-	 * of sigma's domain) that are also in the codomain's terms. In this case you have to
-	 * replace all the occurences of these variables with the corresponding term presents
-	 * in the substitution.  
-	 * 
-	 * @param sigma the substitution that must be "cascaded"
-	 * @return the cascaded substitution
-	 */
-	private static Map<Variable, Term> cascadeSubstitution(Map<Variable, Term> sigma){
-		if(sigma==null)
-			return null;
-		Term t, t2;
-		for(Variable v1: sigma.keySet())
-			for(Variable v2: sigma.keySet())
-				if(!v1.equals(v2)){
-					t2=sigma.get(v2);
-					t=substitute(v1, sigma.get(v1), t2);
-					if(t!=t2){
-						sigma.put(v2, t);
-						if(occurCheck(v2, t, sigma))
-							return null;
-					}		
-				}
-		return sigma;
-	}
-	
-	
-	/**
 	 * Returns a Map<Variable, Term> representing the left-substitution (i.e. a set
 	 * of variable/term pairs) or null which is used to indicate a failure to
 	 * unify.
@@ -214,8 +196,6 @@ public class Unifier {
 			return sigma;
 		}
 	}
-	
-	
 	
 	
 	/**
@@ -265,21 +245,47 @@ public class Unifier {
 		}
 	}
 	
+}
+
+
+
+/**
+
+
+	/*private static Map<Variable, Term> cascadeSubstitution(Map<Variable, Term> sigma){
+	if(sigma==null)
+		return null;
 	
+	Term t, t2;
+			
+	for(Variable v1: sigma.keySet())
+		for(Variable v2: sigma.keySet())
+			if(!v1.equals(v2)){
+				t2=sigma.get(v2);
+				t=substitute(v1, sigma.get(v1), t2);
+				if(t!=t2){
+					if(occurCheck(v2, t, sigma))
+						return null;
+					sigma.put(v2, t);
+				}		
+			}
+	return sigma;
+}
+
 	/**
 	 * Substitute with the term 'substitution' all the occurrences of variable 'v' in term 'toSubstitute'.
 	 * @param v
 	 * @param substitution
 	 * @param toSubstitute
 	 * @return
-	 */
+
 	private static Term substitute(Variable v, Term substitution, Term toSubstitute){
 		if(toSubstitute instanceof Constant)
 			return toSubstitute;
 		 else if(toSubstitute instanceof Variable) 
 			return (toSubstitute.equals(v))? substitution : toSubstitute;
 		 else {  //if(toSubstitute instanceof Function){
-			List<Term> newArgs=new LinkedList<Term>();
+			List<Term> newArgs=new ArrayList<Term>(((Function) toSubstitute).nArgs());
 			Term tNew;
 			boolean newFun=false; // true iff a new function must be created
 			for(Term tArg: ((Function)toSubstitute).getArgs()){
@@ -288,11 +294,47 @@ public class Unifier {
 				 * t=substitute(v, substitution, tArg);
 				 * if (!newObj)	
 				 * 	newObj= t != tArg;
-				 */
+				 
 				newArgs.add(tNew);
 			}
 			return newFun? new Function(toSubstitute.getSymbol(), newArgs) : toSubstitute;
 		}
 	}
-	
+
+public static Map<Variable, Term> composition(Map<Variable, Term> sigma, Map<Variable, Term> theta){
+if(sigma!=null && theta!=null){
+	Map<Variable, Term> composition=new HashMap<Variable, Term>();
+	Term tNew;
+	for(Variable v: sigma.keySet()){
+		tNew=substitute(sigma.get(v), theta);
+		if(occurCheck(v, tNew, composition))
+			return null;
+		if(!v.equals(tNew))
+			composition.put(v, tNew);	
+	}
+	for(Variable v: theta.keySet())
+		if(!sigma.containsKey(v))
+			composition.put(v, theta.get(v));
+	return composition;
 }
+return null;
+}
+
+private static Term substitute(Term toSubstitute, Map<Variable, Term> sigma){
+if (toSubstitute instanceof Constant)
+	return toSubstitute;
+else if (toSubstitute instanceof Variable){
+	Term tNew;
+	return ((tNew=sigma.get((Variable) toSubstitute))!=null)? tNew : toSubstitute; 
+}
+else{//if(toSubstitute instanceof Function){
+	List<Term> newArgs=new ArrayList<Term>(((Function) toSubstitute).getArgs());
+	Term tNew;
+	boolean newFun=false; // true iff a new function must be created
+	for(Term tArg: ((Function)toSubstitute).getArgs()){
+		newFun = ((tNew=substitute(tArg, sigma)) != tArg) || newFun;
+		newArgs.add(tNew);
+	}
+	return newFun? new Function(toSubstitute.getSymbol(), newArgs) : toSubstitute;
+}
+*/
