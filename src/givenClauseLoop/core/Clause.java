@@ -157,13 +157,19 @@ public class Clause implements Comparable<Clause>{
 			if ( (setLit = litMap.get( (lOth.sign()? "~": "") + lOth.getSymbol()) ) != null) // the opposite
 				for(Iterator<Literal> iter1=setLit.iterator(); iter1.hasNext();){
 					// literal of this clause that have the same name of l1
+					
 					lThis=iter1.next();
-					if(Unifier.findLeftSubst(lOth.getArgs(), lThis.getArgs())!= null){ // lOth σ = ~lThis
+					
+					Map<Variable, Term> sigma;
+					if((sigma=Unifier.findLeftSubst(lOth.getArgs(), lThis.getArgs()))!= null){ // lOth σ = ~lThis
+						//System.out.println("\n" + lOth + "\t" + lThis + "\n");
 						symNumber -= lThis.nSymbols();
 						if(rmFromLitMap){
 							literals.remove(lThis);
 							iter1.remove();
 						}
+						//System.out.println("\n" + this + "\t" + c + "\n");
+						//System.out.println("\n" + sigma + "\n");
 						litToRm.add(lThis);
 					}
 				}

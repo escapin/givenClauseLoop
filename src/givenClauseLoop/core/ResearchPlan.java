@@ -330,16 +330,6 @@ public class ResearchPlan {
 					}
 				} else if( !(litSim=cSel.simplify(cNew, false)).isEmpty()){
 					info.nSimplifications++;
-					if(cSel.isEmpty()){	// empty clause generated
-						info.c1=cNew;
-						cTemp=new Clause();
-						for(Literal l: litSim)
-							cTemp.addLiteral(l);
-						info.c2=cTemp;
-						info.res = EnumClass.LoopResult.UNSAT;
-						info.rule=EnumClass.Rule.SIMPLIFICATION;
-						return cNew;
-					}
 					for(Literal l: litSim){
 						if(cSel==givenClause)
 							litGCrm.add(l);
@@ -350,6 +340,16 @@ public class ResearchPlan {
 							lRm.add(l);
 						else // this literal must be removed from support set too
 							cSel.getLitMap().get(( (l.sign()? "": "~") + l.getSymbol())).remove(l);
+					}
+					if(cSel.isEmpty() || (cSel==givenClause && givenClause.nLiterals()==litSim.size())){	// empty clause generated
+						info.c1=cNew;
+						cTemp=new Clause();
+						for(Literal l: litSim)
+							cTemp.addLiteral(l);
+						info.c2=cTemp;
+						info.res = EnumClass.LoopResult.UNSAT;
+						info.rule=EnumClass.Rule.SIMPLIFICATION;
+						return cNew;
 					}
 				}
 				// SUBSUMPTIONS

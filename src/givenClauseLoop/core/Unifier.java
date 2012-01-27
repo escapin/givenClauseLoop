@@ -192,7 +192,8 @@ public class Unifier {
 		else{
 			Map<Variable, Term> sigma = new HashMap<Variable, Term>();
 			for(int i=0;i<arg1.size();i++)
-				sigma=unifyLeft(arg1.get(i), arg2.get(i), sigma);
+				if((sigma=unifyLeft(arg1.get(i), arg2.get(i), sigma))==null)
+					return null;
 			return sigma;
 		}
 	}
@@ -218,11 +219,9 @@ public class Unifier {
 			// if the two term are equals return the substitution without any modification
 			return sigma;
 		} else if (x instanceof Variable){
-			// && !occurCheck((Variable)x, y, sigma) ) {
-			//sigma.put((Variable) x, y);
-			//return sigma;
-			Term t;
-			if((t=sigma.get((Variable) x))==null)
+			Term t=sigma.get((Variable) x);
+			//System.out.println("\n" + x + ", " + t + "\t" + y);
+			if(t==null)
 				sigma.put((Variable) x, y);
 			else if(!t.equals(y))	// you should unify these two term, but the same variable is already used 
 				// to unify another term different from y
@@ -232,7 +231,8 @@ public class Unifier {
 		} else if (x instanceof Function && y instanceof Function) {
 			if(x.getSymbol().equals(y.getSymbol())){		// the function's name must be the same
 				for(int i=0;i<((Function)x).nArgs();i++)
-					sigma=unifyLeft(((Function)x).getArgs().get(i), ((Function)y).getArgs().get(i), sigma);
+					if((sigma=unifyLeft(((Function)x).getArgs().get(i), ((Function)y).getArgs().get(i), sigma))==null)
+						return null;
 				return sigma;
 			} else // CLASH!!!
 				return null;
