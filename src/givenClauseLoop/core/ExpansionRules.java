@@ -11,10 +11,10 @@ public class ExpansionRules {
 	 *  
 	 * @param c1 the first clause
 	 * @param c2 the second clause
-	 * @return set of all the binary resolvents
+	 * @return collection of all the binary resolvents
 	 */
-	public static Queue<Clause> binaryResolution(Clause c1, Clause c2){
-		Queue<Clause> resolvents= new LinkedList<Clause>();
+	public static Collection<Clause> binaryResolution(Clause c1, Clause c2){
+		Collection<Clause> resolvents= new LinkedList<Clause>();
 		Clause cNew;
 		if(c1!=c2){
 			Set<Literal> lMap;
@@ -86,10 +86,10 @@ public class ExpansionRules {
 	 * Generates all the factors of the clause.
 	 *  
 	 * @param c 
-	 * @return set of all the factors
+	 * @return collection of all the factors
 	 */
-	public static Queue<Clause> factorisation(Clause c){
-		Queue<Clause> factors= new LinkedList<Clause>();
+	public static Collection<Clause> factorisation(Clause c){
+		Collection<Clause> factors= new ArrayList<Clause>();
 		Clause cNew;
 		Set<Literal> lMap; 
 		Map<Literal, Literal> alreadyFactorised = new HashMap<Literal, Literal>(); // in order to avoid double factorisations

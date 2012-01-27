@@ -79,9 +79,9 @@ public class ResearchPlan {
 	
 	
 	private static boolean findExpansionBefore(Clause givenClause){
-		Queue<Clause> results= new LinkedList<Clause>();
+		List<Clause> results; //= new LinkedList<Clause>();
 		
-		results=ExpansionRules.factorisation(givenClause);
+		results= (List<Clause>) ExpansionRules.factorisation(givenClause);
 		info.nFactorisations += results.size();
 		Clause cNew;
 		for(Clause cSel: alreadySelected)
@@ -105,29 +105,62 @@ public class ResearchPlan {
 						}
 			}
 		
-		Set<Clause> toBeRemoved = new HashSet<Clause>();
-		Clause c1;
-		boolean toBeRem=false,
-						next=false;
-		for(Iterator<Clause> iter1=results.iterator(); iter1.hasNext(); ){
-			do{
+		Collection<Clause> toBeRm = new HashSet<Clause>();
+		Clause c1, c2;
+		Set<Literal> lSet;
+		int k=0;
+		for(Iterator<Clause> iter1=results.iterator(); iter1.hasNext();){
+			do
 				c1=iter1.next();
-			}while((toBeRem=toBeRemoved.contains(c1)) && (next=iter1.hasNext()));
-			if(toBeRem && !next)
+			while(toBeRm.contains(c1) && iter1.hasNext());
+			if(toBeRm.contains(c1) && !iter1.hasNext())
 				break;
-			if(c1.isTautology()){
+			
+			if(!c1.isTautology()){
+				for(int j=k+1; j<results.size(); j++){
+					c2=results.get(j);
+					if(!(lSet=c1.simplify(c2, false)).isEmpty()){
+						info.nSimplifications++;
+						if(c1.isEmpty()){
+							info.c1=c2;
+							Clause cTmp=new Clause();
+							for(Literal l: lSet)
+								cTmp.addLiteral(l);
+							info.c2=cTmp;
+							info.rule=EnumClass.Rule.SIMPLIFICATION;
+							info.res = EnumClass.LoopResult.UNSAT;
+							return true;
+						}
+					}
+					else if(!(lSet=c2.simplify(c1, false)).isEmpty()){
+						info.nSimplifications++;
+						if(c2.isEmpty()){
+							info.c1=c1;
+							Clause cTmp=new Clause();
+							for(Literal l: lSet)
+								cTmp.addLiteral(l);
+							info.c2=cTmp;
+							info.rule=EnumClass.Rule.SIMPLIFICATION;
+							info.res = EnumClass.LoopResult.UNSAT;
+							return true;
+						}
+					}
+					if(c2.subsumes(c1)){
+						info.nSubsumptions++;
+						iter1.remove();
+						break;
+					} else if(c1.subsumes(c2)){
+						info.nSubsumptions++;
+						toBeRm.add(c2);
+					}
+				}
+			} else
 				info.nTautology++;
-				iter1.remove();
-			} 
-			else {
-				c1=contractionRules(c1, results, toBeRemoved, null, null);
-				if(info.res==EnumClass.LoopResult.UNSAT)
-					return true;
-			}
+			k++;
 		}
-		for(Clause c: toBeRemoved)
+		for(Clause c: toBeRm)
 			results.remove(c);
-				
+			
 		for(Clause c: results)
 			if(!c.isTautology()){
 				c=contractionRules(c, alreadySelected, null, null, null); // CONTRACTION RULES with alreadySelected
@@ -339,7 +372,24 @@ public class ResearchPlan {
 		}
 		return cNew;
 	}
-
+	
+	
+	/*
+	private static Clause simplification(Clause c1, Clause c2){
+		if(c1!=c2 && c2.nLiterals()==1){
+			Literal lC2=c2.getLiterals().iterator().next();
+			Set<Literal> setLit;
+			if ( (setLit = c1.getLitMap().get( (lC2.sign()? "~": "") + lC2.getSymbol()) ) != null){ // the opposite
+				Clause cNew = new Clause();
+				for(Literal lC1: setLit) // literal of this clause that have the same name of l1
+						if(Unifier.findLeftSubst(lC2.getArgs(), lC1.getArgs())== null) // lC2 σ = ~lC1
+							cNew.addLiteral(lC1);
+				return cNew;
+			}
+		}
+		return c1;
+	}
+*/
 }	
 	
 	
