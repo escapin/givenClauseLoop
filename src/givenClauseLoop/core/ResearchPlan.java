@@ -21,9 +21,9 @@ public class ResearchPlan {
 		opt=option;
 		info = infoLoop;
 		litGCrm = new HashSet<Literal>();
-		alreadySelected = new LinkedList<Clause>();
+		//alreadySelected = new LinkedList<Clause>();
 		//alreadySelected = new HashSet<Clause>();
-		//alreadySelected = new LinkedHashSet<Clause>();
+		alreadySelected = new LinkedHashSet<Clause>();
 		info.clausesGenerated=toBeSelected.size();
 		info.loopType=opt.loopType;
 		
@@ -343,10 +343,14 @@ public class ResearchPlan {
 					}
 					if(cSel.isEmpty() || (cSel==givenClause && givenClause.nLiterals()==litSim.size())){	// empty clause generated
 						info.c1=cNew;
-						cTemp=new Clause();
-						for(Literal l: litSim)
-							cTemp.addLiteral(l);
-						info.c2=cTemp;
+						if(cSel==givenClause)
+							info.c2=givenClause;
+						else {
+							cTemp=new Clause();
+							for(Literal l: litSim)
+								cTemp.addLiteral(l);
+							info.c2=cTemp;
+						}
 						info.res = EnumClass.LoopResult.UNSAT;
 						info.rule=EnumClass.Rule.SIMPLIFICATION;
 						return cNew;

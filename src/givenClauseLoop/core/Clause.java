@@ -101,11 +101,25 @@ public class Clause implements Comparable<Clause>{
 	
 	public boolean subsumes(Clause c){
 		if(this!=c && this.nLiterals()<=c.nLiterals() && this.compareTo(c)<=0){
-			for(Literal l: literals)
-				if(c.getLitMap().get( (l.sign()? "": "~") + l.getSymbol()) == null)
-					return false;
 			
-			List<Clause> Uset = new ArrayList<Clause>();
+			for(Literal l: literals)
+				if( c.getLitMap().get((l.sign()? "": "~") + l.getSymbol()) == null)
+					return false;
+			/*
+			Map<String, Integer> match = new HashMap<String, Integer>();
+			String key;
+			Set<Literal> lTmp;
+			for(Literal l: literals){
+				key =(l.sign()? "": "~") + l.getSymbol();
+				lTmp=c.getLitMap().get(key);
+				if( lTmp == null || (match.containsKey(key) && lTmp.size()<=match.get(key).intValue()) )
+					return false;
+				else
+					match.put(key, match.containsKey(key)? new Integer(match.get(key).intValue()+1): new Integer(1));
+			}
+			*/
+			
+			List<Clause> Uset = new LinkedList<Clause>();
 			Uset.add(this);
 			return checkSubsumption(Uset, c);
 		}
@@ -116,9 +130,10 @@ public class Clause implements Comparable<Clause>{
 		Set<Literal> lMap;
 		Map<Variable, Term> sigma;
 		Clause cNew;
-		List<Clause> Uset1 = new ArrayList<Clause>();
+		List<Clause> Uset1=new LinkedList<Clause>();
 		while(!Uset.isEmpty()){
-			for(Clause cSel: Uset){	
+			//Uset1=new LinkedList<Clause>();
+			for(Clause cSel: Uset)
 				for(Literal lSel: cSel.getLiterals())
 					if( (lMap=c.getLitMap().get( (lSel.sign()? "": "~") + lSel.getSymbol()) ) != null )
 						for(Literal lC: lMap)
@@ -127,7 +142,6 @@ public class Clause implements Comparable<Clause>{
 									return true;
 								Uset1.add(cNew);
 							}
-			}
 			Uset.clear();
 			Uset.addAll(Uset1);
 			Uset1.clear();
@@ -160,8 +174,7 @@ public class Clause implements Comparable<Clause>{
 					
 					lThis=iter1.next();
 					
-					Map<Variable, Term> sigma;
-					if((sigma=Unifier.findLeftSubst(lOth.getArgs(), lThis.getArgs()))!= null){ // lOth σ = ~lThis
+					if(Unifier.findLeftSubst(lOth.getArgs(), lThis.getArgs()) != null){ // lOth σ = ~lThis
 						//System.out.println("\n" + lOth + "\t" + lThis + "\n");
 						symNumber -= lThis.nSymbols();
 						if(rmFromLitMap){
@@ -169,7 +182,6 @@ public class Clause implements Comparable<Clause>{
 							iter1.remove();
 						}
 						//System.out.println("\n" + this + "\t" + c + "\n");
-						//System.out.println("\n" + sigma + "\n");
 						litToRm.add(lThis);
 					}
 				}

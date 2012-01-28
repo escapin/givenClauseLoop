@@ -26,4 +26,11 @@ public class Variable extends Term{
 		}
 		return newVar;
 	}
+	
+	public String toString(){
+		//String s = "" + this.hashCode();
+		String s = "" + Integer.toHexString(System.identityHashCode(this));
+		s= s.length()>3? s.substring(s.length()-3, s.length()): s;
+		return symbol + "@" + s;
+	}
 }

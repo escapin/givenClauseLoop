@@ -1,0 +1,57 @@
+henry@VGN:~/workspace/givenClauseLoop/bin$ java givenClauseLoop.Main ../examples/KRS006-1.p 
+FILE: KRS006-1.p
+Parsing...
+ Found 27 clauses
+
+Given Clause Loop parameters:
+	loop type:		Otter
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	contraction rules before
+	time out:		infinite
+
+Executing Given Clause Loop...
+ITERATION	TO BE SELECTED		ALREADY SELECTED
+898)            0.......................797        
+
+Result: SATISFIABLE
+
+Clause generated: 61388
+	Factors: 160
+	Binary resolvents: 61228
+Tautologies:		1823
+Subsumptions:		58795
+Simplifications:	6304
+
+Elapsed clock time:	2m 6,4130s	(126413ms)
+
+
+henry@VGN:~/workspace/givenClauseLoop/bin$ java givenClauseLoop.Main ../examples/KRS006-1.p
+FILE: KRS006-1.p
+Parsing...
+ Found 27 clauses
+
+Given Clause Loop parameters:
+	loop type:		Otter
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	contraction rules before
+	time out:		infinite
+
+Executing Given Clause Loop...
+ITERATION	TO BE SELECTED		ALREADY SELECTED
+869)            22.......................782       
+876)      	15.......................789      
+891)      	0.......................804       
+
+Result: SATISFIABLE
+
+Clause generated: 61229
+	Factors: 158
+	Binary resolvents: 61071
+Tautologies:		1815
+Subsumptions:		58637
+Simplifications:	1504
+
+Elapsed clock time:	7m 21,1260s	(441126ms)
+henry@VGN:~/workspace/givenClauseLoop/bin$ 
