@@ -2,13 +2,14 @@
 import os
 
 def main():
-	if os.path.exists(sys.argv[1]):
-		path=sys.argv[1];
+	if os.path.exists(sys.argv[2]):
+		jarFile=sys.argv[1];
+		path=sys.argv[2];
 		print "Directory with test file: " + path;
 		testFile = open('testResult.csv', 'w+')
 		for infile in os.listdir(path):
 			writeLn = "";
-			process = subprocess.Popen(['java', '-jar', 'givenClauseLoop.jar', 'exp', '-time10' , infile],
+			process = subprocess.Popen(['java', '-jar', jarFile, 'exp', '-time10' , infile],
 				stdout=subprocess.PIPE, 
 				stderr=subprocess.PIPE)
 			
