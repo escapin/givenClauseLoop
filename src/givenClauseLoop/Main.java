@@ -13,7 +13,7 @@ public class Main {
 	
 	private static long	loopTime, start;
 	private static CommandOptions opt = null;
-	private static Queue<Clause> clauses;
+	private static Collection<Clause> clauses;
 	private static InfoLoop info;
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, RuntimeException, Exception{
@@ -44,7 +44,7 @@ public class Main {
 			
 			// creating data structure containing clause
 			clauses =  
-				(opt.clauseStrategy==EnumClass.clauseStrategy.FIFO)? new LinkedList<Clause>() : new PriorityQueue<Clause>();
+				(opt.clauseStrategy==EnumClass.clauseStrategy.FIFO)? new LinkedHashSet<Clause>() : new PriorityQueue<Clause>();
 				
 			System.out.println("Parsing...");
 			TPTPparser.parsing(input.toString(), clauses);
@@ -94,8 +94,10 @@ public class Main {
 				future.cancel(true);
 				if(e.toString().contains("OutOfMemory"))
 					info.res = EnumClass.LoopResult.OUT_OF_MEMORY;
-				else 
+				else{
+					System.out.println();
 					e.printStackTrace();
+				}
 				printResult();
 				System.exit(-1);
 			} finally {

@@ -14,7 +14,7 @@ public class ExpansionRules {
 	 * @return collection of all the binary resolvents
 	 */
 	public static Collection<Clause> binaryResolution(Clause c1, Clause c2){
-		Collection<Clause> resolvents= new LinkedList<Clause>();
+		Collection<Clause> resolvents= new LinkedHashSet<Clause>();
 		Clause cNew;
 		if(c1!=c2){
 			Set<Literal> lMap;
@@ -89,7 +89,7 @@ public class ExpansionRules {
 	 * @return collection of all the factors
 	 */
 	public static Collection<Clause> factorisation(Clause c){
-		Collection<Clause> factors= new ArrayList<Clause>();
+		Collection<Clause> factors= new LinkedHashSet<Clause>();
 		Clause cNew;
 		Set<Literal> lMap; 
 		Map<Literal, Literal> alreadyFactorised = new HashMap<Literal, Literal>(); // in order to avoid double factorisations

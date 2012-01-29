@@ -24,7 +24,7 @@ public class TPTPparser implements TPTPparserConstants {
         /**
 	 * Queue of all formulae read
 	 */
-        private static Queue<Clause> formulae;
+        private static Collection<Clause> formulae;
 
 
         /**	 * The variables' set of the formula that it's currently reading	 */
@@ -44,7 +44,7 @@ public class TPTPparser implements TPTPparserConstants {
 	 *@param input CNF formulae
 	 *@param output
 	 */
-        public static void parsing(String input, Queue<Clause> clauses) throws Exception{
+        public static void parsing(String input, Collection<Clause> clauses) throws Exception{
                 formulae  = clauses;
                 predicates = new HashMap<String, Integer>();
                 functions = new HashMap<String, Integer>();

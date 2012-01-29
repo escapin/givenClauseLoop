@@ -16,7 +16,7 @@ public class ResearchPlan {
 	private static Collection<Clause> alreadySelected;
 	private static Collection<Clause>  oldest;
 	
-	public static InfoLoop givenClauseLoop(Queue<Clause> toBeSel, CommandOptions option, InfoLoop infoLoop){
+	public static InfoLoop givenClauseLoop(Collection<Clause> toBeSel, CommandOptions option, InfoLoop infoLoop){
 		toBeSelected = toBeSel;
 		opt=option;
 		info = infoLoop;
@@ -50,7 +50,12 @@ public class ResearchPlan {
 				oldest.remove(givenClause);
 				toBeSelected.remove(givenClause);
 			} else {
-				givenClause=((Queue<Clause>) toBeSelected).poll();
+				if(toBeSelected instanceof Queue)
+					givenClause=((Queue<Clause>) toBeSelected).poll();
+				else{
+					givenClause=toBeSelected.iterator().next();
+					toBeSelected.remove(givenClause);
+				}
 				if(opt.peakGivenRatio>0)
 					oldest.remove(givenClause);
 			}
@@ -79,9 +84,9 @@ public class ResearchPlan {
 	
 	
 	private static boolean findExpansionBefore(Clause givenClause){
-		List<Clause> results; //= new LinkedList<Clause>();
+		Collection<Clause> results; //= new LinkedList<Clause>();
 		
-		results= (List<Clause>) ExpansionRules.factorisation(givenClause);
+		results= ExpansionRules.factorisation(givenClause);
 		info.nFactorisations += results.size();
 		Clause cNew;
 		for(Clause cSel: alreadySelected)
@@ -105,20 +110,21 @@ public class ResearchPlan {
 						}
 			}
 		
-		Collection<Clause> toBeRm = new HashSet<Clause>();
 		Clause c1, c2;
 		Set<Literal> lSet;
+		Collection<Clause> toBeRm = new HashSet<Clause>();
+		Object[] resToArray = results.toArray(); 
 		int k=0;
-		for(Iterator<Clause> iter1=results.iterator(); iter1.hasNext();){
+		for(Iterator<Clause> iterR=results.iterator(); iterR.hasNext();){
 			do
-				c1=iter1.next();
-			while(toBeRm.contains(c1) && iter1.hasNext());
-			if(toBeRm.contains(c1) && !iter1.hasNext())
+				c1=iterR.next();
+			while(toBeRm.contains(c1) && iterR.hasNext());
+			if(toBeRm.contains(c1) && !iterR.hasNext())
 				break;
 			
 			if(!c1.isTautology()){
-				for(int j=k+1; j<results.size(); j++){
-					c2=results.get(j);
+				for(int j=k+1; j<resToArray.length; j++){
+					c2= (Clause) resToArray[j];
 					if(!(lSet=c1.simplify(c2, false)).isEmpty()){
 						info.nSimplifications++;
 						if(c1.isEmpty()){
@@ -147,7 +153,7 @@ public class ResearchPlan {
 					}
 					if(c2.subsumes(c1)){
 						info.nSubsumptions++;
-						iter1.remove();
+						iterR.remove();
 						break;
 					} else if(c1.subsumes(c2)){
 						info.nSubsumptions++;
