@@ -19,16 +19,16 @@ public Integer nSymbols()</text>
 public String toString()</text>
 <text font-family="Dialog" font-size="12" x="442" y="139">
 public Boolean equals( o)</text>
-<rect fill="#ffffff" height="83" stroke="#ffffff" stroke-width="1" width="184" x="158" y="166"/>
-<rect fill="none" height="83" stroke="#000000" stroke-width="1" width="184" x="158" y="166"/>
-<text font-family="Dialog" font-size="12" x="212" y="198">
+<rect fill="#ffffff" height="83" stroke="#ffffff" stroke-width="1" width="184" x="174" y="166"/>
+<rect fill="none" height="83" stroke="#000000" stroke-width="1" width="184" x="174" y="166"/>
+<text font-family="Dialog" font-size="12" x="228" y="198">
 FOLNodeArg</text>
-<text font-family="Dialog" font-size="12" x="202" y="180">
+<text font-family="Dialog" font-size="12" x="218" y="180">
 &lt;&lt;interface&gt;&gt;</text>
-<rect fill="#000000" height="1" stroke="#000000" stroke-width="1" width="184" x="158" y="208"/>
-<text font-family="Dialog" font-size="12" x="162" y="222">
+<rect fill="#000000" height="1" stroke="#000000" stroke-width="1" width="184" x="174" y="208"/>
+<text font-family="Dialog" font-size="12" x="178" y="222">
 public List&lt;Term&gt; getArgs()</text>
-<text font-family="Dialog" font-size="12" x="162" y="238">
+<text font-family="Dialog" font-size="12" x="178" y="238">
 public Integer nArgs()</text>
 <rect fill="#ffffff" height="69" stroke="#ffffff" stroke-width="1" width="337" x="582" y="182"/>
 <rect fill="none" height="69" stroke="#000000" stroke-width="1" width="337" x="582" y="182"/>
@@ -49,7 +49,7 @@ Literal</text>
 <text font-family="Dialog" font-size="12" x="18" y="435">
 private Boolean sign</text>
 <text font-family="Dialog" font-size="12" x="18" y="451">
-public List&lt;Term&gt; args</text>
+private List&lt;Term&gt; args</text>
 <rect fill="#000000" height="1" stroke="#000000" stroke-width="1" width="440" x="14" y="465"/>
 <text font-family="Dialog" font-size="12" x="18" y="479">
 public Literal(String name, Boolean sign, List&lt;Term&gt; args)</text>
@@ -81,7 +81,7 @@ public Literal clone(Map&lt;Variable varMap,  Variable&gt;)</text>
 <polyline fill="none" points="438,398 438,150" stroke="#000000" stroke-width="1"/>
 <polygon fill="#ffffff" points="438,150 445,162 431,162" stroke="#ffffff" stroke-width="1"/>
 <polygon fill="none" points="438,150 445,162 431,162" stroke="#000000" stroke-width="1"/>
-<text font-family="Dialog" font-size="12" x="443" y="272">
+<text font-family="Dialog" font-size="12" x="443" y="236">
 &lt;&lt;implementation&gt;&gt;</text>
 <rect fill="#ffffff" height="88" stroke="#ffffff" stroke-width="1" width="357" x="478" y="398"/>
 <rect fill="none" height="88" stroke="#000000" stroke-width="1" width="357" x="478" y="398"/>
@@ -96,32 +96,31 @@ public Function(String name, List&lt;Term&gt; args)</text>
 <polyline fill="none" points="630,398 630,251" stroke="#000000" stroke-width="1"/>
 <polygon fill="#ffffff" points="630,251 637,263 623,263" stroke="#ffffff" stroke-width="1"/>
 <polygon fill="none" points="630,251 637,263 623,263" stroke="#000000" stroke-width="1"/>
-<text font-family="Dialog" font-size="12" x="486" y="343">
+<text font-family="Dialog" font-size="12" x="458" y="332">
 &lt;&lt;implementation&gt;&gt;</text>
 <line fill="#000000" stroke="#000000" stroke-width="1" x1="478" x2="475" y1="398" y2="395"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="472" x2="468" y1="391" y2="387"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="465" x2="462" y1="384" y2="380"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="458" x2="455" y1="376" y2="373"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="451" x2="448" y1="369" y2="365"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="445" x2="441" y1="361" y2="358"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="438" x2="435" y1="354" y2="350"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="431" x2="428" y1="347" y2="343"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="424" x2="421" y1="339" y2="335"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="418" x2="414" y1="332" y2="328"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="411" x2="407" y1="324" y2="321"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="404" x2="401" y1="317" y2="313"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="397" x2="394" y1="310" y2="306"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="391" x2="387" y1="302" y2="298"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="384" x2="380" y1="295" y2="291"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="377" x2="374" y1="287" y2="284"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="370" x2="367" y1="280" y2="276"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="363" x2="360" y1="272" y2="269"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="357" x2="353" y1="265" y2="261"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="350" x2="347" y1="258" y2="254"/>
-<line fill="#000000" stroke="#000000" stroke-width="1" x1="343" x2="342" y1="250" y2="249"/>
-<polygon fill="#ffffff" points="342,249 355,253 344,262" stroke="#ffffff" stroke-width="1"/>
-<polygon fill="none" points="342,249 355,253 344,262" stroke="#000000" stroke-width="1"/>
-<text font-family="Dialog" font-size="12" x="306" y="326">
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="472" x2="469" y1="391" y2="387"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="466" x2="463" y1="383" y2="379"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="460" x2="457" y1="375" y2="371"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="453" x2="450" y1="367" y2="363"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="447" x2="444" y1="359" y2="356"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="441" x2="438" y1="352" y2="348"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="435" x2="431" y1="344" y2="340"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="428" x2="425" y1="336" y2="332"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="422" x2="419" y1="328" y2="324"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="416" x2="413" y1="320" y2="317"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="409" x2="406" y1="313" y2="309"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="403" x2="400" y1="305" y2="301"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="397" x2="394" y1="297" y2="293"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="391" x2="387" y1="289" y2="285"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="384" x2="381" y1="281" y2="278"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="378" x2="375" y1="274" y2="270"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="372" x2="369" y1="266" y2="262"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="365" x2="362" y1="258" y2="254"/>
+<line fill="#000000" stroke="#000000" stroke-width="1" x1="359" x2="358" y1="250" y2="249"/>
+<polygon fill="#ffffff" points="358,249 370,253 360,262" stroke="#ffffff" stroke-width="1"/>
+<polygon fill="none" points="358,249 370,253 360,262" stroke="#000000" stroke-width="1"/>
+<text font-family="Dialog" font-size="12" x="315" y="322">
 &lt;&lt;realize&gt;&gt;</text>
 <rect fill="#ffffff" height="72" stroke="#ffffff" stroke-width="1" width="238" x="782" y="526"/>
 <rect fill="none" height="72" stroke="#000000" stroke-width="1" width="238" x="782" y="526"/>
@@ -134,7 +133,7 @@ public Variable(String name)</text>
 <polyline fill="none" points="846,526 846,251" stroke="#000000" stroke-width="1"/>
 <polygon fill="#ffffff" points="846,251 853,263 839,263" stroke="#ffffff" stroke-width="1"/>
 <polygon fill="none" points="846,251 853,263 839,263" stroke="#000000" stroke-width="1"/>
-<text font-family="Dialog" font-size="12" x="851" y="495">
+<text font-family="Dialog" font-size="12" x="832" y="500">
 &lt;&lt;implementation&gt;&gt;</text>
 <rect fill="#ffffff" height="69" stroke="#ffffff" stroke-width="1" width="244" x="878" y="342"/>
 <rect fill="none" height="69" stroke="#000000" stroke-width="1" width="244" x="878" y="342"/>
@@ -147,6 +146,6 @@ public Constant(String name)</text>
 <polyline fill="none" points="886,342 886,251" stroke="#000000" stroke-width="1"/>
 <polygon fill="#ffffff" points="886,251 893,263 879,263" stroke="#ffffff" stroke-width="1"/>
 <polygon fill="none" points="886,251 893,263 879,263" stroke="#000000" stroke-width="1"/>
-<text font-family="Dialog" font-size="12" x="901" y="312">
+<text font-family="Dialog" font-size="12" x="891" y="298">
 &lt;&lt;implementation&gt;&gt;</text>
 </svg>
