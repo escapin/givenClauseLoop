@@ -9,8 +9,8 @@ public class Function extends Term implements FOLNodeArg {
 	 */
 	private List<Term> args=null;
 	
-	public Function(String symbol, List<Term> args){
-		super.symbol=symbol;
+	public Function(String name, List<Term> args){
+		super.name=name;
 		this.args=args;
 		for(Term t: this.args){
 			symNumber += t.nSymbols();
@@ -34,7 +34,7 @@ public class Function extends Term implements FOLNodeArg {
 			return true;
 		if(obj instanceof Function){
 			Function f = (Function) obj;
-			if(this.getSymbol().equals(f.getSymbol()) && this.nArgs()==f.nArgs()){
+			if(this.getName().equals(f.getName()) && this.nArgs()==f.nArgs()){
 				for(int i=0; i<this.nArgs(); i++)
 					if( !(this.getArgs().get(i).equals(f.getArgs().get(i))) )
 						return false;
@@ -45,7 +45,7 @@ public class Function extends Term implements FOLNodeArg {
 	}
 	
 	public String toString(){
-		StringBuffer s = new StringBuffer(symbol + "(");
+		StringBuffer s = new StringBuffer(name + "(");
 		for(Term t: args)
 			s.append(t.toString() + ",");
 		s.replace(s.length()-1, s.length(), ")");
@@ -56,6 +56,6 @@ public class Function extends Term implements FOLNodeArg {
 		List<Term> newArgs = new LinkedList<Term>();
 		for(Term t: this.getArgs())
 			newArgs.add(t.clone(varMap));
-		return new Function(this.getSymbol(), newArgs);
+		return new Function(this.getName(), newArgs);
 	}
 }

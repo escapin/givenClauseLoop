@@ -3,7 +3,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage[italian]{babel}
 
-\usepackage{amsmath,amssymb, enumerate, indentfirst, booktabs, listings, colortbl, tabularx}
+\usepackage{amsmath,amssymb, enumerate, indentfirst, booktabs, listings, colortbl, tabularx, graphicx}
+\usepackage{emp} 
 
 \lstnewenvironment{java}{\lstset{basicstyle=\ttfamily,
 stepnumber=2, numbersep=5pt, language=java, %frame=shadowbox, 
@@ -14,6 +15,7 @@ stringstyle=\color{orange}}}{}
 
 \setlength{\parindent}{3mm}
 \newcommand{\grammarindent}[1][1]{\hspace*{#1\parindent}\ignorespaces} 
+
 
 % set margin
 \usepackage{vmargin}
@@ -35,20 +37,26 @@ Uno degli obiettivi del ragionamento automatico consiste nel cercare di costruir
 \[ H \models \varphi \]
 I dimostratori automatici tipicamente procedono in maniera refutazionale in quanto ogni formula è valida se e solo se la sua negazione è insoddisfacibile. Quindi, riferendoci al sequente sopra:
 \[ H \models \varphi \Longleftrightarrow H \cup \lbrace\neg \varphi\rbrace \text{ è insoddisfacibile} \]
-Da questa considerazione possiamo quindi cercare di costruire una procedura che, se dimostra l'insoddisfacibilità di $H \cup \lbrace\neg \varphi\rbrace$, allora $ H \models \varphi $ è valido, altrimenti, se ne dimostra la sua soddisfacibilità, il modello che lo soddisfa costituirà il controesempio alla validità di $ H \models \varphi $.\\
-Siamo interessati a dimostrare formule espresse in Logica del Primo Ordine\footnote{anche conosciuta con l'acronimo \emph{FOL}, First Order Logic} in quanto, al contrario della logica proposizionale, essa è sufficientemente espressiva da poter modellare una buona parte della nostra conoscenza. Utilizzando questo linguaggio però il problema della validità non è più decidibile bensì semidecidibile: infatti se l'insieme $H \cup \lbrace\neg \varphi\rbrace $ è insoddisfacibile allora la procedura terminerà sempre con la risposta corretta, mentre se esso è soddisfacibile non è detto che la procedura termini. \\
-La semidecidibilità deriva direttamente dal \emph{Teorema di Herbrand} che afferma che un insieme finito $S$ di clausole in \emph{FOL} è soddisfacibile se e solo se esiste un insieme finito $S'$ di istanze ground\footnote{clausole in cui tutte le variabili sono istanziate ad una qualche costante} di clausole di $S$ tale che $S'$ è soddisfacibile. Quindi per dimostrare la soddisfacibilità di $S$ è necessario generare tutti gli insiemi $S'$ di istanze ground e dimostrarne la soddisfacibilità ma, se in $S$ si quantifica su insiemi infiniti, allora la cardinalità degli insiemi $S'$ da generare è anch'essa infinita.
-In questo progetto si è implementata una procedura di semi-decisione basata su un sistema di cinque regole di inferenza (di cui due di espansione e tre di contrazione) e su un piano di ricerca denominato \emph{Ciclo della Clausola Data} (Given clause loop) che è uno standard alla base di molti dimostratori di insieme di formule in logica al primo ordine come Otter, E, Vampire etc.
+Da questa considerazione possiamo quindi cercare di costruire una procedura che, se dimostra l'insoddisfacibilità di $H \cup \lbrace\neg \varphi\rbrace$, allora $ H \models \varphi $ è valido, altrimenti, se ne dimostra la sua soddisfacibilità, il modello che lo soddisfa costituirà il controesempio alla validità di $ H \models \varphi $.\par
+Siamo interessati a dimostrare formule espresse in Logica del Primo Ordine\footnote{\emph{FOL}, First Order Logic} in quanto, al contrario della logica proposizionale, essa è sufficientemente espressiva da poter modellare una buona parte della nostra conoscenza. Utilizzando questo linguaggio però il problema della validità non è più decidibile bensì semidecidibile: infatti se l'insieme $H \cup \lbrace\neg \varphi\rbrace $ è insoddisfacibile allora la procedura terminerà sempre con la risposta corretta, mentre se esso è soddisfacibile non è detto che la procedura termini. \par
+La semidecidibilità deriva direttamente dal \emph{Teorema di Herbrand} che afferma che un insieme finito $S$ di clausole in \emph{FOL} è soddisfacibile se e solo se esiste un insieme finito $S'$ di istanze ground (clausole in cui tutte le variabili sono istanziate ad una qualche costante) di clausole di $S$ tale che $S'$ è soddisfacibile. Quindi per dimostrare la soddisfacibilità di $S$ è necessario generare tutti gli insiemi $S'$ di istanze ground e dimostrarne la soddisfacibilità ma, se in $S$ si quantifica su insiemi infiniti, allora la cardinalità degli insiemi $S'$ da generare è anch'essa infinita.\par
+Questo dimostratore prende in ingresso un insieme di clausole scritte in Forma Normale Congiunta\footnote{\emph{CNF}, Conjunctive Normal Form} e definite da una sintassi standard compatibile con frammento CNF senza uguaglianza della libreria \emph{TPTP}\footnote{http://www.cs.miami.edu/~tptp/}. Si è quindi implementata una procedura di semi-decisione che, basata su un sistema di cinque regole di inferenza (di cui due di espansione e tre di contrazione), implementa un piano di ricerca denominato \emph{Ciclo della Clausola Data} (Given clause loop) che è uno standard alla base di molti dimostratori di insieme di formule in logica al primo ordine come Otter, E, Vampire, Gandalf etc.
 
 %%%%%% Scelte implementative %%%%%%%%
-\section{Scelte implementative}
-L'elaborato è stato implementato utilizzando il linguaggio \emph{Java} 
-in quanto il livello di astrazione è tale da permettere al programmatore 
-di concentrarsi principalmente sulla progettazione dell'algoritmo ed, in 
-particolare, su quali strutture dati sia meglio utilizzare. 
-Inoltre la scelta di Java consente l'utilizzo di \emph{JavaCC}, uno 
-strumento che permette di effettuare il parsing delle formule 
-semplicemente specificando l'alfabeto e la grammatica del linguaggio.\par
+\section{Scelte progettuali}
+L'elaborato è stato implementato utilizzando il linguaggio \emph{Java} in quanto il livello di astrazione è tale da permettere al programmatore di concentrarsi principalmente sulla progettazione dell'algoritmo ed, in particolare, su quali strutture dati sia meglio utilizzare. 
+Inoltre la scelta di Java consente l'utilizzo di \emph{JavaCC}, uno strumento che ha permesso di effettuare sia il parsing delle formule sia quello degli argomenti che vengono passati da riga di comando.\par
+La scelta di tale linguaggio ha inoltre permesso un minimo di progettazione orientata agli oggetti soprattutto delle cosidette classi bean\footnote{così si denotano le classi che logicamente contengono le informazioni da manipolare} e, in particolare, delle classi che definisco i termini (funzioni, variabili e costanti) e i letterali.
+
+\begin{figure}[h]
+\includegraphics[width=1\columnwidth]{beanClassUML.png}
+\caption{UML delle classi bean rilevanti}
+\label{beanClassUML}
+\end{figure}
+
+
+
+
 Poiché si è deciso di mantenere il più possibile separate la fase di 
 parsing e quella di implementazione dell'algoritmo di Nelson-Oppen, è 
 stato necessario creare una classe “contenitore”, \texttt{CCObject} 

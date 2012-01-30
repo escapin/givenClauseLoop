@@ -66,7 +66,7 @@ public class TestResolutionRule {
 		"\n---------------------------------------------------------------------------------------------------------------------------------");
 					Set<Literal> lMap;
 					for(Literal l1: givenClause.getLiterals())
-						if( (lMap=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null )
+						if( (lMap=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getName()) ) != null )
 							for(Literal l2: lMap){
 								cNew=ExpansionRules.binaryResolution(givenClause, l1, cSel, l2);
 								System.out.print("\t" + cNew);

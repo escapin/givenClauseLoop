@@ -35,7 +35,7 @@ public class Clause implements Comparable<Clause>{
 		if(l!=null){
 			literals.add(l);
 			symNumber+=l.nSymbols();
-			String signature = ((l.sign())? "": "~") + l.getSymbol();
+			String signature = ((l.sign())? "": "~") + l.getName();
 			Set<Literal> setLit = litMap.get(signature);
 			if(setLit==null){ // we have to create a new set
 				setLit=new HashSet<Literal>();
@@ -91,7 +91,7 @@ public class Clause implements Comparable<Clause>{
 	public boolean isTautology(){
 		Set<Literal> setLit;
 		for(Literal l1: literals)
-			if( (setLit = litMap.get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null ) // the opposite
+			if( (setLit = litMap.get( (l1.sign()? "~": "") + l1.getName()) ) != null ) // the opposite
 				for(Literal l2: setLit)
 					if(l1!=l2 && l1.isOpposite(l2))
 						return true;
@@ -103,7 +103,7 @@ public class Clause implements Comparable<Clause>{
 		if(this!=c && this.nLiterals()<=c.nLiterals() && this.compareTo(c)<=0){
 			
 			for(Literal l: literals)
-				if( c.getLitMap().get((l.sign()? "": "~") + l.getSymbol()) == null)
+				if( c.getLitMap().get((l.sign()? "": "~") + l.getName()) == null)
 					return false;
 			/*
 			Map<String, Integer> match = new HashMap<String, Integer>();
@@ -135,7 +135,7 @@ public class Clause implements Comparable<Clause>{
 			//Uset1=new LinkedList<Clause>();
 			for(Clause cSel: Uset)
 				for(Literal lSel: cSel.getLiterals())
-					if( (lMap=c.getLitMap().get( (lSel.sign()? "": "~") + lSel.getSymbol()) ) != null )
+					if( (lMap=c.getLitMap().get( (lSel.sign()? "": "~") + lSel.getName()) ) != null )
 						for(Literal lC: lMap)
 							if( (sigma=Unifier.findLeftSubst(lSel.getArgs(), lC.getArgs())) != null){
 								if( (cNew=ExpansionRules.createFactor(cSel, lSel, sigma)).isEmpty() )
@@ -168,7 +168,7 @@ public class Clause implements Comparable<Clause>{
 		if(this!=c && c.nLiterals()==1){
 			Set<Literal> setLit;
 			Literal lOth=c.getLiterals().iterator().next(); // only one literal
-			if ( (setLit = litMap.get( (lOth.sign()? "~": "") + lOth.getSymbol()) ) != null) // the opposite
+			if ( (setLit = litMap.get( (lOth.sign()? "~": "") + lOth.getName()) ) != null) // the opposite
 				for(Iterator<Literal> iter1=setLit.iterator(); iter1.hasNext();){
 					// literal of this clause that have the same name of l1
 					

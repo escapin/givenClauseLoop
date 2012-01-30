@@ -11,8 +11,8 @@ public class Literal extends FOLNode implements FOLNodeArg {
 	 */
 	private List<Term> args=null;
 	
-	public Literal(String symbol, boolean sign, List<Term> args){
-		super.symbol=symbol;
+	public Literal(String name, boolean sign, List<Term> args){
+		super.name=name;
 		this.sign=sign;
 		
 		if(args==null)
@@ -39,9 +39,9 @@ public class Literal extends FOLNode implements FOLNodeArg {
 	
 	public String toString(){
 		if(args.size()==0)
-			return sign? symbol : "~" + symbol;
+			return sign? name : "~" + name;
 		
-		StringBuffer s = new StringBuffer(symbol + "(");
+		StringBuffer s = new StringBuffer(name + "(");
 		for(Term t: args)
 			s.append(t.toString() + ",");
 		s.replace(s.length()-1, s.length(), ")");
@@ -57,7 +57,7 @@ public class Literal extends FOLNode implements FOLNodeArg {
 			return true;
 		if(obj instanceof Literal){
 			Literal p = (Literal) obj;
-			if(this.getSymbol().equals(p.getSymbol()) && this.sign()==p.sign() && this.nArgs()==p.nArgs()){
+			if(this.getName().equals(p.getName()) && this.sign()==p.sign() && this.nArgs()==p.nArgs()){
 				for(int i=0; i<this.nArgs(); i++)
 					if ( !(this.getArgs().get(i).equals(p.getArgs().get(i)) ) )
 						return false;
@@ -70,13 +70,13 @@ public class Literal extends FOLNode implements FOLNodeArg {
 	/**
 	 * Two predicate are opposite  
 	 * 
-	 * @param p
+	 * @param lit
 	 * @return
 	 */
-	public boolean isOpposite(Literal p){
-		if(p!=null && symbol.equals(p.getSymbol()) && sign!=p.sign() && this.nArgs()==p.nArgs()){
+	public boolean isOpposite(Literal lit){
+		if(lit!=null && name.equals(lit.getName()) && sign!=lit.sign() && this.nArgs()==lit.nArgs()){
 			for(int i=0; i<this.nArgs(); i++)
-				if( !( this.getArgs().get(i).equals(p.getArgs().get(i)) ) )
+				if( !( this.getArgs().get(i).equals(lit.getArgs().get(i)) ) )
 					return false;		
 			return true;
 		}
@@ -87,6 +87,6 @@ public class Literal extends FOLNode implements FOLNodeArg {
 		List<Term> newArgs=new ArrayList<Term>();
 		for(Term t: this.getArgs())
 			newArgs.add(t.clone(varMap));
-		return new Literal(this.getSymbol(), this.sign(), newArgs);
+		return new Literal(this.getName(), this.sign(), newArgs);
 	}
 }

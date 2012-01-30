@@ -4,8 +4,8 @@ import java.util.Map;
 
 public class Variable extends Term{
 
-	public Variable(String symbol){
-		this.symbol=symbol;
+	public Variable(String name){
+		this.name=name;
 	}
 
 	/**
@@ -21,7 +21,7 @@ public class Variable extends Term{
 		Variable newVar=varMap.get(this);	
 		if(!varMap.containsKey(this)){ 
 			// variable never found before
-			newVar=new Variable(this.getSymbol());
+			newVar=new Variable(this.getName());
 			varMap.put(this, newVar);	
 		}
 		return newVar;
@@ -31,6 +31,6 @@ public class Variable extends Term{
 		//String s = "" + this.hashCode();
 		String s = "" + Integer.toHexString(System.identityHashCode(this));
 		s= s.length()>3? s.substring(s.length()-3, s.length()): s;
-		return symbol + "@" + s;
+		return name + "@" + s;
 	}
 }

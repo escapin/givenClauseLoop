@@ -110,7 +110,7 @@ public class Unifier {
 			return unifyVar((Variable) y, x, sigma);
 		} else if (x instanceof Function && y instanceof Function) {
 			// else if FUNCTION?(x) and FUNCTION?(y) then
-			if(x.getSymbol().equals(y.getSymbol()))		// the function's name must be the same
+			if(x.getName().equals(y.getName()))		// the function's name must be the same
 				return unify(((Function) x).getArgs(), ((Function) y).getArgs(), sigma);
 			else // CLASH!!!
 				return null;
@@ -229,7 +229,7 @@ public class Unifier {
 			return sigma;
 			
 		} else if (x instanceof Function && y instanceof Function) {
-			if(x.getSymbol().equals(y.getSymbol())){		// the function's name must be the same
+			if(x.getName().equals(y.getName())){		// the function's name must be the same
 				for(int i=0;i<((Function)x).nArgs();i++)
 					if((sigma=unifyLeft(((Function)x).getArgs().get(i), ((Function)y).getArgs().get(i), sigma))==null)
 						return null;

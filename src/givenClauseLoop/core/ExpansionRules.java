@@ -19,7 +19,7 @@ public class ExpansionRules {
 		if(c1!=c2){
 			Set<Literal> lMap;
 			for(Literal l1: c1.getLiterals())
-				if( (lMap=c2.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null )
+				if( (lMap=c2.getLitMap().get( (l1.sign()? "~": "") + l1.getName()) ) != null )
 					for(Literal l2: lMap){
 						cNew=binaryResolution(c1, l1, c2, l2);
 						if(cNew!=null)
@@ -94,7 +94,7 @@ public class ExpansionRules {
 		Set<Literal> lMap; 
 		Map<Literal, Literal> alreadyFactorised = new HashMap<Literal, Literal>(); // in order to avoid double factorisations
 		for(Literal l1: c.getLiterals())
-			if( (lMap=c.getLitMap().get( (l1.sign()? "": "~") + l1.getSymbol()) ) != null)
+			if( (lMap=c.getLitMap().get( (l1.sign()? "": "~") + l1.getName()) ) != null)
 				for(Literal l2: lMap){
 					cNew=factorisation(c, l1, l2, alreadyFactorised);
 					if(cNew!=null){

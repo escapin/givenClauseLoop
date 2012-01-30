@@ -93,7 +93,7 @@ public class ResearchPlan {
 			if(givenClause!=cSel){
 				Set<Literal> lMap;
 				for(Literal l1: givenClause.getLiterals())
-					if( (lMap=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null )
+					if( (lMap=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getName()) ) != null )
 						for(Literal l2: lMap){
 							cNew=ExpansionRules.binaryResolution(givenClause, l1, cSel, l2);
 							if(cNew!=null){
@@ -194,7 +194,7 @@ public class ResearchPlan {
 		Set<Literal> lMap;
 		Map<Literal, Literal> alreadyFactorised = new HashMap<Literal, Literal>(); // in order to avoid double factorisations
 		for(Literal l1: givenClause.getLiterals())
-			if( (lMap=givenClause.getLitMap().get( (l1.sign()? "": "~") + l1.getSymbol()) ) != null)
+			if( (lMap=givenClause.getLitMap().get( (l1.sign()? "": "~") + l1.getName()) ) != null)
 				for(Literal l2: lMap){
 					cNew=ExpansionRules.factorisation(givenClause, l1, l2, alreadyFactorised);
 					if(cNew!=null){ // a factor has been found
@@ -238,7 +238,7 @@ public class ResearchPlan {
 					if(litGCrm.contains(l1) && !iterGiven.hasNext())
 						break;
 					
-					if(!toBeRemoved.contains(cSel) && (lSet=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null ){
+					if(!toBeRemoved.contains(cSel) && (lSet=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getName()) ) != null ){
 						lRm= new HashSet<Literal>();
 						
 						for(Iterator<Literal> iter=lSet.iterator(); !toBeRemoved.contains(cSel) && iter.hasNext();){
@@ -345,7 +345,7 @@ public class ResearchPlan {
 						if(lSet!=null && lRm!=null && lSet.contains(l))
 							lRm.add(l);
 						else // this literal must be removed from support set too
-							cSel.getLitMap().get(( (l.sign()? "": "~") + l.getSymbol())).remove(l);
+							cSel.getLitMap().get(( (l.sign()? "": "~") + l.getName())).remove(l);
 					}
 					if(cSel.isEmpty() || (cSel==givenClause && givenClause.nLiterals()==litSim.size())){	// empty clause generated
 						info.c1=cNew;

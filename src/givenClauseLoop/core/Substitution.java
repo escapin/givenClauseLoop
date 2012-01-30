@@ -17,7 +17,7 @@ public class Substitution {
 	 * applied to the literal inserted in input  
 	 */
 	public static Literal substitute(Literal lit, Map<Variable, Term> sigma, Map<Variable, Variable> varMap){
-		return new Literal(lit.getSymbol(), lit.sign(), substitute(lit.getArgs(), sigma, varMap));
+		return new Literal(lit.getName(), lit.sign(), substitute(lit.getArgs(), sigma, varMap));
 	}
 	
 	
@@ -57,6 +57,6 @@ public class Substitution {
 			return ((tNew=sigma.get((Variable) toSubstitute))!=null)? tNew : toSubstitute.clone(varMap); 
 		}
 		else //if(toSubstitute instanceof Function){
-			return new Function(toSubstitute.getSymbol(), substitute(((Function) toSubstitute).getArgs(), sigma, varMap));
+			return new Function(toSubstitute.getName(), substitute(((Function) toSubstitute).getArgs(), sigma, varMap));
 	}
 }
