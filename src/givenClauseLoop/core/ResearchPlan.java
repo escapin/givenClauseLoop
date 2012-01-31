@@ -15,11 +15,13 @@ public class ResearchPlan {
 	private static Collection<Clause> toBeSelected;
 	private static Collection<Clause> alreadySelected;
 	private static Collection<Clause>  oldest;
+	private static Collection<Clause> simplified;
 	
 	public static InfoLoop givenClauseLoop(Collection<Clause> toBeSel, CommandOptions option, InfoLoop infoLoop){
 		toBeSelected = toBeSel;
 		opt=option;
 		info = infoLoop;
+		simplified=new HashSet<Clause>();
 		litGCrm = new HashSet<Literal>();
 		//alreadySelected = new LinkedList<Clause>();
 		//alreadySelected = new HashSet<Clause>();
@@ -110,6 +112,7 @@ public class ResearchPlan {
 						}
 			}
 		
+		// MAINTAINED results to inter-reduced
 		Clause c1, c2;
 		Set<Literal> lSet;
 		Collection<Clause> toBeRm = new HashSet<Clause>();
@@ -166,14 +169,16 @@ public class ResearchPlan {
 		}
 		for(Clause c: toBeRm)
 			results.remove(c);
-			
+		
+		// clearing all the clauses simplified
+		simplified.clear();	
 		for(Clause c: results)
 			if(!c.isTautology()){
-				c=contractionRules(c, alreadySelected, null, null, null); // CONTRACTION RULES with alreadySelected
+				c=contractionRules(c, alreadySelected, null); // CONTRACTION RULES with alreadySelected
 				if(info.res==EnumClass.LoopResult.UNSAT)
 					return true;
 				if(c!=null && info.loopType==EnumClass.LoopType.OTTER_LOOP){
-					c=contractionRules(c, toBeSelected, null, null, null); 
+					c=contractionRules(c, toBeSelected, null); 
 					if(info.res==EnumClass.LoopResult.UNSAT)
 						return true;
 				}
@@ -184,6 +189,7 @@ public class ResearchPlan {
 				} 
 			} else
 				info.nTautology++;
+		toBeSelected.addAll(simplified);
 		
 		return false;	
 	}
@@ -193,6 +199,8 @@ public class ResearchPlan {
 		Clause cNew;
 		Set<Literal> lMap;
 		Map<Literal, Literal> alreadyFactorised = new HashMap<Literal, Literal>(); // in order to avoid double factorisations
+		// clearing all the clauses simplified
+		simplified.clear();
 		for(Literal l1: givenClause.getLiterals())
 			if( (lMap=givenClause.getLitMap().get( (l1.sign()? "": "~") + l1.getName()) ) != null)
 				for(Literal l2: lMap){
@@ -201,11 +209,11 @@ public class ResearchPlan {
 						info.nFactorisations++;
 						if(!cNew.isTautology()){	
 							
-							cNew=contractionRules(cNew, alreadySelected, null, null, null); // CONTRACTION RULES with alreadySelected
+							cNew=contractionRules(cNew, alreadySelected, null); // CONTRACTION RULES with alreadySelected
 							if(info.res==EnumClass.LoopResult.UNSAT)
 								return true;
 							if(cNew!=null && info.loopType==EnumClass.LoopType.OTTER_LOOP){
-								cNew=contractionRules(cNew, toBeSelected, null, null, null); // CONTRACTION RULES with toBeSelected									
+								cNew=contractionRules(cNew, toBeSelected, null); // CONTRACTION RULES with toBeSelected									
 								if(info.res==EnumClass.LoopResult.UNSAT)
 									return true;
 							}
@@ -218,6 +226,7 @@ public class ResearchPlan {
 							info.nTautology++;
 					}
 				}
+		toBeSelected.addAll(simplified);
 		return false;
 	}
 	
@@ -229,6 +238,8 @@ public class ResearchPlan {
 						lRm = new HashSet<Literal>();
 		Literal l1, l2;
 		boolean notToBeConsidered=false;
+		// clearing all the clauses simplified
+		simplified.clear();
 		for(Clause cSel: alreadySelected)
 			if(cSel!=givenClause && !toBeRemoved.contains(cSel))
 				for(Iterator<Literal> iterGiven = givenClause.getLiterals().iterator(); iterGiven.hasNext();){
@@ -259,11 +270,11 @@ public class ResearchPlan {
 									return true;
 								}
 								if(!cNew.isTautology()){
-									cNew=contractionRules(cNew, alreadySelected, toBeRemoved, lSet, lRm); // CONTRACTION RULES with alreadySelected
+									cNew=contractionRules(cNew, alreadySelected, toBeRemoved); // CONTRACTION RULES with alreadySelected
 									if(info.res==EnumClass.LoopResult.UNSAT)
 										return true;
 									if(cNew!=null && info.loopType==EnumClass.LoopType.OTTER_LOOP){
-										cNew=contractionRules(cNew, toBeSelected, null, null, null); 
+										cNew=contractionRules(cNew, toBeSelected, null); 
 										// CONTRACTION RULES with toBeSelected									
 										if(info.res==EnumClass.LoopResult.UNSAT)
 											return true;
@@ -285,6 +296,7 @@ public class ResearchPlan {
 			givenClause.literals.remove(l);
 		for(Clause rmCl: toBeRemoved)
 			alreadySelected.remove(rmCl);
+		toBeSelected.addAll(simplified);
 		
 		return false;	
 	}
@@ -304,8 +316,7 @@ public class ResearchPlan {
 	 * @param lRm	set of literals contained in lSet that the calling method will have to remove from lSet	
 	 * @return cNew if this clause has to be added to toBeSelected, null otherwise
 	 */
-	private static Clause contractionRules(Clause cNew, Collection<Clause> clauseCollection, 
-			Set<Clause> toBeRemoved, Set<Literal> lSet, Set<Literal> lRm){
+	private static Clause contractionRules(Clause cNew, Collection<Clause> clauseCollection, Set<Clause> toBeRemoved){
 		if(cNew!=null){
 			Clause 	cSel=new Clause(),
 					cTemp;
@@ -336,16 +347,19 @@ public class ResearchPlan {
 					}
 				} else if( !(litSim=cSel.simplify(cNew, false)).isEmpty()){
 					info.nSimplifications++;
+					
 					for(Literal l: litSim){
 						if(cSel==givenClause)
 							litGCrm.add(l);
 						else
 							cSel.getLiterals().remove(l);
-					
+						
+						cSel.getLitMap().get(( (l.sign()? "": "~") + l.getName())).remove(l);
+						/*
 						if(lSet!=null && lRm!=null && lSet.contains(l))
 							lRm.add(l);
 						else // this literal must be removed from support set too
-							cSel.getLitMap().get(( (l.sign()? "": "~") + l.getName())).remove(l);
+						*/
 					}
 					if(cSel.isEmpty() || (cSel==givenClause && givenClause.nLiterals()==litSim.size())){	// empty clause generated
 						info.c1=cNew;
@@ -361,6 +375,23 @@ public class ResearchPlan {
 						info.rule=EnumClass.Rule.SIMPLIFICATION;
 						return cNew;
 					}
+					if(toBeRemoved!=null)
+						toBeRemoved.add(cSel);
+					else
+						iter.remove(); 	// Removes from the clauseCollection Queue the last element returned by the iterator
+														// is like clauseCollection.remove(cSel);
+					//simplified.add(cSel);
+					cSel=contractionRules(cSel, alreadySelected, toBeRemoved); // CONTRACTION RULES with alreadySelected
+					if(info.res==EnumClass.LoopResult.UNSAT)
+						return cNew;
+					if(cSel!=null && info.loopType==EnumClass.LoopType.OTTER_LOOP){
+						cSel=contractionRules(cSel, toBeSelected, null); 
+						// CONTRACTION RULES with toBeSelected									
+						if(info.res==EnumClass.LoopResult.UNSAT)
+							return cNew;
+					}
+					if(cSel!=null)
+						simplified.add(cSel);
 				}
 				// SUBSUMPTIONS
 				if (cSel.subsumes(cNew)){
