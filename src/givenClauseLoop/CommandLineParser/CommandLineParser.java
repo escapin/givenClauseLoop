@@ -83,8 +83,8 @@ public class CommandLineParser implements CommandLineParserConstants {
       t1 = jj_consume_token(TIME);
     opt.timeOut = (new Integer(t1.image.substring(5, t1.image.length()))).intValue();
       break;
-    case RESEARCH_STRATEGY:
-      t1 = jj_consume_token(RESEARCH_STRATEGY);
+    case SEARCH_STRATEGY:
+      t1 = jj_consume_token(SEARCH_STRATEGY);
         if(t1.image.equals("-exp"))
         opt.researchStrategy = EnumClass.researchStrategy.EXP_BEFORE;
     else

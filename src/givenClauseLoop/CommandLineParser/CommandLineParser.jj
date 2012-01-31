@@ -47,7 +47,7 @@ TOKEN:	{	<FIFO_STRATEGY: 	"-fifo">
 		|	<BFS_STRATEGY:		"-best"(<NUMERIC>)? >   
 		|	<LOOP_TYPE:			"-o" | "-e">
 		|	<TIME:				"-time"<NUMERIC> >
-		| 	<RESEARCH_STRATEGY:	"-exp" | "-contr">
+		| 	<SEARCH_STRATEGY:	"-exp" | "-contr">
 		|   <FILEPATH:			<CHAR1>(<CHAR2>)*>
 		|	<NUMERIC:			(["0"-"9"])+> 
 		| 	<#CHAR1:			~["-", "\t"] > 	//["\33"-"\172"] | ["\174"] | ["\176"]> 	
@@ -82,7 +82,7 @@ void argument(): {Token t1=null;}
   {
     opt.timeOut = (new Integer(t1.image.substring(5, t1.image.length()))).intValue();
   }
-  | t1=<RESEARCH_STRATEGY>
+  | t1=<SEARCH_STRATEGY>
   {
 	if(t1.image.equals("-exp"))
     	opt.researchStrategy = EnumClass.researchStrategy.EXP_BEFORE;

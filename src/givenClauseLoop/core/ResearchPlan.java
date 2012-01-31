@@ -234,10 +234,8 @@ public class ResearchPlan {
 	private static boolean findResolvents(Clause givenClause){
 		Clause cNew;
 		Set<Clause> toBeRemoved = new HashSet<Clause>();
-		Set<Literal>	lSet, 
-						lRm = new HashSet<Literal>();
-		Literal l1, l2;
-		boolean notToBeConsidered=false;
+		Set<Literal>	lSet;
+		Literal l1;
 		// clearing all the clauses simplified
 		simplified.clear();
 		for(Clause cSel: alreadySelected)
@@ -250,15 +248,8 @@ public class ResearchPlan {
 						break;
 					
 					if(!toBeRemoved.contains(cSel) && (lSet=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getName()) ) != null ){
-						lRm= new HashSet<Literal>();
 						
-						for(Iterator<Literal> iter=lSet.iterator(); !toBeRemoved.contains(cSel) && iter.hasNext();){
-							do{
-								l2=iter.next();
-							}while( (notToBeConsidered=lRm.contains(l2)) && iter.hasNext());
-							if(notToBeConsidered && !iter.hasNext()) // last element but it has not to be considered
-								break;
-							
+						for(Literal l2: lSet){
 							cNew=ExpansionRules.binaryResolution(givenClause, l1, cSel, l2);
 							if(cNew!=null){ // a binary resolvent has been found
 								info.nResolutions++;
@@ -288,8 +279,6 @@ public class ResearchPlan {
 									info.nTautology++;
 							}
 						}
-						for(Literal l: lRm)
-							lSet.remove(l);
 					}
 				}
 		for(Literal l: litGCrm)
@@ -322,7 +311,8 @@ public class ResearchPlan {
 					cTemp;
 			Set<Literal> litSim;
 			boolean notToBeConsidered=false,
-							next=false;
+							next=false,
+							cSelSimplified=false;
 			
 			for(Iterator<Clause> iter = clauseCollection.iterator(); iter.hasNext(); ){
 				do{
@@ -332,6 +322,7 @@ public class ResearchPlan {
 					// if this element have not to be considered but there isn't other after
 					return cNew;
 				
+				cSelSimplified=false;
 				// SIMPLIFICATIONS
 				if(!(litSim=cNew.simplify(cSel, true)).isEmpty()){
 					info.nSimplifications++;
@@ -346,15 +337,13 @@ public class ResearchPlan {
 						return cNew;
 					}
 				} else if( !(litSim=cSel.simplify(cNew, false)).isEmpty()){
+					cSelSimplified=true;
 					info.nSimplifications++;
-					
 					for(Literal l: litSim){
 						if(cSel==givenClause)
 							litGCrm.add(l);
 						else
 							cSel.getLiterals().remove(l);
-						
-						cSel.getLitMap().get(( (l.sign()? "": "~") + l.getName())).remove(l);
 						/*
 						if(lSet!=null && lRm!=null && lSet.contains(l))
 							lRm.add(l);
@@ -380,7 +369,8 @@ public class ResearchPlan {
 					else
 						iter.remove(); 	// Removes from the clauseCollection Queue the last element returned by the iterator
 														// is like clauseCollection.remove(cSel);
-					//simplified.add(cSel);
+					simplified.add(cSel);
+					/*
 					cSel=contractionRules(cSel, alreadySelected, toBeRemoved); // CONTRACTION RULES with alreadySelected
 					if(info.res==EnumClass.LoopResult.UNSAT)
 						return cNew;
@@ -392,21 +382,24 @@ public class ResearchPlan {
 					}
 					if(cSel!=null)
 						simplified.add(cSel);
+					*/
 				}
-				// SUBSUMPTIONS
-				if (cSel.subsumes(cNew)){
-					info.nSubsumptions++;
-					return null;
-				} else if(cNew.subsumes(cSel)){
-					info.nSubsumptions++;
-					//System.out.println("\n" + cSel + " subsumes " + cNew);
-					if(toBeRemoved!=null)
-						toBeRemoved.add(cSel);
-					else{
-						iter.remove(); 	// Removes from the clauseCollection Queue the last element returned by the iterator
-														// is like clauseCollection.remove(cSel);
-						if(clauseCollection==toBeSelected && opt.peakGivenRatio>0)
-							oldest.remove(cSel);
+				if(!cSelSimplified){
+					// SUBSUMPTIONS
+					if (cSel.subsumes(cNew)){
+						info.nSubsumptions++;
+						return null;
+					} else if(cNew.subsumes(cSel)){
+						info.nSubsumptions++;
+						//System.out.println("\n" + cSel + " subsumes " + cNew);
+						if(toBeRemoved!=null)
+							toBeRemoved.add(cSel);
+						else{
+							iter.remove(); 	// Removes from the clauseCollection Queue the last element returned by the iterator
+															// is like clauseCollection.remove(cSel);
+							if(clauseCollection==toBeSelected && opt.peakGivenRatio>0)
+								oldest.remove(cSel);
+						}
 					}
 				} 
 			}		

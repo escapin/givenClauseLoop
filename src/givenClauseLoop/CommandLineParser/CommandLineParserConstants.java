@@ -19,7 +19,7 @@ public interface CommandLineParserConstants {
   /** RegularExpression Id. */
   int TIME = 7;
   /** RegularExpression Id. */
-  int RESEARCH_STRATEGY = 8;
+  int SEARCH_STRATEGY = 8;
   /** RegularExpression Id. */
   int FILEPATH = 9;
   /** RegularExpression Id. */
@@ -42,7 +42,7 @@ public interface CommandLineParserConstants {
     "<BFS_STRATEGY>",
     "<LOOP_TYPE>",
     "<TIME>",
-    "<RESEARCH_STRATEGY>",
+    "<SEARCH_STRATEGY>",
     "<FILEPATH>",
     "<NUMERIC>",
     "<CHAR1>",

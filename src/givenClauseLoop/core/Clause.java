@@ -162,7 +162,7 @@ public class Clause implements Comparable<Clause>{
 	 * @param rmFromLitMap it should be true iff this literal has to be removed also from litMap
 	 * @return the literal deleted if a simplification was made, null otherwise.
 	 */
-	public Set<Literal> simplify(Clause c, boolean rmFromLitMap){
+	public Set<Literal> simplify(Clause c, boolean rmFromLit){
 		Set<Literal> litToRm=new HashSet<Literal>();
 		Literal lThis;
 		if(this!=c && c.nLiterals()==1){
@@ -177,10 +177,9 @@ public class Clause implements Comparable<Clause>{
 					if(Unifier.findLeftSubst(lOth.getArgs(), lThis.getArgs()) != null){ // lOth σ = ~lThis
 						//System.out.println("\n" + lOth + "\t" + lThis + "\n");
 						symNumber -= lThis.nSymbols();
-						if(rmFromLitMap){
+						if(rmFromLit)
 							literals.remove(lThis);
-							iter1.remove();
-						}
+							
 						//System.out.println("\n" + this + "\t" + c + "\n");
 						litToRm.add(lThis);
 					}
