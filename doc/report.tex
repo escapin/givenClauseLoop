@@ -102,22 +102,48 @@ La scelta dell'utilizzo di \emph{Java} ha permesso un minimo di progettazione or
 
 Il diagramma UML visibile in Figura \ref{beanClassUML} rappresenta come è state progettate le classi: ovviamente è molto rilevante la classe astratta \texttt{Term}, che rappresenta un qualsiasi oggetto di tipo \texttt{Function}, \texttt{Variable} o \texttt{Constant}, in quanto è spesso necessario riferirsi ad una di esse indistintamente (come ad esempio quando si specificano gli argomenti di un letterale). Il metodo \texttt{clone(Map<Variable, Variable>)} presente sia nella classe \texttt{Term} sia nella classe \texttt{Literal} permette di clonare l'oggetto in questione restituendone un altro con la stessa struttura. Questo metodo si rivela essere molto importante quando è necessario generare una nuova clausola a partire da un'altra: infatti è sufficiente chiamare il metodo \texttt{clone} su ogni letterale che ricorsivamente clonerà anche i termini che compongono i suoi argomenti. Quando si crea un nuova clausola è però necessario mantenere inalterato il numero delle variabili in modo tale che tutte le occorrenze di ogni variabile nella vecchia clausola vengano rimpiazzate dalla stessa nuova variabile nella nuova: per far ciò è necessario avere una mappa che mantiene il collegamento tra il vecchio oggetto \texttt{Variable} con il nuovo se esso è già stato creato in precedenza in quanto quella determinata variabile è stata già incontrata in precedenza durante la clonazione. Alternativamente se quella variabile non è stata incontrata in precedenza allora è necessario crearne una nuova e inserire la coppia $(vecchia, nuova)$ all'interno della mappa. Se invece al posto di una variabile il metodo clone è chiamato su una costante, essa non verrà clonata (perché il set delle costanti deve rimanere sempre inalterato) bensì verrà ritornata la stessa.\par
 Per quanto riguarda il metodo \texttt{toString} è da segnalare l'implementazione nella classe \texttt{Variable} in quanto, per differenziare le variabili diverse ma con lo stesso nome, si è scelto di concatenarci gli ultimi 3 caratteri del loro \emph{hash code} codificato in esadecimale.
-Da notare infine il metodo \texttt{equals} che nel caso delle variabili ritorna \texttt{true} se e solo se sono lo stesso oggetto mentre nel caso delle costanti ritorna \texttt{true} se esse hanno lo stesso nome (e questo è consistente col fatto che le costanti sono le stesse per tutto l'insieme di clausole). Di conseguenza i metodi \texttt{equals} delle funzioni e dei letterali, dopo aver controllato l'uguaglianza dei segni e/o dei nomi, andranno in ricorsione sul termini che compongono i loro argomenti e solo se sono tutti uguali ritorneranno \texttt{true}.
+Da notare infine il metodo \texttt{equals} che nel caso delle variabili ritorna \texttt{true} se e solo se sono lo stesso oggetto mentre nel caso delle costanti ritorna \texttt{true} se esse hanno lo stesso nome (e questo è consistente col fatto che le costanti sono le stesse per tutto l'insieme di clausole). Di conseguenza i metodi \texttt{equals} delle funzioni e dei letterali, dopo aver controllato l'uguaglianza dei segni e/o dei nomi, vanno in ricorsione sui termini che compongono i loro argomenti e, solo se sono tutti uguali, ritornano \texttt{true}.
 
 \subsection{Core Class}
+Le classi contenute nel package \emph{core} sono quelle responsabili della parte computazionale.
+\subsubsection{Unifier}
+La classe Unifier contiene i metodi \texttt{findMGU} e \texttt{findLeftSubst} che, date due liste di argomenti, restituiscono il primo l'unificatore più generale\footnote{\emph{MGU}, Most General Unifier} tra le due liste mentre il secondo una sostituzione che, se applicata alla prima lista di argomenti, li rende sintatticamente identici alla seconda lista. In entrambi i casi essi restitutisco una \texttt{HashMap} formata da coppie \texttt{<Variable, Term>} se l'\emph{MGU} o la sostituzione esiste, altrimenti \texttt{null}. Per quanto riguarda l'\emph{MGU} si è deciso di implementare l'algoritmo presente nel libro \emph{Artificial Intelligence: A Modern Approach} (vedi \cite{AIMAbook} e \cite{AIMAalgo}) che è quadratico nella grandezza delle espressioni che devono essere unificate. A questo algoritmo è stato aggiunto un metodo chiamato \texttt{cascadeSubst} che rende la sostituzione idempotente, ovvero tutte le variabili presenti nel suo range e che fanno parte anche del suo dominio vengono sostituite con il corrispettivo termine.
+\subsubsection{Substitution}
+La classe Substitution si occupa data una sostituzione di applicarla ad un letterale o ad un termine. Questi metodi ritornano sempre un nuovo oggetto e non il vecchio a cui è stata applicata la sostituzione in quanto in tutte le regole di inferenza ogni volta che si applica una sostituzione è per generare una nuova clausola che quindi dovrà avere nuovi letterali e termini. Proprio per questa ragione in questa classe si fa ingente uso del metodo \texttt{clone} spiegato precedentemente.
+\subsubsection{ExpansionRules}
+La classe ExpansionRules implementa le due regole di espansione Risoluzione Binaria e Fattorizzazione entrambe in due modalità differenti: nella prima vengono passate solamente la (o le) clausole e si cerca di generare tutti i fattori (o i risolutori binari) restituendo un oggetto di tipo \texttt{Collection} con tutte le nuove clausole generate, mentre nella seconda sono anche passati i due letterali e la regola di inferenza viene applicata una sola volta su di essi. Entrambe le procedure consistono nella verifica della compatibilità trai due letterali, in caso positivo, nella ricerca di \emph{MGU} tra le due liste dei loro termini e, se questo viene trovato, nella creazione di un nuovo fattore o risolvente binario. A tale scopo sono presenti anche due metodo \texttt{createFactor} e \texttt{createResolvent} che, chiamando i metodi della classe \texttt{Substitution}, creano una nuova clausola.
+\subsubsection{Clause}
+La classe Clause, oltre a contenere i metodi per l'aggiunta dei letterali che la compongono, implementa anche le tre regole di contrazione: eliminazione delle tautologie, semplificazione e sussunzione.\par
+Per quanto riguarda l'eliminazione delle tautologie, il metodo \texttt{isTautology} due letterali che siano opposti ovvero che abbiano stesso nome, stessi argomenti ma segno opposto: solo in caso positivo questo metodo ritorna \texttt{true}.\par
+Per quanto riguarda la semplificazione clausale, il metodo \texttt{simplify} prende come argomento un'altra clausola che, se possibile, la semplifica. Per prima cosa si controlla che la clausola inserita abbia un unico letterale, in caso positivo per ogni letterale compatibile nella clausola chiamate si chiama il metodo \texttt{findLeftSubst} che cerca una sostituzione da applicare al letterale della clausola inserita in modo che divenga sintatticamente uguale al letterale selezionato. In caso affermativo si elimita dalla clausola chiamate tale letterale. Un'euristica implementata è che questo procedimento non si fermi al primo letterale eliminato ma continui cercando di semplificare più letterali possibile. I letterali eliminati vengono ritornati tramite un oggetto di tipo \texttt{Collection}.\par
+Per quanto riguarda la sussunzione, di gran lunga la regola di inferenza più onerosa dal punto di vista computazionale, il metodo \texttt{subsumes} controlla se la clausola chiamate sussume la clausola inserita come argomento. Tale metodo implementa l'algoritmo presente nel libro \emph{Symbolic Logic and Mechanical Theorem Proving} (vedi \cite{ChangLee}) con qualche euristica. Infatti condizioni necessarie per cui una clausola ne sussuma un'altra sono:
+\begin{itemize}
+\item il numero di letterali della clausola che sussume deve essere minore o uguale al numero di letterali della clausola da sussumere;
+\item il numero di simboli della clausola che sussume deve essere minore o uguale al numero di simboli della clausola da sussumere: questa condizione è stata dimostrata nel paper \emph{Towards Efficient Subsumption} (vedi \cite{efficientSubsum});
+\item per ogni letterale nella clausola che sussume vi deve essere almeno un letterale nella clausola da sussumere con lo stesso nome e stesso segno.
+\end{itemize}
+Se queste tre condizioni necessarie sono soddisfatte si procede con l'algoritmo di sussunzione che però è una versione modificata rispetto a quella del libro di testo. Si mantiene sempre l'insieme delle clausole generate $U$ e si termina se viene trovata la clausola vuota oppure se quest'insieme è vuoto. Ciò che cambia è come vengono generate le clausole che ad ogni iterazione vengono inserite:
+\begin{enumerate}
+\item per ogni clausola in $U$ e per ogni letterale di questa clausola viene eseguito il metodo \texttt{findLeftSubst} con un letterale della clausola inserita come parametro;
+\item in caso si trovi una sostituzione si crea una nuova clausola a partire da quella che era in $U$ a cui si applica la sostituzione senza considerare il letterale che, istanzianto, è sintatticamente equivalente a quello nella clausola inserita come argomento (da notare che ciò è effettuato semplicemente chiamando il metodo \texttt{createFactor});
+\item una volta generati tutti le nuove clausole l'insieme $U$ viene svuotato e ripopolato con le nuove clausole generate a quell'iterazione.
+\end{enumerate}
 
 \begin{thebibliography}{9}
-			\bibitem{deClercq: architectures} De Clercq J. (2002),
-			\newblock "Single Sign On Architettures", \emph{Lecture Notes in Computer Science. Springer Verlag}.
+\bibitem{ChangLee} 	Chang~C.L. Lee~R.C.T. (1973),	
+\newblock "Symbolic Logic and Mechanical Theorem Proving", \emph{Academic Press}.
+\bibitem{AIMAbook} Russell~S. Norvig~P. (2010),
+\newblock "Artificial Intelligence: A Modern Approach (Third Edition)", \emph{Prentice Hall}.
+\bibitem{efficientSubsum} Tammet T. (1998), \emph{Lecture Notes in Computer Science. Springer Verlag}.
+\newblock "Towards Efficient Subsumption"
 \end{thebibliography}
 \begin{thesitography}{9}
 \bibitem{TPTP}
 \url{http://www.cs.miami.edu/~tptp/}
 \bibitem{TPTPsyntax}
 \url{http://www.cs.miami.edu/~tptp/TPTP/SyntaxBNF.html}		
+\bibitem{AIMAalgo}
+\url{http://aima.cs.berkeley.edu/algorithms.pdf}
 \end{thesitography}
 
 \end{document}
-
-
-

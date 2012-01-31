@@ -370,19 +370,6 @@ public class ResearchPlan {
 						iter.remove(); 	// Removes from the clauseCollection Queue the last element returned by the iterator
 														// is like clauseCollection.remove(cSel);
 					simplified.add(cSel);
-					/*
-					cSel=contractionRules(cSel, alreadySelected, toBeRemoved); // CONTRACTION RULES with alreadySelected
-					if(info.res==EnumClass.LoopResult.UNSAT)
-						return cNew;
-					if(cSel!=null && info.loopType==EnumClass.LoopType.OTTER_LOOP){
-						cSel=contractionRules(cSel, toBeSelected, null); 
-						// CONTRACTION RULES with toBeSelected									
-						if(info.res==EnumClass.LoopResult.UNSAT)
-							return cNew;
-					}
-					if(cSel!=null)
-						simplified.add(cSel);
-					*/
 				}
 				if(!cSelSimplified){
 					// SUBSUMPTIONS
@@ -406,24 +393,6 @@ public class ResearchPlan {
 		}
 		return cNew;
 	}
-	
-	
-	/*
-	private static Clause simplification(Clause c1, Clause c2){
-		if(c1!=c2 && c2.nLiterals()==1){
-			Literal lC2=c2.getLiterals().iterator().next();
-			Set<Literal> setLit;
-			if ( (setLit = c1.getLitMap().get( (lC2.sign()? "~": "") + lC2.getSymbol()) ) != null){ // the opposite
-				Clause cNew = new Clause();
-				for(Literal lC1: setLit) // literal of this clause that have the same name of l1
-						if(Unifier.findLeftSubst(lC2.getArgs(), lC1.getArgs())== null) // lC2 σ = ~lC1
-							cNew.addLiteral(lC1);
-				return cNew;
-			}
-		}
-		return c1;
-	}
-*/
 }	
 	
 	

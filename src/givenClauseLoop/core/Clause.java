@@ -170,20 +170,18 @@ public class Clause implements Comparable<Clause>{
 			Literal lOth=c.getLiterals().iterator().next(); // only one literal
 			if ( (setLit = litMap.get( (lOth.sign()? "~": "") + lOth.getName()) ) != null) // the opposite
 				for(Iterator<Literal> iter1=setLit.iterator(); iter1.hasNext();){
-					// literal of this clause that have the same name of l1
-					
 					lThis=iter1.next();
-					
+					// literal of this clause that have the same name of l1
 					if(Unifier.findLeftSubst(lOth.getArgs(), lThis.getArgs()) != null){ // lOth σ = ~lThis
 						//System.out.println("\n" + lOth + "\t" + lThis + "\n");
 						symNumber -= lThis.nSymbols();
+						iter1.remove();
 						if(rmFromLit)
 							literals.remove(lThis);
-							
-						//System.out.println("\n" + this + "\t" + c + "\n");
-						litToRm.add(lThis);
-					}
+					//System.out.println("\n" + this + "\t" + c + "\n");
+					litToRm.add(lThis);
 				}
+			}
 		}
 		return litToRm;
 	}
