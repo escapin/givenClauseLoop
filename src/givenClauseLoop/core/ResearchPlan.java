@@ -80,6 +80,7 @@ public class ResearchPlan {
 			}
 			
 		} // END OF GIVEN CLAUSE LOOP
+		
 		info.res = EnumClass.LoopResult.SAT;
 		return info;
 	}
@@ -189,8 +190,10 @@ public class ResearchPlan {
 				} 
 			} else
 				info.nTautology++;
-		toBeSelected.addAll(simplified);
 		
+		if(manageSimplified(simplified))
+			return true;
+		//toBeSelected.addAll(simplified);
 		return false;	
 	}
 	
@@ -226,7 +229,9 @@ public class ResearchPlan {
 							info.nTautology++;
 					}
 				}
-		toBeSelected.addAll(simplified);
+		if(manageSimplified(simplified))
+			return true;
+		//toBeSelected.addAll(simplified);
 		return false;
 	}
 	
@@ -285,11 +290,36 @@ public class ResearchPlan {
 			givenClause.literals.remove(l);
 		for(Clause rmCl: toBeRemoved)
 			alreadySelected.remove(rmCl);
-		toBeSelected.addAll(simplified);
+		
+		if(manageSimplified(simplified))
+			return true;
+		//toBeSelected.addAll(simplified);
 		
 		return false;	
 	}
 	
+	private static boolean manageSimplified(Collection<Clause> simplified){
+		Clause cNew;
+		while(!simplified.isEmpty()){
+			cNew=simplified.iterator().next();
+			simplified.remove(cNew);
+			cNew=contractionRules(cNew, alreadySelected, null); // CONTRACTION RULES with alreadySelected
+			if(info.res==EnumClass.LoopResult.UNSAT)
+				return true;
+			if(cNew!=null && info.loopType==EnumClass.LoopType.OTTER_LOOP){
+				cNew=contractionRules(cNew, toBeSelected, null); 
+				// CONTRACTION RULES with toBeSelected									
+				if(info.res==EnumClass.LoopResult.UNSAT)
+					return true;
+			}
+			if(cNew!=null){
+				toBeSelected.add(cNew);
+				if(opt.peakGivenRatio>0)
+					oldest.add(cNew);
+			}
+		}
+		return false;
+	}
 	
 	/**
 	 * Applies the contraction rules subsumption and clauses' simplification.
