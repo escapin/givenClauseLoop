@@ -1,0 +1,62 @@
+FILE: PUZ015-3.p
+Parsing...
+ Found 32 clauses
+
+Given Clause Loop parameters:
+	loop type:		Otter
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	contraction rules before
+	time out:		300s
+
+Executing Given Clause Loop...
+
+
+Result: TIME EXPIRED
+
+Clause generated: 20110
+	Factors: 0
+	Binary resolvents: 20110
+Tautologies:		0
+Subsumptions:		12243
+Simplifications:	0
+
+Elapsed clock time:	5m 0,0010s	(300001ms)
+
+##################################################################################
+
+FILE: PUZ015-3.p
+Parsing...
+ Found 32 clauses
+
+Given Clause Loop parameters:
+	loop type:		Otter
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	expansion rules before
+	time out:		300s
+
+Executing Given Clause Loop...
+
+##################################################################################
+
+FILE: PUZ015-3.p
+Parsing...
+ Found 32 clauses
+
+Given Clause Loop parameters:
+	loop type:		E
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	contraction rules before
+	time out:		300s
+
+Executing Given Clause Loop...
+
+##################################################################################
+
+FILE: PUZ015-3.p
+Parsing...
+
+##################################################################################
+

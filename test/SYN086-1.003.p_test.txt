@@ -1,6 +1,6 @@
-FILE: KRS006-1.p
+FILE: SYN086-1.003.p
 Parsing...
- Found 27 clauses
+ Found 19 clauses
 
 Given Clause Loop parameters:
 	loop type:		Otter
@@ -14,20 +14,20 @@ Executing Given Clause Loop...
 
 Result: SATISFIABLE
 
-Clause generated: 61471
-	Factors: 160
-	Binary resolvents: 61311
-Tautologies:		1819
-Subsumptions:		58882
-Simplifications:	6325
+Clause generated: 757
+	Factors: 9
+	Binary resolvents: 748
+Tautologies:		90
+Subsumptions:		618
+Simplifications:	8
 
-Elapsed clock time:	2m 3,5980s	(123598ms)
+Elapsed clock time:	0m 0,3650s	(365ms)
 
 ##################################################################################
 
-FILE: KRS006-1.p
+FILE: SYN086-1.003.p
 Parsing...
- Found 27 clauses
+ Found 19 clauses
 
 Given Clause Loop parameters:
 	loop type:		Otter
@@ -39,22 +39,22 @@ Given Clause Loop parameters:
 Executing Given Clause Loop...
 
 
-Result: TIME EXPIRED
+Result: SATISFIABLE
 
-Clause generated: 18999
-	Factors: 54
-	Binary resolvents: 18945
-Tautologies:		1854
-Subsumptions:		18658
-Simplifications:	486
+Clause generated: 813
+	Factors: 10
+	Binary resolvents: 803
+Tautologies:		180
+Subsumptions:		699
+Simplifications:	6
 
-Elapsed clock time:	5m 0,0100s	(300010ms)
+Elapsed clock time:	0m 0,3930s	(393ms)
 
 ##################################################################################
 
-FILE: KRS006-1.p
+FILE: SYN086-1.003.p
 Parsing...
- Found 27 clauses
+ Found 19 clauses
 
 Given Clause Loop parameters:
 	loop type:		E
@@ -66,22 +66,22 @@ Given Clause Loop parameters:
 Executing Given Clause Loop...
 
 
-Result: TIME EXPIRED
+Result: SATISFIABLE
 
-Clause generated: 814025
-	Factors: 133
-	Binary resolvents: 813892
-Tautologies:		65910
-Subsumptions:		695066
-Simplifications:	191108
+Clause generated: 8393
+	Factors: 94
+	Binary resolvents: 8299
+Tautologies:		502
+Subsumptions:		7628
+Simplifications:	8
 
-Elapsed clock time:	5m 0,0010s	(300001ms)
+Elapsed clock time:	0m 1,4770s	(1477ms)
 
 ##################################################################################
 
-FILE: KRS006-1.p
+FILE: SYN086-1.003.p
 Parsing...
- Found 27 clauses
+ Found 19 clauses
 
 Given Clause Loop parameters:
 	loop type:		Otter
@@ -93,16 +93,16 @@ Given Clause Loop parameters:
 Executing Given Clause Loop...
 
 
-Result: TIME EXPIRED
+Result: SATISFIABLE
 
-Clause generated: 19574
-	Factors: 55
-	Binary resolvents: 19519
-Tautologies:		1933
-Subsumptions:		19243
-Simplifications:	499
+Clause generated: 813
+	Factors: 10
+	Binary resolvents: 803
+Tautologies:		180
+Subsumptions:		699
+Simplifications:	6
 
-Elapsed clock time:	5m 1,6240s	(301624ms)
+Elapsed clock time:	0m 0,4390s	(439ms)
 
 ##################################################################################
 

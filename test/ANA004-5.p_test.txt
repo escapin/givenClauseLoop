@@ -1,6 +1,6 @@
-FILE: KRS006-1.p
+FILE: ANA004-5.p
 Parsing...
- Found 27 clauses
+ Found 16 clauses
 
 Given Clause Loop parameters:
 	loop type:		Otter
@@ -12,22 +12,24 @@ Given Clause Loop parameters:
 Executing Given Clause Loop...
 
 
-Result: SATISFIABLE
+Result: UNSATISFIABLE
+Binary Resolution: 
+	[~less_or_equal(epsilon_0,minimum(X@820,Y@283))]		[less_or_equal(Y@b53,minimum(Y@b53,Y@b53))]
 
-Clause generated: 61471
-	Factors: 160
-	Binary resolvents: 61311
-Tautologies:		1819
-Subsumptions:		58882
-Simplifications:	6325
+Clause generated: 6410
+	Factors: 2
+	Binary resolvents: 6408
+Tautologies:		3
+Subsumptions:		704
+Simplifications:	3
 
-Elapsed clock time:	2m 3,5980s	(123598ms)
+Elapsed clock time:	0m 42,0790s	(42079ms)
 
 ##################################################################################
 
-FILE: KRS006-1.p
+FILE: ANA004-5.p
 Parsing...
- Found 27 clauses
+ Found 16 clauses
 
 Given Clause Loop parameters:
 	loop type:		Otter
@@ -39,22 +41,24 @@ Given Clause Loop parameters:
 Executing Given Clause Loop...
 
 
-Result: TIME EXPIRED
+Result: UNSATISFIABLE
+Binary Resolution: 
+	[~less_or_equal(epsilon_0,minimum(X@439,Y@f0c))]		[less_or_equal(Y@de6,minimum(Y@de6,Y@de6))]
 
-Clause generated: 18999
-	Factors: 54
-	Binary resolvents: 18945
-Tautologies:		1854
-Subsumptions:		18658
-Simplifications:	486
+Clause generated: 6410
+	Factors: 2
+	Binary resolvents: 6408
+Tautologies:		6
+Subsumptions:		698
+Simplifications:	3
 
-Elapsed clock time:	5m 0,0100s	(300010ms)
+Elapsed clock time:	0m 45,1670s	(45167ms)
 
 ##################################################################################
 
-FILE: KRS006-1.p
+FILE: ANA004-5.p
 Parsing...
- Found 27 clauses
+ Found 16 clauses
 
 Given Clause Loop parameters:
 	loop type:		E
@@ -66,22 +70,24 @@ Given Clause Loop parameters:
 Executing Given Clause Loop...
 
 
-Result: TIME EXPIRED
+Result: UNSATISFIABLE
+Binary Resolution: 
+	[~less_or_equal(epsilon_0,minimum(X@456,Y@595))]		[less_or_equal(Y@4a3,minimum(Y@4a3,Y@4a3))]
 
-Clause generated: 814025
-	Factors: 133
-	Binary resolvents: 813892
-Tautologies:		65910
-Subsumptions:		695066
-Simplifications:	191108
+Clause generated: 6828
+	Factors: 2
+	Binary resolvents: 6826
+Tautologies:		3
+Subsumptions:		64
+Simplifications:	3
 
-Elapsed clock time:	5m 0,0010s	(300001ms)
+Elapsed clock time:	0m 16,8530s	(16853ms)
 
 ##################################################################################
 
-FILE: KRS006-1.p
+FILE: ANA004-5.p
 Parsing...
- Found 27 clauses
+ Found 16 clauses
 
 Given Clause Loop parameters:
 	loop type:		Otter
@@ -93,16 +99,18 @@ Given Clause Loop parameters:
 Executing Given Clause Loop...
 
 
-Result: TIME EXPIRED
+Result: UNSATISFIABLE
+Binary Resolution: 
+	[~less_or_equal(epsilon_0,minimum(X@666,Y@706))]		[less_or_equal(Y@1fb,minimum(Y@1fb,Y@1fb))]
 
-Clause generated: 19574
-	Factors: 55
-	Binary resolvents: 19519
-Tautologies:		1933
-Subsumptions:		19243
-Simplifications:	499
+Clause generated: 6410
+	Factors: 2
+	Binary resolvents: 6408
+Tautologies:		6
+Subsumptions:		698
+Simplifications:	3
 
-Elapsed clock time:	5m 1,6240s	(301624ms)
+Elapsed clock time:	0m 47,1810s	(47181ms)
 
 ##################################################################################
 
