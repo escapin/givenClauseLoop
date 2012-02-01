@@ -1,0 +1,116 @@
+FILE: ALG002-1.p
+Parsing...
+ Found 14 clauses
+
+Given Clause Loop parameters:
+	loop type:		Otter
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	contraction rules before
+	time out:		300s
+
+Executing Given Clause Loop...
+
+
+Result: UNSATISFIABLE
+Simplification: 
+	[product(additive_inverse(multiplicative_identity),additive_inverse(X@b48),Z@436)]  simplifies  [~product(additive_inverse(multiplicative_identity),additive_inverse(multiplicative_identity),additive_identity)]
+
+Clause generated: 445
+	Factors: 0
+	Binary resolvents: 445
+Tautologies:		8
+Subsumptions:		272
+Simplifications:	6
+
+Elapsed clock time:	0m 0,9810s	(981ms)
+
+##################################################################################
+
+FILE: ALG002-1.p
+Parsing...
+ Found 14 clauses
+
+Given Clause Loop parameters:
+	loop type:		Otter
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	expansion rules before
+	time out:		300s
+
+Executing Given Clause Loop...
+
+
+Result: UNSATISFIABLE
+Simplification: 
+	[product(multiplicative_identity,X@fa6,Z@b51)]  simplifies  [~product(multiplicative_identity,multiplicative_identity,additive_identity)]
+
+Clause generated: 2523
+	Factors: 3
+	Binary resolvents: 2520
+Tautologies:		68
+Subsumptions:		2246
+Simplifications:	188
+
+Elapsed clock time:	0m 2,8330s	(2833ms)
+
+##################################################################################
+
+FILE: ALG002-1.p
+Parsing...
+ Found 14 clauses
+
+Given Clause Loop parameters:
+	loop type:		E
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	contraction rules before
+	time out:		300s
+
+Executing Given Clause Loop...
+
+
+Result: UNSATISFIABLE
+Simplification: 
+	[greater_than_0(additive_inverse(X@1b1))]  simplifies  [~greater_than_0(additive_inverse(additive_inverse(multiplicative_identity)))]
+
+Clause generated: 4695
+	Factors: 23
+	Binary resolvents: 4672
+Tautologies:		43
+Subsumptions:		3757
+Simplifications:	243
+
+Elapsed clock time:	0m 3,5370s	(3537ms)
+
+##################################################################################
+
+FILE: ALG002-1.p
+Parsing...
+ Found 14 clauses
+
+Given Clause Loop parameters:
+	loop type:		Otter
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	expansion rules before
+	time out:		300s
+
+Executing Given Clause Loop...
+
+
+Result: UNSATISFIABLE
+Simplification: 
+	[product(multiplicative_identity,X@582,Z@a0a)]  simplifies  [~product(multiplicative_identity,multiplicative_identity,additive_identity)]
+
+Clause generated: 2523
+	Factors: 3
+	Binary resolvents: 2520
+Tautologies:		68
+Subsumptions:		2245
+Simplifications:	188
+
+Elapsed clock time:	0m 2,7930s	(2793ms)
+
+##################################################################################
+

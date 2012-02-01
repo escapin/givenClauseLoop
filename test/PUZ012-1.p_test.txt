@@ -1,0 +1,116 @@
+FILE: PUZ012-1.p
+Parsing...
+ Found 18 clauses
+
+Given Clause Loop parameters:
+	loop type:		Otter
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	contraction rules before
+	time out:		300s
+
+Executing Given Clause Loop...
+
+
+Result: UNSATISFIABLE
+Simplification: 
+	[contains(boxa,oranges)]  simplifies  [~contains(boxa,oranges)]
+
+Clause generated: 235
+	Factors: 1
+	Binary resolvents: 234
+Tautologies:		14
+Subsumptions:		182
+Simplifications:	54
+
+Elapsed clock time:	0m 0,1960s	(196ms)
+
+##################################################################################
+
+FILE: PUZ012-1.p
+Parsing...
+ Found 18 clauses
+
+Given Clause Loop parameters:
+	loop type:		Otter
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	expansion rules before
+	time out:		300s
+
+Executing Given Clause Loop...
+
+
+Result: UNSATISFIABLE
+Simplification: 
+	[contains(boxa,oranges)]  simplifies  [~contains(boxa,oranges)]
+
+Clause generated: 240
+	Factors: 1
+	Binary resolvents: 239
+Tautologies:		28
+Subsumptions:		187
+Simplifications:	45
+
+Elapsed clock time:	0m 0,3250s	(325ms)
+
+##################################################################################
+
+FILE: PUZ012-1.p
+Parsing...
+ Found 18 clauses
+
+Given Clause Loop parameters:
+	loop type:		E
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	contraction rules before
+	time out:		300s
+
+Executing Given Clause Loop...
+
+
+Result: UNSATISFIABLE
+Simplification: 
+	[contains(boxa,oranges)]  simplifies  [~contains(boxa,oranges)]
+
+Clause generated: 469
+	Factors: 2
+	Binary resolvents: 467
+Tautologies:		14
+Subsumptions:		367
+Simplifications:	101
+
+Elapsed clock time:	0m 0,6060s	(606ms)
+
+##################################################################################
+
+FILE: PUZ012-1.p
+Parsing...
+ Found 18 clauses
+
+Given Clause Loop parameters:
+	loop type:		Otter
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	expansion rules before
+	time out:		300s
+
+Executing Given Clause Loop...
+
+
+Result: UNSATISFIABLE
+Simplification: 
+	[contains(boxa,oranges)]  simplifies  [~contains(boxa,oranges)]
+
+Clause generated: 240
+	Factors: 1
+	Binary resolvents: 239
+Tautologies:		28
+Subsumptions:		187
+Simplifications:	45
+
+Elapsed clock time:	0m 0,3510s	(351ms)
+
+##################################################################################
+

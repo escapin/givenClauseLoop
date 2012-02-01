@@ -1,0 +1,12 @@
+FILE: KRS006-1.p
+Parsing...
+ Found 27 clauses
+
+Given Clause Loop parameters:
+	loop type:		Otter
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	contraction rules before
+	time out:		300s
+
+Executing Given Clause Loop...

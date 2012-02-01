@@ -63,6 +63,7 @@ public class ResearchPlan {
 			}
 			
 			litGCrm.clear();
+			
 			alreadySelected.add(givenClause);
 			
 			System.out.print("\r" + i + ")      \t" + toBeSelected.size() + "......................." + alreadySelected.size() + "      ");
@@ -190,7 +191,7 @@ public class ResearchPlan {
 				} 
 			} else
 				info.nTautology++;
-		
+
 		if(manageSimplified(simplified))
 			return true;
 		//toBeSelected.addAll(simplified);
@@ -424,171 +425,102 @@ public class ResearchPlan {
 		return cNew;
 	}
 }	
-	
-	
-	
-	
-	/*
-	private static boolean findExpFactRes(Clause givenClause){
-		Queue<Clause> results=ExpansionRules.factorisation(givenClause);
-		Clause cNew;
-		for(Clause cSel: alreadySelected)
-			if(givenClause!=cSel){
-				Set<Literal> lMap;
-				for(Literal l1: givenClause.getLiterals())
-					if( (lMap=cSel.getLitMap().get( (l1.sign()? "~": "") + l1.getSymbol()) ) != null )
-						for(Literal l2: lMap){
-							cNew=ExpansionRules.binaryResolution(givenClause, l1, cSel, l2);
-							if(cNew!=null){
-								info.nResolutions++;
-								if(cNew.isEmpty()){
-									info.c1=givenClause;
-									info.c2=cSel;
-									info.rule=EnumClass.Rule.BINARY_RESOLUTION;
-									info.res = EnumClass.LoopResult.UNSAT;
-									return true;
-								}
-								results.add(cNew);
-							}	
-						}
+
+/*
+	simplified.clear();
+	Set<Literal> litSim;
+	if(info.loopType==EnumClass.LoopType.E_LOOP){
+		Clause cSel;
+		for(Iterator<Clause> iter=alreadySelected.iterator(); iter.hasNext();){
+			cSel=iter.next();
+			if(givenClause.subsumes(cSel)){
+				info.nSubsumptions++;
+				iter.remove();
 			}
+			else if(!(litSim=cSel.simplify(givenClause, false)).isEmpty()){
+				info.nSimplifications++;
+				if(cSel.isEmpty()){ // empty clause generated
+					info.c1=cSel;
+					Clause cTemp=new Clause();
+					for(Literal l: litSim)
+						cTemp.addLiteral(l);
+					info.c2=cTemp;
+					info.rule=EnumClass.Rule.SIMPLIFICATION;
+					info.res = EnumClass.LoopResult.UNSAT;
+					return info;
+				}
+				iter.remove();
+				simplified.add(cSel);
+			}	
+		}
+	}
+	toBeSelected.addAll(simplified);
+
+// clearing all the clauses simplified
+		simplified.clear();
+		Clause c;
+		Set<Literal> litSim;
+		boolean resultRm=false;
 		for(Iterator<Clause> iter=results.iterator(); iter.hasNext();){
-			cNew=iter.next();
-			if(cNew.isTautology()){
+			c=iter.next();
+			if(!c.isTautology()){
+				if(info.loopType==EnumClass.LoopType.OTTER_LOOP){
+					c=contractionRules(c, alreadySelected, null); // CONTRACTION RULES with alreadySelected
+					if(info.res==EnumClass.LoopResult.UNSAT)
+						return true;
+					if(c!=null){
+						c=contractionRules(c, toBeSelected, null); 
+						if(info.res==EnumClass.LoopResult.UNSAT)
+							return true;
+					}
+					if(c!=null){
+						toBeSelected.add(c);
+						if(opt.peakGivenRatio>0)
+							oldest.add(c);
+					}
+				} else{ // LoopType.E_LOOP
+					resultRm=false;
+					for(Clause cSel: alreadySelected){
+						if(cSel.subsumes(c)){
+							info.nSubsumptions++;
+							iter.remove();
+							resultRm=true;
+							break;
+						} else if(!(litSim=c.simplify(cSel, false)).isEmpty()){
+							info.nSimplifications++;
+							if(c.isEmpty()){ // empty clause generated
+								info.c1=cSel;
+								Clause cTemp=new Clause();
+								for(Literal l: litSim)
+									cTemp.addLiteral(l);
+								info.c2=cTemp;
+								info.rule=EnumClass.Rule.SIMPLIFICATION;
+								info.res = EnumClass.LoopResult.UNSAT;
+								return true;
+							}
+							iter.remove();	
+							simplified.add(c);
+							resultRm=true;
+							break;
+						}
+					}
+					if(!resultRm){
+						toBeSelected.add(c);
+						if(opt.peakGivenRatio>0)
+							oldest.add(c);
+					}
+				}
+			} else {
 				info.nTautology++;
 				iter.remove();
 			}
 		}
 		
-		Literal l;
-		for(Clause c1: results)
-			for(Clause c2: results)
-				if(c1!=c2){ 
-					if((l=c1.simplify(c2, false))!=null){
-						info.nSimplifications++;
-						if(c1.isEmpty()){ // empty clause generated
-							info.c1=c2;
-							Clause cTemp=new Clause();
-							cTemp.addLiteral(l);
-							info.c2=cTemp;
-							info.rule=EnumClass.Rule.SIMPLIFICATION;
-							info.res = EnumClass.LoopResult.UNSAT;
-							return true;
-						}
-					}
-				}
-		
-		for(Clause c1: results)
-			for(Clause c2: toBeSelected)
-				if(c1!=c2){ 
-					if((l=c1.simplify(c2, false))!=null){
-						info.nSimplifications++;
-						if(c1.isEmpty()){ // empty clause generated
-							info.c1=c2;
-							Clause cTemp=new Clause();
-							cTemp.addLiteral(l);
-							info.c2=cTemp;
-							info.rule=EnumClass.Rule.SIMPLIFICATION;
-							info.res = EnumClass.LoopResult.UNSAT;
-							return true;
-						}
-					} else if((l=c2.simplify(c1, false))!=null){
-						info.nSimplifications++;
-						if(c2.isEmpty()){ // empty clause generated
-							info.c1=c1;
-							Clause cTemp=new Clause();
-							cTemp.addLiteral(l);
-							info.c2=cTemp;
-							info.rule=EnumClass.Rule.SIMPLIFICATION;
-							info.res = EnumClass.LoopResult.UNSAT;
-							return true;
-						}
-					}	
-				}
-		for(Clause c1: results)
-			for(Clause c2: alreadySelected)
-				if(c1!=c2){ 
-					if((l=c1.simplify(c2, false))!=null){
-						info.nSimplifications++;
-						if(c1.isEmpty()){ // empty clause generated
-							info.c1=c2;
-							Clause cTemp=new Clause();
-							cTemp.addLiteral(l);
-							info.c2=cTemp;
-							info.rule=EnumClass.Rule.SIMPLIFICATION;
-							info.res = EnumClass.LoopResult.UNSAT;
-							return true;
-						}
-					} else if((l=c2.simplify(c1, false))!=null){
-						info.nSimplifications++;
-						if(c2.isEmpty()){ // empty clause generated
-							info.c1=c1;
-							Clause cTemp=new Clause();
-							cTemp.addLiteral(l);
-							info.c2=cTemp;
-							info.rule=EnumClass.Rule.SIMPLIFICATION;
-							info.res = EnumClass.LoopResult.UNSAT;
-							return true;
-						}
-					}	
-				}
-		
-		Queue<Clause> tmp1 = new PriorityQueue<Clause>();
-		Set<Clause> tmpSubsumed = new HashSet<Clause>();
-		
-		for(Clause c1: results){
-			for(Clause c2: results){
-				if(c1!=c2){ 
-					if(!tmpSubsumed.contains(c1) && !tmpSubsumed.contains(c1) && c2.subsumes(c1)){
-						info.nSubsumptions++;
-						tmpSubsumed.add(c1);
-					}
-				}
-			}
-			if(!tmpSubsumed.contains(c1))
-				tmp1.add(c1);
-		}
-		results.clear();
-		results.addAll(tmp1);
-		tmp1.clear();
-		
-		for(Clause c1: results){
-			for(Clause c2: toBeSelected){
-				if(c1!=c2){ 
-					if(!tmpSubsumed.contains(c1) && !tmpSubsumed.contains(c1) && c2.subsumes(c1)){
-						info.nSubsumptions++;
-						tmpSubsumed.add(c1);
-					}
-				}
-			}
-			if(!tmpSubsumed.contains(c1))
-				tmp1.add(c1);
-		}
-		results.clear();
-		results.addAll(tmp1);
-		tmp1.clear();
-		
-		
-		for(Clause c1: results){
-			for(Clause c2: alreadySelected){
-				if(c1!=c2){ 
-					if(!tmpSubsumed.contains(c1) && !tmpSubsumed.contains(c1) && c2.subsumes(c1)){
-						info.nSubsumptions++;
-						tmpSubsumed.add(c1);
-					}
-				}
-			}
-			if(!tmpSubsumed.contains(c1))
-				tmp1.add(c1);
-		}
-		results.clear();
-		results.addAll(tmp1);
-		tmp1.clear();
-		
-		
-		
-		
-		return false;
-	}
-	*/
+		if(info.loopType==EnumClass.LoopType.E_LOOP)
+			toBeSelected.addAll(simplified);
+		else if(manageSimplified(simplified))
+			return true;
+		//toBeSelected.addAll(simplified);
+		return false;	 
+ */
 

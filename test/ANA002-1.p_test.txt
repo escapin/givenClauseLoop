@@ -1,0 +1,116 @@
+FILE: ANA002-1.p
+Parsing...
+ Found 18 clauses
+
+Given Clause Loop parameters:
+	loop type:		Otter
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	contraction rules before
+	time out:		300s
+
+Executing Given Clause Loop...
+
+
+Result: UNSATISFIABLE
+Simplification: 
+	[~less_than_or_equal(n0,f(X@eb8))]  simplifies  [less_than_or_equal(n0,f(upper_bound))]
+
+Clause generated: 12266
+	Factors: 11
+	Binary resolvents: 12255
+Tautologies:		6
+Subsumptions:		10711
+Simplifications:	29
+
+Elapsed clock time:	0m 8,7350s	(8735ms)
+
+##################################################################################
+
+FILE: ANA002-1.p
+Parsing...
+ Found 18 clauses
+
+Given Clause Loop parameters:
+	loop type:		Otter
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	expansion rules before
+	time out:		300s
+
+Executing Given Clause Loop...
+
+
+Result: UNSATISFIABLE
+Simplification: 
+	[less_than_or_equal(X@9a9,n0)]  simplifies  [~less_than_or_equal(f(X@c1c),n0)]
+
+Clause generated: 13106
+	Factors: 13
+	Binary resolvents: 13093
+Tautologies:		34
+Subsumptions:		13642
+Simplifications:	155
+
+Elapsed clock time:	0m 9,3540s	(9354ms)
+
+##################################################################################
+
+FILE: ANA002-1.p
+Parsing...
+ Found 18 clauses
+
+Given Clause Loop parameters:
+	loop type:		E
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	contraction rules before
+	time out:		300s
+
+Executing Given Clause Loop...
+
+
+Result: UNSATISFIABLE
+Simplification: 
+	[~less_than_or_equal(n0,f(X@faf))]  simplifies  [less_than_or_equal(n0,f(upper_bound))]
+
+Clause generated: 27285
+	Factors: 17
+	Binary resolvents: 27268
+Tautologies:		3
+Subsumptions:		20753
+Simplifications:	23
+
+Elapsed clock time:	0m 16,9380s	(16938ms)
+
+##################################################################################
+
+FILE: ANA002-1.p
+Parsing...
+ Found 18 clauses
+
+Given Clause Loop parameters:
+	loop type:		Otter
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	expansion rules before
+	time out:		300s
+
+Executing Given Clause Loop...
+
+
+Result: UNSATISFIABLE
+Simplification: 
+	[less_than_or_equal(X@588,n0)]  simplifies  [~less_than_or_equal(f(X@552),n0)]
+
+Clause generated: 62456
+	Factors: 28
+	Binary resolvents: 62428
+Tautologies:		104
+Subsumptions:		77674
+Simplifications:	874
+
+Elapsed clock time:	0m 32,8130s	(32813ms)
+
+##################################################################################
+

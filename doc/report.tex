@@ -95,7 +95,7 @@ Per quanto riguarda l'aspetto semantico è stato inserito del codice Java che si
 La scelta dell'utilizzo di \emph{Java} ha permesso un minimo di progettazione orientata agli oggetti soprattutto delle cosidette classi bean\footnote{così si denotano le classi che logicamente contengono le informazioni da manipolare} e, in particolare, delle classi che definisco i termini (funzioni, variabili e costanti) e i letterali. 
 
 \begin{figure}[h]
-\includegraphics[width=1\columnwidth]{beanClassUML.png}
+\includegraphics[width=1\columnwidth]{beanClassUML}
 \caption{\small{UML delle bean class}}
 \label{beanClassUML}
 \end{figure}
@@ -141,7 +141,37 @@ L'ultimo aspetto rilevante della strategia di ricerca consiste, nel caso la clau
 \section{Benchmark}
 In questa sezione viene riportata l'analisi delle prestazioni di tale metodo effettuata su un calcolatore con CPU \texttt{Intel Core 2 Duo P8600 2.4GHz}, sistema operativo \texttt{Ubuntu 11.10} e \texttt{JVM v1.6.0\_26}.\\
 Da notare che uno degli argomenti che possono essere inseriti è \texttt{-time} seguito da un numero che indica il limite massimo di secondi entro cui il ciclo della clausola data può cercare una prova di insoddisfacibilità o un modello per la soddisfacibilità. Ovviamente nel caso questo parametro non sia specificato il tempo di esecuzione rimante potenzialmente infinito. Inoltre nel caso il numero di clausole generate per regole di espansione siano tali da eccedere l'heap space della \emph{thread} che viene creata per eseguire il ciclo, allora essa viene chiusa e la risposta sarà OUT OF MEMORY.\par
-Di seguito sono presentate due tabelle con alcuni dei dati raccolti sulle prestazioni dell'algoritmo.
+Di seguito sono presentate due tabelle con alcuni dei dati raccolti sulle prestazioni dell'algoritmo con un timeout di 300 secondi.
+
+\begin{table}[!htp]
+\center
+\begin{tabular}{lcGcccc}
+\toprule
+File & Clausole & Risultato & Otter contr & Otter exp &  E contr & E exp \\
+\midrule
+ANA002-1 & 18 & UNSAT & 12266 & 13106 & 27285 & 62456 \\
+ALG002-1 & 14 & UNSAT & 445 & 2523 & 4695 & 2523 \\
+PUZ001-3 & 12 & SAT & 148 & 152 & 305 & 152\\
+PUZ012-1 & 18 & UNSAT & 234 & 239 & 467 & 239 \\
+\bottomrule
+\end{tabular}
+\caption{Numero di clausole generate dalle regole di espansione}
+\end{table}
+
+\begin{table}[!htp]
+\center
+\begin{tabular}{lcccc}
+\toprule
+File & Otter contr (ms) & Otter exp (ms) &  E contr (ms) & E exp (ms) \\
+\midrule
+ANA002-1 & 8735 & 9354 & 16938 & 32813 \\
+ALG002-1 & 981 & 2833 & 3537 & 2793 \\
+PUZ001-3 & 120 & 146 & 199 & 159\\
+PUZ012-1 & 196 & 325 & 606 & 351 \\
+\bottomrule
+\end{tabular}
+\caption{Tempistiche a seconda della strategia}
+\end{table}
 
 \begin{thebibliography}{9}
 \bibitem{ChangLee} 	Chang~C.L. Lee~R.C.T. (1973),	
