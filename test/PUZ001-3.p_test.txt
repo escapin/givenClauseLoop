@@ -21,61 +21,7 @@ Tautologies:		0
 Subsumptions:		123
 Simplifications:	102
 
-Elapsed clock time:	0m 0,1200s	(120ms)
-
-##################################################################################
-
-FILE: PUZ001-3.p
-Parsing...
- Found 12 clauses
-
-Given Clause Loop parameters:
-	loop type:		Otter
-	selection strategy:	best visit first (min priority queue)
-	peak given ratio:	not inserted
-	research strategy:	expansion rules before
-	time out:		300s
-
-Executing Given Clause Loop...
-
-
-Result: SATISFIABLE
-
-Clause generated: 152
-	Factors: 0
-	Binary resolvents: 152
-Tautologies:		0
-Subsumptions:		129
-Simplifications:	55
-
-Elapsed clock time:	0m 0,1460s	(146ms)
-
-##################################################################################
-
-FILE: PUZ001-3.p
-Parsing...
- Found 12 clauses
-
-Given Clause Loop parameters:
-	loop type:		E
-	selection strategy:	best visit first (min priority queue)
-	peak given ratio:	not inserted
-	research strategy:	contraction rules before
-	time out:		300s
-
-Executing Given Clause Loop...
-
-
-Result: SATISFIABLE
-
-Clause generated: 305
-	Factors: 0
-	Binary resolvents: 305
-Tautologies:		2
-Subsumptions:		254
-Simplifications:	174
-
-Elapsed clock time:	0m 0,1990s	(199ms)
+Elapsed clock time:	0m 0,3950s	(395ms)
 
 ##################################################################################
 
@@ -102,7 +48,61 @@ Tautologies:		0
 Subsumptions:		128
 Simplifications:	55
 
-Elapsed clock time:	0m 0,1590s	(159ms)
+Elapsed clock time:	0m 0,1470s	(147ms)
+
+##################################################################################
+
+FILE: PUZ001-3.p
+Parsing...
+ Found 12 clauses
+
+Given Clause Loop parameters:
+	loop type:		E
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	contraction rules before
+	time out:		300s
+
+Executing Given Clause Loop...
+
+
+Result: SATISFIABLE
+
+Clause generated: 305
+	Factors: 0
+	Binary resolvents: 305
+Tautologies:		2
+Subsumptions:		254
+Simplifications:	174
+
+Elapsed clock time:	0m 0,2240s	(224ms)
+
+##################################################################################
+
+FILE: PUZ001-3.p
+Parsing...
+ Found 12 clauses
+
+Given Clause Loop parameters:
+	loop type:		Otter
+	selection strategy:	best visit first (min priority queue)
+	peak given ratio:	not inserted
+	research strategy:	expansion rules before
+	time out:		300s
+
+Executing Given Clause Loop...
+
+
+Result: SATISFIABLE
+
+Clause generated: 152
+	Factors: 0
+	Binary resolvents: 152
+Tautologies:		0
+Subsumptions:		129
+Simplifications:	55
+
+Elapsed clock time:	0m 0,1470s	(147ms)
 
 ##################################################################################
 
