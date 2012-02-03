@@ -134,7 +134,7 @@ In entrambi si lavora con due insiemi di clausole: \texttt{toBeSelected}, che al
 Alla fine di ogni iterazione le nuove clausole generate verranno inserite in \texttt{toBeSelected} in attesa di divenire \emph{given-clause}. Non appena una regola di inferenza (risoluzione binaria o semplificazione clausale) genera la clausola vuota si esce dal ciclo restituendo UNSAT. Se invece \texttt{toBeSelected} si svuota allora l'insieme di clausole in ingresso è soddisfacibile per cui viene ritornato SAT. \par
 Per quanto riguarda la generazione di nuove clausole mediante regole di espansione sono state individuate due strategie: 
 la prima consiste, ogni volta che una nuova clausola è stata generata tramite una regola di espansione, di cercare di applicare una qualche regola di contrazione con \texttt{alreadySelected} e, nel caso del ciclo à la Otter, anche con \texttt{toBeSelected}; la seconda invece consiste nel generare prima tutte le clausole tramite regole di espansione (fattorizzazione e risoluzione binaria) poi rendere inter-ridotto questo insieme di nuove clausole ed infine per ogni clausola rimasta, cercare di inter-ridurre \texttt{alreadySelected} e, in caso di ciclo à la Otter, anche \texttt{toBeSelected}. Le due possibilità sono selezionabili rispettivamente tramite i comandi \texttt{-contr} e \texttt{-exp}.\par
-Per quanto riguarda invece l'applicazione delle regole di contrazione, se una clasuola è tautologica oppure è sussunta da un'altra deve essere eliminata dall'insieme di appartenenza mentre, se viene semplificata, deve essere prelevata da tale insieme e trattata come se fosse una nuova clausola generata.\par
+Per quanto riguarda invece l'applicazione delle regole di contrazione, se una clasuola è tautologica oppure è sussunta da un'altra deve essere eliminata dall'insieme di appartenenza, mentre, se viene semplificata, deve essere prelevata da tale insieme e trattata come se fosse una nuova clausola generata.\par
 L'ultimo aspetto rilevante della strategia di ricerca consiste, nel caso la clausola venga prelevata tramite una strategia \emph{Best Visit First}, di poter opzionalmente inserire anche il \emph{Peak Given Ratio}, che ogni \texttt{k}\footnote{di solito il \emph{Peak Given Ratio} è compreso tra 4 e 6} iterazioni preleva non la clasuola con peso minore, ma quella che da più tempo è in \texttt{toBeSelected} (si passa quindi ad una strategia FIFO). Per far ciò viene mantenuta una struttura dati parallela di tipo \texttt{LinkedHashSet} che contiene tutte le clausole secondo l'ordine di inserimento permettendo quindi ogni \texttt{k} iterazioni di selezionare la clausola che da più tempo si trova nell'insieme.
 
 \section{Benchmark}
@@ -166,28 +166,28 @@ SYN087-1.003 & SAT & 2583 & 2621 & 66101 & 2621 \\
 
 \begin{table}[!htp]
 \center
-\begin{tabular}{lcccc}
+\begin{tabular}{lGcccc}
 \toprule
-File & Otter contr (ms) & Otter exp (ms) &  E contr (ms) & E exp (ms) \\
+File & Risultato & Otter contr (ms) & Otter exp (ms) &  E contr (ms) & E exp (ms) \\
 \midrule
-ALG002-1 & 981 & 2833 & 3537 & 2793 \\
-ANA002-1 & 8735 & 9354 & 16938 & 32813 \\
-ANA004-5 & 42079 & 45167 & 16853 & 14107 \\
-CAT007-3 & 141 & 216 & 278 & 230\\
-KRS006-1 & 123598 &	time expired & time expired	& time expired	\\
-NUM284-1.014 & 30398 & out of memory & 33460 & out of memory	\\
-PUZ001-3 & 120 & 146 & 199 & 159\\
-PUZ012-1 & 196 & 325 & 606 & 351 \\
-PUZ018-1 & time expired & out of memory & time expired & out of memory \\
-SYN086-1.003 & 365 & 393 & 1477 & 439 \\
-SYN087-1.003 & 1392 & 2489 & 7287 & 2594 \\
+ALG002-1 & UNSAT & 981 & 2833 & 3537 & 2793 \\
+ANA002-1 & UNSAT & 8735 & 9354 & 16938 & 32813 \\
+ANA004-5 & UNSAT & 42079 & 45167 & 16853 & 14107 \\
+CAT007-3 & UNSAT & 141 & 216 & 278 & 230\\
+KRS006-1 & SAT & 123598 &	time expired & time expired	& time expired	\\
+NUM284-1.014 & UNSAT & 30398 & out of memory & 33460 & out of memory	\\
+PUZ001-3 & SAT & 120 & 146 & 199 & 159\\
+PUZ012-1 & UNSAT & 196 & 325 & 606 & 351 \\
+PUZ018-1 & - & time expired & out of memory & time expired & out of memory \\
+SYN086-1.003 & SAT & 365 & 393 & 1477 & 439 \\
+SYN087-1.003 & SAT & 1392 & 2489 & 7287 & 2594 \\
 \bottomrule
 \end{tabular}
 \caption{Tempistiche a seconda della strategia}
 \end{table}
 \subsection{Considerazioni}
 Nelle due tabelle è possibile osservare rispettivamente il numero di clausole generate dalle regole di espansione e i tempi di esecuzione a seconda della strategia di ricerca. Nella cartella \texttt{test/} per ogni insieme di clausole testato è presente un altro file con tutte le altre statistiche qui omesse.
-Dalla prima tabella si può notare come l'implementazione di \emph{E} in genere genera più clausole prima di restituire la risposta corretta: questo perché \emph{E} non mantiene \texttt{toBeSelected} inter-ridotto e quindi se la \emph{given clause} che genera la clausola vuota ha un rating alto verrà prelevata successivamente generando nel frattempo molte altre clausole. Di conseguenza, nonostante in \emph{E} vengano eseguite meno regole di contrazione, i tempi sono leggermente maggiori: molto probabilmente i tempi in \emph{E} si avvicinerebbero maggiormente a quelli di \emph{Otter} se non fossero state implementate le euristiche sulla regola di sussunzione (il vero responsabile del decreasing delle prestazioni) in quanto il vantaggio di non applicare eccessivamente le regole di contrazione sarebbe equiparabile al vantaggio di mantenere entrambi gli insiemi inter-ridotti. A favore di questa tesi è stato riportato l'esempio ANA004-5 nel quale \emph{Otter} impiega più tempo di \emph{E}: ciò accade proprio a causa dell'applicazione delle regole di contrazione tra le clausole generate e \texttt{toBeSelected} in cui evidentemente si esegue in modo massiccio l'algoritmo di sussunzione.\par
+Dalla prima tabella si può notare come l'implementazione di \emph{E} generi più clausole prima di restituire la risposta corretta: questo perché \emph{E} non mantiene \texttt{toBeSelected} inter-ridotto e quindi se la \emph{given clause} che genera la clausola vuota ha un rating alto verrà prelevata successivamente generando nel frattempo molte altre clausole. Di conseguenza, nonostante in \emph{E} vengano eseguite meno regole di contrazione, i tempi sono leggermente maggiori: molto probabilmente i tempi in \emph{E} si avvicinerebbero maggiormente a quelli di \emph{Otter} se non fossero state implementate le euristiche sulla regola di sussunzione (il vero responsabile del decreasing delle prestazioni) in quanto il vantaggio di non applicare eccessivamente le regole di contrazione sarebbe equiparabile al vantaggio di mantenere entrambi gli insiemi inter-ridotti. A favore di questa tesi è stato riportato l'esempio ANA004-5 nel quale \emph{Otter} impiega più tempo di \emph{E}: ciò accade proprio a causa dell'applicazione delle regole di contrazione tra le clausole generate e \texttt{toBeSelected} in cui evidentemente si esegue in modo massiccio l'algoritmo di sussunzione.\par
 Per quanto riguarda invece la scelta se prima applicare tutte le regole di espansione e poi contrarre oppure cercare di contrarre ogni clausola appena generata, sembra che quest'ultima strategia sia più efficiente ed, in taluni casi (e.g. KRS006-1), permetta l'uscita dal ciclo che invece deve essere interrotto con risultato \emph{time expired} o \emph{out of memory} in caso si adotti l'altra strategia. A tal proposito emblematico è il problema PUZ018-1 che se eseguito col comando \texttt{-contr} non termina a causa del tempo scaduto mentre con \texttt{-exp} a causa dell'eccessiva memoria allocata.
 
 \begin{thebibliography}{9}
