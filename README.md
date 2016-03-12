@@ -11,7 +11,7 @@ fragment without equality of the TPTP syntax.
 * http://www.cs.miami.edu/~tptp/TPTP/SyntaxBNF.html
 
 There are two deletion strategies, each of them based on that one
-implemented in to two well-known theorem provers:
+implemented in two well-known theorem provers:
 
 * Otter	http://www.cs.unm.edu/~mccune/otter/
 
