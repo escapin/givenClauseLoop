@@ -5,12 +5,16 @@ allowing to assert whether a set of clauses in the First Order Logic is
 *satisfiable* or not.
 It accepts clauses in _Conjunctive Normal Form_ (CNF) based on the CNF
 fragment without equality of the TPTP syntax.
-	 * http://www.tptp.org
-	 * http://www.cs.miami.edu/~tptp/TPTP/SyntaxBNF.html
+
+	* http://www.tptp.org
+
+	* http://www.cs.miami.edu/~tptp/TPTP/SyntaxBNF.html
 
 There are two deletion strategies, each of them based on that one
-implemented in to two well-known theorem provers: 
-	* Otter	http://www.cs.unm.edu/~mccune/otter/ 
+implemented in to two well-known theorem provers:
+
+	* Otter	http://www.cs.unm.edu/~mccune/otter/
+
 	* E 	http://www4.informatik.tu-muenchen.de/~schulz/E/E.html
 
 
