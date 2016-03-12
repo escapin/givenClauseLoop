@@ -36,21 +36,24 @@ java -jar givenClauseLoop.jar -best -o -contr filePath
 
 # Options:
 
--fifo	the given clause is the oldest for insertion sort
--best	the given clause is the least one where the order is defined by symbols' number in each clause
--bestN	such as above but with a number N that represents the Peak Given Ration: each N iterations 
-		the given clause is not the least one but the oldest one
+-fifo             the given clause is the oldest for insertion sort
 
--o	based on Otter theorem prover, aims at keeping the union of To-be-selected and Already-selected inter-reduced
--e	based on E theorem prover, aims at keeping only Already-selected inter-reduced
+-best	         the given clause is the least one where the order is defined by symbols' number in each clause
 
--timeN	if specified, it allows to stop the execution of the given clause loop also if the correct result has not been found
+-bestN	     such as above but with a number N that represents the Peak Given Ration: each N iterations the given clause is not the least one but the oldest one
 
--contr	every time a new clause is generated applying binary resolution, checks if it is possible to apply a contraction rule 
-		(tautology, subsumption, clauses' simplification) with the clause in To-be-selected and Already-selected
--exp	creates all the binary resolvents from the given clause and all the clauses in Already-selected, and then try to apply 
-		contraction rules (tautology, subsumption, clauses' simplification)
+-o	             based on Otter theorem prover, aims at keeping the union of To-be-selected and Already-selected inter-reduced
 
--man	print this manual and exit
+-e	             based on E theorem prover, aims at keeping only Already-selected inter-reduced
 
-filePath the path of the file in which there are the clauses that have to be analysed (the only mandatory option)
+-timeN	     if specified, it allows to stop the execution of the given clause loop also if the correct result has not been found
+
+-contr	         every time a new clause is generated applying binary
+
+-resolution   checks if it is possible to apply a contraction rule  (tautology, subsumption, clauses' simplification) with the clause in To-be-selected and Already-selected
+
+-exp	         creates all the binary resolvents from the given clause and all the clauses in Already-selected, and then try to apply contraction rules (tautology, subsumption, clauses' simplification)
+
+-man	         print this manual and exit
+
+filePath         the path of the file in which there are the clauses that have to be analysed (the only mandatory option)
