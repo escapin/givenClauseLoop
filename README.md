@@ -1,7 +1,7 @@
 # Description:
 
 A theorem prover, based on the "Given Clause Loop" methodology,
-allowing to assert whether a set of clauses in the First Order Logic is
+allowing one to assert whether a set of clauses in the First Order Logic is
 *satisfiable* or not.
 It accepts clauses in _Conjunctive Normal Form_ (CNF) based on the CNF
 fragment without equality of the TPTP syntax.
